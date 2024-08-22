@@ -1,0 +1,13 @@
+pip-tools
+numpy<2
+torch
+matplotlib
+icecream
+pytest
+click
+h5py
+dvc
+dvclive>=3
+scikit-learn
+torchvision
+black

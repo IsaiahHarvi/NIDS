@@ -1,0 +1,31 @@
+{
+	"name": "Python 3: Machine Learning",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2.11.0": {},
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/git-lfs:1": {
+			"autoPull": true
+		}
+	},
+	"containerEnv": {
+		"PYTHONPATH": "/workspace/"
+	},
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "scripts/setup_dev.sh 2>setup.err | tee setup.log",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-toolsai.jupyter",
+				"iterative.dvc",
+				"tamasfe.even-better-toml"
+			]
+		}
+	},
+	"runArgs": [
+		"--gpus=all",
+		"--shm-size=16g"
+		// "--env-file", ".devcontainer/dev.env"
+	]
+}

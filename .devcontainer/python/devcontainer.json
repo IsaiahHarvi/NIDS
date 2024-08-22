@@ -1,0 +1,26 @@
+{
+	"name": "Python 3: Local CPU",
+	"image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2.11.0": {},
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/git-lfs:1": {
+			"autoPull": false
+		}
+	},
+
+	"containerEnv": {
+		"PYTHONPATH": "/workspace/"
+	},
+	
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "scripts/setup_dev.sh 2> setup.err | tee setup.log",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-toolsai.jupyter"
+			]
+		}
+	}
+	// "runArgs": ["--env-file", ".devcontainer/dev.env"]
+}

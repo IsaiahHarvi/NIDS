@@ -13,7 +13,7 @@
 		"PYTHONPATH": "/workspace/"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "scripts/setup_dev.sh 2>setup.err | tee setup.log",
+	"postCreateCommand": "scripts/setup_devcontainer.sh 2>setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {
 			"extensions": [

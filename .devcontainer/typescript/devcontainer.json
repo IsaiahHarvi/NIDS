@@ -1,0 +1,29 @@
+{
+    "name": "TypeScript",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node",
+    "features": {
+      "ghcr.io/devcontainers/features/docker-in-docker:2.11.0": {},
+      "ghcr.io/devcontainers/features/git:1": {}, // Git
+      "ghcr.io/devcontainers/features/git-lfs:1": {
+        "autoPull": false
+      }
+    },
+    "postCreateCommand": "scripts/setup_devcontainer.sh 2>setup.err | tee setup.log",
+    // "runArgs": [
+    //   "--env-file", ".devcontainer/dev.env",
+    //   "--name", "${localEnv:USER}_ts_devcontainer"
+    // ],
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "oven.bun-vscode",
+          "bradlc.vscode-tailwindcss",
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint",
+          "tamasfe.even-better-toml",
+          "ms-python.python"
+        ]
+      }
+    }
+  }
+  

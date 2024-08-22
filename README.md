@@ -121,7 +121,7 @@
 - **Requirement 20**: Deploy the system and prepare user documentation.
 
 ## Team Member Breakdown
-- **Network Engineer**: Focus on network traffic monitoring, packet capture, and deep packet inspection.
-- **Machine Learning Specialist**: Develop and integrate machine learning models for anomaly detection and threat prediction.
-- **Back-End Developer**: Build the API, handle secure data transmission, and integrate the back-end with threat detection and alerts.
-- **Front-End Developer**: Design the visualization dashboard, including traffic and threat visualizations.
+- **Network Engineer**: N/A
+- **Machine Learning Specialist**: Isaiah Harville
+- **Back-End Developer**: Jacob Neel
+- **Front-End Developer**: Casey Bramlett

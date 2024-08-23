@@ -10,10 +10,10 @@
 		}
 	},
 	"containerEnv": {
-		"PYTHONPATH": "/workspace/"
+		"PYTHONPATH": "/workspace/src"
 	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "scripts/setup_devcontainer.sh 2>setup.err | tee setup.log",
+	"postCreateCommand": "chmod +x scripts/setup_devcontainer.sh && chmod +x scripts/setup_common.sh && scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {
 			"extensions": [

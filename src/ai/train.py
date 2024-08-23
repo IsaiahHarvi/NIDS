@@ -12,16 +12,17 @@ def main(epochs):
     train(epochs)
     
 def train(epochs):
-    proot = "data/CIC"
-
-    all_csvs = os.listdir(proot)
+    cic_dir = "data/CIC"
+    all_csvs = os.listdir(cic_dir)
     dm = DataModule(
-        paths=[
-            f"{proot}/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
-            f"{proot}/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
-        ], 
+        # paths=[
+        #     f"{cic_dir}/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+        #     f"{cic_dir}/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
+        # ],
+        paths = all_csvs,
         batch_size=64, 
-        test_size=0.2)
+        test_size=0.2
+    )
     dm.prepare_data()
 
     model = Recurrent(

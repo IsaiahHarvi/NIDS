@@ -1,0 +1,15 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+numpy<2
+lightning
+torch
+torchvision
+matplotlib
+icecream
+pytest
+click
+dvc
+dvclive>=3
+scikit-learn
+black
+pandas

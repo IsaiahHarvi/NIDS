@@ -1,0 +1,7 @@
+services:
+  model_recurrent:
+    build:
+      context: ../../
+      dockerfile: deploy/model/Dockerfile
+    ports:
+      - "50051:50051"

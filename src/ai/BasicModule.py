@@ -27,11 +27,18 @@ class BasicModule(pl.LightningModule):
         x, y = batch
         outputs = self(x)
         loss = self.criterion(outputs, y)
-        self.log('train_loss', loss)
-        return loss
+        acc = (outputs.argmax(dim=1) == y).float().mean()
+        self.log('train_loss', loss, prog_bar=True)
+        self.log('train_acc', acc, prog_bar=True)
+
 
     def test_step(self, batch, batch_idx):
-        pass
+        x, y = batch
+        outputs = self(x)
+        loss = self.criterion(outputs, y)
+        acc = (outputs.argmax(dim=1) == y).float().mean()
+        self.log('test_loss', loss, prog_bar=True)
+        self.log('test_acc', acc, prog_bar=True)
 
     def validation_step(self, batch, batch_idx):
         x, y = batch

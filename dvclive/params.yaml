@@ -1,0 +1,4 @@
+input_size: 80
+hidden_size: 128
+num_classes: 3
+learning_rate: 0.001

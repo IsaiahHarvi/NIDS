@@ -1,13 +1,14 @@
 pip-tools
 numpy<2
 torch
+lightning
 matplotlib
 icecream
 pytest
 click
-h5py
 dvc
 dvclive>=3
 scikit-learn
 torchvision
 black
+pandas

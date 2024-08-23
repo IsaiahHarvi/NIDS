@@ -3,6 +3,7 @@ import lightning.pytorch as pl
 import click
 from dvclive.lightning import DVCLiveLogger
 
+from data.CIC.check_data import collect_data
 from ai.DataModule import DataModule
 from ai.BasicModule import Recurrent
 
@@ -12,14 +13,12 @@ def main(epochs):
     train(epochs)
     
 def train(epochs):
-    cic_dir = "data/CIC"
-    all_csvs = os.listdir(cic_dir)
     dm = DataModule(
         # paths=[
-        #     f"{cic_dir}/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
-        #     f"{cic_dir}/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
+        #     f"{cic_dir}Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+        #     f"{cic_dir}Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
         # ],
-        paths = all_csvs,
+        paths=collect_data(),
         batch_size=64, 
         test_size=0.2
     )

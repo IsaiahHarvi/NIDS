@@ -10,7 +10,7 @@
 	},
 
 	"containerEnv": {
-		"PYTHONPATH": "/workspace/src"
+		"PYTHONPATH": "/workspace/CS-499/src"
 	},
 	
 	// Use 'postCreateCommand' to run commands after the container is created.

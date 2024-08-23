@@ -4,6 +4,8 @@
 #
 #    pip-compile .devcontainer/requirements.in
 #
+--extra-index-url https://download.pytorch.org/whl/cu121
+
 aiohappyeyeballs==2.4.0
     # via aiohttp
 aiohttp==3.10.5
@@ -412,7 +414,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 tomlkit==0.13.2
     # via dvc
-torch==2.4.0
+torch==2.4.0+cu121
     # via
     #   -r .devcontainer/requirements.in
     #   lightning
@@ -423,7 +425,7 @@ torchmetrics==1.4.1
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.19.0
+torchvision==0.19.0+cu121
     # via -r .devcontainer/requirements.in
 tqdm==4.66.5
     # via

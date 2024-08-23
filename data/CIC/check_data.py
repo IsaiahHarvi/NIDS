@@ -1,23 +1,24 @@
 import os
 import pandas as pd
 
-def collect_data():
+def collect_data(verbose: bool = False):
     """
     Collects all pandas readable CSV files in data/CIC.
     """
     files = [f"data/CIC/{csv}" for csv in os.listdir("data/CIC") if csv.endswith('.csv')]
     for file in files:
-        print(f"Checking {file}...", end="   ")
+        if verbose: print(f"Checking {file}...", end="   ")
 
         try:
             pd.read_csv(file)
-            print(f"OK")
+            if verbose: print(f"OK")
         except Exception as e:
-            print("X")
-            print(f"\t{e}\n")
+            if verbose:
+                print("X")
+                print(f"\t{e}\n")
             files.remove(file)
-    print(end="\n\n")
+    if verbose: print(end="\n\n")
     return files
 
 if __name__ == "__main__":
-    collect_data()
+    collect_data(verbose=True)

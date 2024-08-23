@@ -3,18 +3,23 @@ import torch.nn as nn
 import torch.optim as optim
 import lightning.pytorch as pl
 
-class Recurrent(pl.LightningModule):
-    def __init__(self, in_features, hidden_size, out_features, lr=0.001):
-        super(Recurrent, self).__init__()
+
+def RNN(in_features, hidden_size, batch_first=True):
+    return nn.RNN(in_features, hidden_size, batch_first=batch_first)
+
+
+class BasicModule(pl.LightningModule):
+    def __init__(self, model_constructor, in_features, hidden_size, out_features, lr=0.001):
+        super(BasicModule, self).__init__()
         self.save_hyperparameters()
-        self.rnn = nn.RNN(in_features, hidden_size, batch_first=True)
+        self.constructor = model_constructor(in_features, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, out_features)
         self.criterion = nn.CrossEntropyLoss()
         self.lr = lr
 
     def forward(self, x):
         h0 = torch.zeros(1, x.size(0), self.hparams.hidden_size).to(x.device)
-        out, _ = self.rnn(x, h0)
+        out, _ = self.constructor(x, h0)
         out = self.fc(out[:, -1, :])
         return out
 
@@ -37,4 +42,5 @@ class Recurrent(pl.LightningModule):
         self.log('val_acc', acc, prog_bar=True)
 
     def configure_optimizers(self):
-        return optim.Adam(self.parameters(), lr=self.lrw)
+        return optim.Adam(self.parameters(), lr=self.lr)
+

@@ -8,12 +8,6 @@
 			"autoPull": false
 		}
 	},
-
-	"containerEnv": {
-		"PYTHONPATH": "/workspace/CS-499/src"
-	},
-	
-	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "chmod +x scripts/setup_devcontainer.sh && chmod +x scripts/setup_common.sh && scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {
@@ -21,6 +15,6 @@
 				"ms-toolsai.jupyter"
 			]
 		}
-	}
-	// "runArgs": ["--env-file", ".devcontainer/dev.env"]
+	},
+	"runArgs": ["--env-file", ".devcontainer/python.env"]
 }

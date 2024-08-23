@@ -5,7 +5,7 @@ from dvclive.lightning import DVCLiveLogger
 
 from data.CIC.check_data import collect_data
 from ai.DataModule import DataModule
-from ai.BasicModule import Recurrent
+from ai.BasicModule import BasicModule, RNN
 
 @click.command()
 @click.option("--epochs", default=10)
@@ -24,7 +24,8 @@ def train(epochs):
     )
     dm.prepare_data()
 
-    model = Recurrent(
+    model = BasicModule(
+        model_constructor=RNN,
         in_features=dm.train_dataset[0][0].shape[1],
         hidden_size=128, 
         out_features=dm.n_classes,

@@ -1,8 +1,8 @@
 # This is a CODEOWNERS file.
 # The users mentioned below will be the code owners for the app directory.
 # Their approval is required for files touched in their directories.
-
-/app/ @CaseyBramlett
+[UI]
+/app/**/* @CaseyBramlett
 
 # Codeowner for everything excluding the previous
 * @IsaiahHarvi

@@ -13,3 +13,5 @@ dvclive>=3
 scikit-learn
 black
 pandas
+grpcio
+grpcio-tools

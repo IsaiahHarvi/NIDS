@@ -8,14 +8,14 @@ from sklearn.preprocessing import StandardScaler
 from icecream import ic
 
 class DataModule(pl.LightningDataModule):
-    def __init__(self, paths, batch_size=64, test_size=0.2):
+    def __init__(self, paths: list[str], batch_size: int =64, val_split: float=0.2):
         super().__init__()
         self.paths = paths
         self.batch_size = batch_size
-        self.test_size = test_size
+        self.val_split = val_split
         self.n_classes = 0
 
-    def prepare_data(self):
+    def setup(self):
         dfs = []
         for path in self.paths:
             df = pd.read_csv(path)
@@ -23,7 +23,6 @@ class DataModule(pl.LightningDataModule):
             dfs.append(df)
 
         df = pd.concat(dfs, ignore_index=True)
-
         df = df.drop(["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"], axis=1, errors="ignore")
         
         x = df.select_dtypes(include=[float, int]).fillna(0)
@@ -41,7 +40,7 @@ class DataModule(pl.LightningDataModule):
         y_tensor = torch.tensor(y.values, dtype=torch.long)
         
         dataset = TensorDataset(x_tensor.unsqueeze(1), y_tensor)
-        train_size = int((1 - self.test_size) * len(dataset))
+        train_size = int((1 - self.val_split) * len(dataset))
         val_size = len(dataset) - train_size
         
         self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
@@ -54,9 +53,10 @@ class DataModule(pl.LightningDataModule):
             num_workers=os.cpu_count()
         )
 
-    def val_dataloader(self):
+    def val_dataloader(self, shuffle: bool = False):
         return DataLoader(
             self.val_dataset, 
             batch_size=self.batch_size,
+            shuffle=shuffle,
             num_workers=os.cpu_count()
         )

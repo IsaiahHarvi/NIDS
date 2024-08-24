@@ -14,7 +14,6 @@ def main():
         stub = ComponentStub(channel)
         request = ComponentMessage(input=[1., 2., 3.], health_check=True)
         response = stub.forward(request)
-
         ic(response.output)
 
     # Connect to Residual service on port 50052
@@ -22,7 +21,6 @@ def main():
         stub = ComponentStub(channel)
         request = ComponentMessage(input=[1., 2., 3.], health_check=True)
         response = stub.forward(request)
-
         ic(response.output)
 
 

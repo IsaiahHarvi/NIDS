@@ -8,8 +8,10 @@ service Component {
 
 message ComponentMessage {
   repeated float input = 1;
+  bool health_check = 2; // Will make the component pass through the input data without any processing
 }
 
 message ComponentResponse {
-  int32 output = 1;
+  repeated float output = 1; // for pass throughs
+  int32 prediction = 2; // for model service
 }

@@ -8,7 +8,7 @@
 			"autoPull": false
 		}
 	},
-	"postCreateCommand": "chmod +x scripts/setup_devcontainer.sh && chmod +x scripts/setup_common.sh && scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
+	"postCreateCommand": "chmod +x scripts/*.sh && scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {
 			"extensions": [

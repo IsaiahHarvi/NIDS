@@ -10,8 +10,15 @@ class ResidualModel(ComponentServicer):
         self.model = BasicModule.load_from_checkpoint(
             "data/checkpoints/ResidualNetwork.ckpt", 
         )
-    def forward(self, request, context):
-        x = torch.tensor(request.input) 
+        self.model.eval()
+        ic("Started")
+
+    def forward(self, msg: ComponentMessage, context):
+        if msg.health_check:
+            ic("Health check")
+            return ComponentResponse(output=msg.input)
+
+        x = torch.tensor(msg.input) 
         match x.dim():
             case 1:
                 x = x.unsqueeze(0) # add batch dimension
@@ -22,7 +29,7 @@ class ResidualModel(ComponentServicer):
 
         pred = torch.argmax(self.model(x), dim=1).item()
         # ic(pred)
-        return ComponentResponse(output=pred)
+        return ComponentResponse(prediction=pred)
 
 if __name__ == "__main__":
     service = ResidualModel()

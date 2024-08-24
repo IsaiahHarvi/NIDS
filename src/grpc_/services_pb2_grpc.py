@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import src.grpc_.services_pb2 as services__pb2
+from src.grpc_ import services_pb2 as src_dot_grpc___dot_services__pb2
 
 GRPC_GENERATED_VERSION = '1.66.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in services_pb2_grpc.py depends on'
+        + f' but the generated code in src/grpc_/services_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,8 +36,8 @@ class ComponentStub(object):
         """
         self.forward = channel.unary_unary(
                 '/services.Component/forward',
-                request_serializer=services__pb2.ComponentMessage.SerializeToString,
-                response_deserializer=services__pb2.ComponentResponse.FromString,
+                request_serializer=src_dot_grpc___dot_services__pb2.ComponentMessage.SerializeToString,
+                response_deserializer=src_dot_grpc___dot_services__pb2.ComponentResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,8 +55,8 @@ def add_ComponentServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'forward': grpc.unary_unary_rpc_method_handler(
                     servicer.forward,
-                    request_deserializer=services__pb2.ComponentMessage.FromString,
-                    response_serializer=services__pb2.ComponentResponse.SerializeToString,
+                    request_deserializer=src_dot_grpc___dot_services__pb2.ComponentMessage.FromString,
+                    response_serializer=src_dot_grpc___dot_services__pb2.ComponentResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -84,8 +84,8 @@ class Component(object):
             request,
             target,
             '/services.Component/forward',
-            services__pb2.ComponentMessage.SerializeToString,
-            services__pb2.ComponentResponse.FromString,
+            src_dot_grpc___dot_services__pb2.ComponentMessage.SerializeToString,
+            src_dot_grpc___dot_services__pb2.ComponentResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -16,6 +16,10 @@ from src.ai.DataModule import DataModule
 
 @pytest.fixture(scope="module")
 def grpc_server(request):
+    os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
+    os.system("docker container prune -f > /dev/null 2>&1")
+    os.system("docker image prune -f > /dev/null 2>&1")
+
     model_class, port = request.param
     server_process = multiprocessing.Process(target=start_server, args=(model_class(), port))
     server_process.start()
@@ -44,7 +48,7 @@ def test_model(grpc_server):
 
         response = stub.forward(msg)
         assert isinstance(response, ComponentResponse)
-        ic(f"Got {response.output}, expected {label.item()}")
+        ic(f"Got {response.prediction}, expected {label.item()}")
 
 if __name__ == "__main__":
     pytest.main(["-sv", "tests/unit/test_model.py"])

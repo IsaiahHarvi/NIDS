@@ -29,7 +29,7 @@ jobs:
         echo $PWD
         echo "PYTHONPATH is: $PYTHONPATH"
         python -c "import sys; print(sys.path); import src.grpc.utils"
-    - name: Cache pip
+    - name: Pip Cache
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
@@ -37,6 +37,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install Dependencies
+      # in the future, we can make a dedicated ci-requirements file
       run: |
         pip install --no-cache-dir -r .devcontainer/requirements-cpu.txt -e .
 

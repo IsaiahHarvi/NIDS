@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package services;
+
+service Component {
+  rpc forward (ComponentMessage) returns (ComponentResponse);
+}
+
+message ComponentMessage {
+  repeated float input = 1;
+}
+
+message ComponentResponse {
+  int32 output = 1;
+}

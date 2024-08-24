@@ -16,9 +16,6 @@ from src.ai.DataModule import DataModule
 
 @pytest.fixture(scope="module")
 def grpc_server(request):
-    os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
-    os.system("docker rm $(docker ps -a -q) > /dev/null 2>&1") # free up the ports
-
     model_class, port = request.param
     server_process = multiprocessing.Process(target=start_server, args=(model_class(), port))
     server_process.start()

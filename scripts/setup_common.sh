@@ -10,6 +10,7 @@ git config --global pull.rebase false
 docker container prune -f | true
 docker image prune -f | true
 docker volume prune -f --all | true
+# docker system prune --volumes -af | true
 
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y vim tmux neovim fzf dnsutils iputils-ping curl

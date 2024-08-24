@@ -3,14 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import lightning.pytorch as pl
 
-import matplotlib
-matplotlib.use("Agg")
-from matplotlib import pyplot as plt
-
 import numpy as np
-from torchmetrics import ConfusionMatrix
-from sklearn.metrics import ConfusionMatrixDisplay
-from dvclive import Live
 from icecream import ic
 
 class ResidualBlock(nn.Module):
@@ -125,6 +118,13 @@ class BasicModule(pl.LightningModule):
         self.test_outputs.clear()
 
     def log_confusion_matrix(self, preds, labels, stage):
+        # we import here to minimize the deps in the model service
+        import matplotlib; matplotlib.use("Agg")
+        from matplotlib import pyplot as plt
+        from dvclive import Live
+        from torchmetrics import ConfusionMatrix
+        from sklearn.metrics import ConfusionMatrixDisplay
+
         cm = ConfusionMatrix(num_classes=self.num_classes, task="multiclass")(preds, labels).cpu().numpy()
 
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(self.num_classes))

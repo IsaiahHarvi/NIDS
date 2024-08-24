@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
-COPY .devcontainer/requirements-cpu.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
+COPY deploy/model/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt --retries 1 && rm /app/requirements.txt
 
 ARG MODEL_PATH
 ARG FILE_NAME

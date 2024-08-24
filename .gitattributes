@@ -6,4 +6,3 @@ data/CIC/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv filter=lfs diff=
 data/CIC/Tuesday-WorkingHours.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
 data/CIC/Wednesday-workingHours.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
 data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
-data/checkpoints/RNN.ckpt filter=lfs diff=lfs merge=lfs -text

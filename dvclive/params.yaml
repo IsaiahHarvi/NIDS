@@ -1,5 +1,0 @@
-model_constructor: RNN
-in_features: 80
-hidden_size: 128
-out_features: 3
-lr: 0.001

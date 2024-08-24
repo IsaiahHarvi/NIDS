@@ -165,6 +165,12 @@ gitpython==3.1.43
     # via scmrepo
 grandalf==0.8
     # via dvc
+grpcio==1.66.0
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   grpcio-tools
+grpcio-tools==1.66.0
+    # via -r .devcontainer/requirements-cpu.in
 gto==1.7.1
     # via
     #   dvc
@@ -267,6 +273,8 @@ pluggy==1.5.0
     # via pytest
 prompt-toolkit==3.0.47
     # via click-repl
+protobuf==5.27.3
+    # via grpcio-tools
 psutil==6.0.0
     # via
     #   dvc

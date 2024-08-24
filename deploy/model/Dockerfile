@@ -1,4 +1,4 @@
-FROM base-python:latest
+FROM python:3.11-slim
 
 COPY src/services/model/recurrent.py /app/recurrent.py
 COPY data/checkpoints/RNN.ckpt data/checkpoints/RNN.ckpt

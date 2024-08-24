@@ -9,5 +9,5 @@ def pytest_sessionstart(session):
     """
     ic("Killing and removing all existing services")
     os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
-    os.system("docker system prune -f > /dev/null 2>&1")
+    os.system("docker container prune -f > /dev/null 2>&1")
     os.system("docker image prune -f > /dev/null 2>&1")

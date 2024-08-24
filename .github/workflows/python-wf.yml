@@ -20,12 +20,14 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.11"
-    - name: Install Git LFS
+    - name: Verify Setup
       run: |
         sudo apt-get update
         sudo apt-get install git-lfs
         git lfs install
         git lfs pull
+        echo "PYTHONPATH is: $PYTHONPATH"
+        python -c "import sys; print(sys.path); import src.grpc.utils"
     - name: Cache pip
       uses: actions/cache@v3
       with:
@@ -35,7 +37,6 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install Dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install --no-cache-dir -r .devcontainer/requirements-cpu.txt -e .
 
     - name: Run pytest

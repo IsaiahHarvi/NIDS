@@ -163,3 +163,8 @@ cython_debug/
 
 # Extras
 setup.err
+DvcLiveLogger/
+*acc.tsv
+*loss.tsv
+*epoch.tsv
+*.png

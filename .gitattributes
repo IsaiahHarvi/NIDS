@@ -1,1 +1,12 @@
-data/* filter=lfs diff=lfs merge=lfs -text
+data/CIC/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Monday-WorkingHours.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Tuesday-WorkingHours.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Wednesday-workingHours.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv filter=lfs diff=lfs merge=lfs -text
+data/checkpoints/RNN.ckpt filter=lfs diff=lfs merge=lfs -text
+data/checkpoints/RNN-v1.ckpt filter=lfs diff=lfs merge=lfs -text
+dvclive/plots/images/val_confusion_matrix.png filter=lfs diff=lfs merge=lfs -text
+data/checkpoints/ResidualNetwork.ckpt filter=lfs diff=lfs merge=lfs -text

@@ -16,7 +16,7 @@ jobs:
         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d "{\"content\": \"**${{ github.event.pull_request.title }}** is ```ready for review``` ${{ github.event.pull_request.html_url }}\"}" \
+        -d "{\"content\": \"**${{ github.event.pull_request.title }}** is \`\`\`ready for review\`\`\` ${{ github.event.pull_request.html_url }}\"}" \
         $DISCORD_WEBHOOK_URL
 
   if_merged:
@@ -28,5 +28,5 @@ jobs:
         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d "{\"content\": \"**${{ github.event.pull_request.title }}** is ```merged into main``` ${{ github.event.pull_request.html_url }}\"}" \
+        -d "{\"content\": \"**${{ github.event.pull_request.title }}** is \`\`\`merged into main\`\`\` ${{ github.event.pull_request.html_url }}\"}" \
         $DISCORD_WEBHOOK_URL

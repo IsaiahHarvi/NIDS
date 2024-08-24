@@ -1,18 +1,32 @@
-name: Pull Request Webhook
+name: Discord Webhooks
 
 on:
   pull_request:
-    types: [ready_for_review]
+    types: 
+      - ready_for_review
+      - closed
 
 jobs:
   send_webhook:
+    if: github.event.action == 'ready_for_review'
     runs-on: ubuntu-latest
-
     steps:
-    - name: Send Discord Webhook
+    - name: Ready for Review
       env:
         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d "{\"content\": \"A new pull request has been taken out of draft: **${{ github.event.pull_request.title }}**. \nURL: ${{ github.event.pull_request.html_url }}\"}" \
+        -d "{\"content\": \"**${{ github.event.pull_request.title }}** is ready for review. \nURL: ${{ github.event.pull_request.html_url }}\"}" \
+        $DISCORD_WEBHOOK_URL
+
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Merged Notification
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        curl -X POST -H "Content-Type: application/json" \
+        -d "{\"content\": \"The pull request **${{ github.event.pull_request.title }}** has been merged. \nURL: ${{ github.event.pull_request.html_url }}\"}" \
         $DISCORD_WEBHOOK_URL

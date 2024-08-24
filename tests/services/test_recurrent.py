@@ -31,14 +31,13 @@ def test_recurrent(grpc_server):
         )
         dm.setup()
 
-        data = next(iter(dm.train_dataloader()))[0]
-        if data.dim() == 3:
-            data = data.squeeze(0) 
+        data, label = next(iter(dm.train_dataloader()))
 
-        data = data.numpy()
+        # ic(data.shape) # [1, 1, 80]
+        data = data.numpy().flatten().tolist() # [80] bc it has to live over gRPC
         msg = ComponentMessage(input=data)
-        ic(dm.train_dataset[0][0].shape)
 
         response = stub.forward(msg)
         assert isinstance(response, ComponentResponse)
-        ic(response.output)
+        # ic(response.output)
+        assert response.output == label.item(), f"False Prediction, expected {label.item()} but got {response.output}"

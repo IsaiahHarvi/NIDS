@@ -26,6 +26,7 @@ jobs:
         sudo apt-get install git-lfs
         git lfs install
         git lfs pull
+        echo $PWD
         echo "PYTHONPATH is: $PYTHONPATH"
         python -c "import sys; print(sys.path); import src.grpc.utils"
     - name: Cache pip

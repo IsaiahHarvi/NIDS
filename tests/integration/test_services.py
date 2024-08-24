@@ -21,7 +21,6 @@ def docker_compose():
         )
 
 def test_docker_services(docker_compose):
-    """Test that the Docker services are up and running."""
     result = subprocess.run(
         ["docker", "compose", "ps"],
         check=True,

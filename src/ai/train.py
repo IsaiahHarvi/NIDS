@@ -7,7 +7,7 @@ from icecream import ic
 from dvclive.lightning import DVCLiveLogger
 
 from ai.DataModule import DataModule
-from ai.BasicModule import BasicModule, RNN
+from ai.BasicModule import BasicModule, RNN, ResidualNetwork
 
 @click.command()
 @click.option("--epochs", default=10)
@@ -40,12 +40,15 @@ def train(epochs, batch_size, target_batch, paths):
     ic(dm.n_classes)
 
     model = BasicModule(
-        model_constructor=RNN,
+        model_constructor=ResidualNetwork,
         in_features=dm.train_dataset[0][0].shape[1], # this param is not strictly necessary, but its nice metadata
         hidden_size=128, 
         out_features=dm.n_classes,
         lr=0.001,
-        batch_size=dm.batch_size # used for model_constructors
+        model_constructor_kwargs={
+            # "batch_size" : dm.batch_size,  # used for RNN
+            "num_blocks" : 3, # used for ResidualNetwork
+        }
     )
     
     ckpt = ModelCheckpoint(

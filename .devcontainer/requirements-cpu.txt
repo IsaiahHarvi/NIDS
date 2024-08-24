@@ -91,6 +91,8 @@ distro==1.9.0
     # via
     #   dvc
     #   iterative-telemetry
+docker==7.1.0
+    # via -r .devcontainer/requirements-cpu.in
 dpath==2.2.0
     # via dvc
 dulwich==0.22.1
@@ -326,6 +328,7 @@ pyyaml==6.0.2
     #   pytorch-lightning
 requests==2.32.3
     # via
+    #   docker
     #   dvc
     #   dvc-studio-client
     #   iterative-telemetry
@@ -419,6 +422,7 @@ tzdata==2024.1
     #   pandas
 urllib3==2.2.2
     # via
+    #   docker
     #   dulwich
     #   requests
 vine==5.1.0

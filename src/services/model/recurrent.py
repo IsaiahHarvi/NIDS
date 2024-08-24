@@ -8,7 +8,7 @@ from src.grpc.utils import start_server
 class RecurrentModel(ComponentServicer):
     def __init__(self):
         self.model = BasicModule.load_from_checkpoint(
-            "data/checkpoints/RNN-v1.ckpt", 
+            "data/checkpoints/RNN.ckpt", 
             model_constructor_kwargs={"batch_size": 1}
         )
 

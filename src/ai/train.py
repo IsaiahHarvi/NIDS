@@ -13,8 +13,9 @@ from ai.BasicModule import BasicModule, RNN, ResidualNetwork
 @click.option("--epochs", default=10)
 @click.option("--batch_size", default=64) # >=256 when all_data
 @click.option("--target_batch", default=64) # used for gradient accumulation
+@click.option("--constructor", type=click.Choice(["RNN", "ResidualNetwork"], case_sensitive=False), prompt=True)
 @click.option("--all_data", is_flag=True, default=False)
-def main(epochs, batch_size, target_batch, all_data):
+def main(epochs, batch_size, target_batch, constructor, all_data):
     if target_batch < batch_size: 
         target_batch = batch_size
 
@@ -27,9 +28,11 @@ def main(epochs, batch_size, target_batch, all_data):
             # "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
         ]
 
-    train(epochs, batch_size, target_batch, paths)
+    constructor = {"RNN": RNN, "ResidualNetwork": ResidualNetwork}[constructor]
+
+    train(epochs, batch_size, target_batch, paths, constructor)
     
-def train(epochs, batch_size, target_batch, paths):
+def train(epochs, batch_size, target_batch, paths, constructor):
     dm = DataModule(
         paths=paths,
         val_split=0.2,
@@ -40,14 +43,14 @@ def train(epochs, batch_size, target_batch, paths):
     ic(dm.n_classes)
 
     model = BasicModule(
-        model_constructor=ResidualNetwork,
+        model_constructor=constructor,
         in_features=dm.train_dataset[0][0].shape[1], # this param is not strictly necessary, but its nice metadata
         hidden_size=128, 
         out_features=dm.n_classes,
         lr=0.001,
         model_constructor_kwargs={
-            # "batch_size" : dm.batch_size,  # used for RNN
-            "num_blocks" : 3, # used for ResidualNetwork
+            "batch_size" : dm.batch_size,  # used for RNN
+            # "num_blocks" : 3, # used for ResidualNetwork
         }
     )
     

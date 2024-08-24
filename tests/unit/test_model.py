@@ -1,4 +1,4 @@
-import grpc_
+import grpc
 import os
 import pytest
 import multiprocessing
@@ -27,7 +27,7 @@ def grpc_server(request):
 @pytest.mark.parametrize("grpc_server", [(RecurrentModel, 50051), (ResidualModel, 50052)], indirect=True)
 def test_model(grpc_server):
     port = grpc_server
-    with grpc_.insecure_channel(f'localhost:{port}') as channel:
+    with grpc.insecure_channel(f'localhost:{port}') as channel:
         stub = ComponentStub(channel)
         dm = DataModule(
             paths=[

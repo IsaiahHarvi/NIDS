@@ -8,12 +8,13 @@ from sklearn.preprocessing import StandardScaler
 from icecream import ic
 
 class DataModule(pl.LightningDataModule):
-    def __init__(self, paths: list[str], batch_size: int =64, val_split: float=0.2):
+    def __init__(self, paths: list[str], batch_size: int =64, val_split: float=0.2, num_workers: int=os.cpu_count()):
         super().__init__()
         self.paths = paths
         self.batch_size = batch_size
         self.val_split = val_split
         self.n_classes = 0
+        self.num_workers = num_workers
 
     def setup(self):
         dfs = []
@@ -50,7 +51,7 @@ class DataModule(pl.LightningDataModule):
             self.train_dataset, 
             batch_size=self.batch_size, 
             shuffle=True,
-            num_workers=os.cpu_count()
+            num_workers=self.num_workers
         )
 
     def val_dataloader(self, shuffle: bool = False):
@@ -58,5 +59,5 @@ class DataModule(pl.LightningDataModule):
             self.val_dataset, 
             batch_size=self.batch_size,
             shuffle=shuffle,
-            num_workers=os.cpu_count()
+            num_workers=self.num_workers
         )

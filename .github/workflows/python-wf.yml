@@ -33,7 +33,6 @@ jobs:
         echo "PYTHONPATH: ${{ github.workspace }}/src"
         ls ${{ github.workspace }}/src
     - name: pytest
-      env:
-        PYTHONPATH: ${{ github.workspace }}/src
       run: |
+        export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/src
         pytest -sv

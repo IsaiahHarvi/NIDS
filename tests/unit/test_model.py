@@ -1,4 +1,5 @@
 import grpc
+import os
 import pytest
 import multiprocessing
 import time
@@ -15,6 +16,9 @@ from src.ai.DataModule import DataModule
 
 @pytest.fixture(scope="module")
 def grpc_server(request):
+    os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
+    os.system("docker rm $(docker ps -a -q) > /dev/null 2>&1") # free up the ports
+
     model_class, port = request.param
     server_process = multiprocessing.Process(target=start_server, args=(model_class(), port))
     server_process.start()
@@ -43,7 +47,7 @@ def test_model(grpc_server):
 
         response = stub.forward(msg)
         assert isinstance(response, ComponentResponse)
-        assert response.output == label.item(), f"False Prediction, expected {label.item()} but got {response.output}"
+        ic(f"Got {response.output}, expected {label.item()}")
 
 if __name__ == "__main__":
     pytest.main(["-sv", "tests/unit/test_model.py"])

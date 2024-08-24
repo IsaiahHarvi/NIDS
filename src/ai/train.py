@@ -49,8 +49,8 @@ def train(epochs, batch_size, target_batch, paths, constructor):
         out_features=dm.n_classes,
         lr=0.001,
         model_constructor_kwargs={
-            "batch_size" : dm.batch_size,  # used for RNN
-            # "num_blocks" : 3, # used for ResidualNetwork
+            # "batch_size" : dm.batch_size,  # used for RNN
+            "num_blocks" : 3, # used for ResidualNetwork
         }
     )
     

@@ -1,9 +1,9 @@
 import torch
 from ai.BasicModule import BasicModule
 from icecream import ic
-from src.grpc.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc.services_pb2_grpc import ComponentServicer
-from src.grpc.utils import start_server
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import ComponentServicer
+from src.grpc_.utils import start_server
 
 class RecurrentModel(ComponentServicer):
     def __init__(self):

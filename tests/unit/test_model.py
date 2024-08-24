@@ -1,13 +1,13 @@
-import grpc
+import grpc_
 import os
 import pytest
 import multiprocessing
 import time
 import numpy as np
 from icecream import ic
-from src.grpc.utils import start_server
-from src.grpc.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc.services_pb2_grpc import ComponentStub
+from src.grpc_.utils import start_server
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import ComponentStub
 
 from src.services.model.recurrent import RecurrentModel
 from src.services.model.residual import ResidualModel
@@ -27,7 +27,7 @@ def grpc_server(request):
 @pytest.mark.parametrize("grpc_server", [(RecurrentModel, 50051), (ResidualModel, 50052)], indirect=True)
 def test_model(grpc_server):
     port = grpc_server
-    with grpc.insecure_channel(f'localhost:{port}') as channel:
+    with grpc_.insecure_channel(f'localhost:{port}') as channel:
         stub = ComponentStub(channel)
         dm = DataModule(
             paths=[

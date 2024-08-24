@@ -30,11 +30,12 @@ def train(epochs, batch_size, target_batch, all_data):
 
     model = BasicModule(
         model_constructor=RNN,
-        in_features=dm.train_dataset[0][0].shape[1],
+        in_features=dm.train_dataset[0][0].shape[1], # not strictly necessary as a param, but its nice metadata
         hidden_size=128, 
         out_features=dm.n_classes,
         lr=0.001,
         accumulate_grad_batches=(max(1, target_batch // dm.batch_size)),
+        batch_size=dm.batch_size # used for model_constructors
     )
     
     trainer = pl.Trainer(

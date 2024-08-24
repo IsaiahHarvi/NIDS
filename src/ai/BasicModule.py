@@ -4,24 +4,27 @@ import torch.optim as optim
 import lightning.pytorch as pl
 
 
-def RNN(in_features, hidden_size, batch_first=True):
-    return nn.RNN(in_features, hidden_size, batch_first=batch_first)
+def RNN(x, in_features, hidden_size, batch_size, batch_first=True):
+    rnn = nn.RNN(in_features, hidden_size, batch_first=batch_first)
+    h0 = torch.zeros(1, batch_size, hidden_size).to(x.device)
+    out, _ = rnn(x, h0)
+    return out[:, -1, :]
 
 
 class BasicModule(pl.LightningModule):
-    def __init__(self, model_constructor, in_features, hidden_size, out_features, lr=0.001):
+    def __init__(self, model_constructor, in_features, hidden_size, out_features, lr=0.001, batch_size=64):
         super(BasicModule, self).__init__()
         self.save_hyperparameters()
-        self.constructor = model_constructor(in_features, hidden_size, batch_first=True)
+        self.constructor = model_constructor
+        self.batch_size = batch_size # needefd for h0
         self.fc = nn.Linear(hidden_size, out_features)
         self.criterion = nn.CrossEntropyLoss()
         self.lr = lr
 
     def forward(self, x):
-        h0 = torch.zeros(1, x.size(0), self.hparams.hidden_size).to(x.device)
-        out, _ = self.constructor(x, h0)
-        out = self.fc(out[:, -1, :])
-        return out
+        return self.fc(
+            self.constructor(x, self.hparams.in_features, self.hparams.hidden_size, self.batch_size)
+        )
 
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -30,7 +33,6 @@ class BasicModule(pl.LightningModule):
         acc = (outputs.argmax(dim=1) == y).float().mean()
         self.log('train_loss', loss, prog_bar=True)
         self.log('train_acc', acc, prog_bar=True)
-
 
     def test_step(self, batch, batch_idx):
         x, y = batch

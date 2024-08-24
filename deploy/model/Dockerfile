@@ -6,7 +6,7 @@ ENV PYTHONPATH=/app/src
 COPY deploy/model/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt --retries 1 && rm /app/requirements.txt
 
-COPY src/grpc /app/src/grpc
+COPY src/grpc_ /app/src/grpc_
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
 
 ARG MODEL_PATH

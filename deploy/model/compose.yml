@@ -3,5 +3,18 @@ services:
     build:
       context: ../../
       dockerfile: deploy/model/Dockerfile
+      args:
+        - MODEL_PATH=data/checkpoints/RNN-v1.ckpt
+        - FILE_NAME=recurrent.py
     ports:
       - "50051:50051"
+
+  residual:
+    build:
+      context: ../../
+      dockerfile: deploy/model/Dockerfile
+      args:
+        - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
+        - FILE_NAME=residual.py
+    ports:
+      - "50052:50051"  # expose port 50052 on the host, but map  to 50051 inside the container

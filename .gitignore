@@ -168,3 +168,4 @@ DvcLiveLogger/
 *loss.tsv
 *epoch.tsv
 *.png
+scripts/setup_git.personal.sh

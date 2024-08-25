@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-bash scripts/setup_git.sh
-
 if [ -f "scripts/setup_gitconfig.personal.sh" ]; then
     bash scripts/setup_gitconfig.personal.sh
 else
@@ -24,4 +22,5 @@ docker system prune --volumes -af | true
 
 
 echo "Bringing up Services"
-docker compose up --build -d
+docker compose up --build
+docker compose down

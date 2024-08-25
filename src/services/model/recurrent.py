@@ -1,4 +1,5 @@
 import torch
+import os
 from ai.BasicModule import BasicModule
 from icecream import ic
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
@@ -12,7 +13,7 @@ class RecurrentModel(ComponentServicer):
             model_constructor_kwargs={"batch_size": 1}
         )
         self.model.eval()
-        ic("Started")
+        ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context):
         if msg.health_check:
@@ -34,4 +35,4 @@ class RecurrentModel(ComponentServicer):
 
 if __name__ == "__main__":
     service = RecurrentModel()
-    start_server(service, port=50051)
+    start_server(service, port=int(os.environ.get("PORT")))

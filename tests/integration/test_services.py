@@ -1,6 +1,6 @@
 import subprocess
 import pytest
-import os
+from icecream import ic
 
 @pytest.fixture(scope="session")
 def docker_compose():
@@ -28,6 +28,6 @@ def test_docker_services(docker_compose):
         stderr=subprocess.PIPE
     )
     output = result.stdout.decode("utf-8")
-
+    ic(output)
     assert "Exit" not in output, "One or more services failed to start."
     assert "Up" in output, "Services are not staying up."

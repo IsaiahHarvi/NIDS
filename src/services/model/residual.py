@@ -1,4 +1,5 @@
 import torch
+import os
 from ai.BasicModule import BasicModule
 from icecream import ic
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
@@ -11,7 +12,7 @@ class ResidualModel(ComponentServicer):
             "data/checkpoints/ResidualNetwork.ckpt", 
         )
         self.model.eval()
-        ic("Started")
+        ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context):
         if msg.health_check:
@@ -33,4 +34,4 @@ class ResidualModel(ComponentServicer):
 
 if __name__ == "__main__":
     service = ResidualModel()
-    start_server(service, port=50052)
+    start_server(service, port=int(os.environ.get("PORT")))

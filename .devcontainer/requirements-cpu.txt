@@ -56,6 +56,8 @@ cffi==1.17.0
     #   pygit2
 charset-normalizer==3.3.2
     # via requests
+cicflowmeter==0.2.0
+    # via -r .devcontainer/requirements-cpu.in
 click==8.1.7
     # via
     #   -r .devcontainer/requirements-cpu.in
@@ -230,6 +232,7 @@ networkx==3.3
 numpy==1.26.4
     # via
     #   -r .devcontainer/requirements-cpu.in
+    #   cicflowmeter
     #   contourpy
     #   matplotlib
     #   pandas
@@ -328,6 +331,7 @@ pyyaml==6.0.2
     #   pytorch-lightning
 requests==2.32.3
     # via
+    #   cicflowmeter
     #   docker
     #   dvc
     #   dvc-studio-client
@@ -344,10 +348,16 @@ ruamel-yaml==0.18.6
     #   gto
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
+scapy==2.5.0
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   cicflowmeter
 scikit-learn==1.5.1
     # via -r .devcontainer/requirements-cpu.in
 scipy==1.14.1
-    # via scikit-learn
+    # via
+    #   cicflowmeter
+    #   scikit-learn
 scmrepo==3.3.7
     # via
     #   dvc

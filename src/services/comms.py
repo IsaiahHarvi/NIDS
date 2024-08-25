@@ -10,18 +10,27 @@ from icecream import ic
 
 
 @click.command()
-@click.option('--port', default=50054, help='Port of the service to connect to.')
-def main(port):
+@click.option("--port", default=50054, help="Port of the service to connect to.")
+@click.option("--interactive", "-i", is_flag=True, default=False)
+def main(port: int, interactive: bool) -> None:
+    if interactive:
+        while True:
+            connect(port=int(input("PORT: ")))
+    else:
+        connect(port)
+
+
+def connect(port: int) -> None:
     match port:
         case 50051 | 50052:
-            # Connect to Recurrent or Residual service
+            # Connect to Model Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
                 request = ComponentMessage(input=[1., 2., 3.], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
-        case 50053 | 50054:
-            # Connect to Feeder or Offline Feederservice
+        case 50053 | 50054 | 50055:
+            # Connect to Feeder or Logger Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
                 request = ComponentMessage(input=[])
@@ -34,5 +43,6 @@ def main(port):
                 response = stub.forward(request)
                 ic(response.output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

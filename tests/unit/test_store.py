@@ -46,7 +46,6 @@ def setup():
     if os.path.exists("offline_feeder.csv"):
         os.remove("offline_feeder.csv")
     
-
 def test_store(setup):
     """
     Use the offline feeder to send data to the store to file service

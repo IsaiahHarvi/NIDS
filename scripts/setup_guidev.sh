@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-bash ./scripts/setup_common.sh
+bash scripts/setup_common.sh
 
 npm i -g bun

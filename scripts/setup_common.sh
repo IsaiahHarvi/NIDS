@@ -25,4 +25,4 @@ docker system prune --volumes -af | true
 
 
 echo "Bringing up Services"
-docker compose up -d
+docker compose up --build -d

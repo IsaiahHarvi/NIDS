@@ -11,7 +11,7 @@
   	"capAdd": [
       "NET_ADMIN"
     ],
-    "postCreateCommand": "chmod +x scripts/*.sh && scripts/setup_guidev.sh 2>setup.err | tee setup.log",
+    "postCreateCommand": "sudo chmod +x scripts/*.sh && bash scripts/setup_guidev.sh 2>setup.err | tee setup.log",
     // "runArgs": [
     //   "--env-file", ".devcontainer/dev.env",
     //   "--name", "${localEnv:USER}_ts_devcontainer"

@@ -1,0 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+numpy
+icecream
+pandas
+grpcio
+grpcio-tools

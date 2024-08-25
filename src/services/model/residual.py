@@ -23,7 +23,7 @@ class ResidualModel(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         x = torch.tensor(msg.input)
-        ic(x)
+        # ic(x)
         match x.dim():
             case 1:
                 x = x.unsqueeze(0) # add batch dimension
@@ -33,7 +33,7 @@ class ResidualModel(ComponentServicer):
         assert x.dim() == 2, f"Expected [batch_size, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
-        # ic(pred)
+        ic(pred)
         return ComponentResponse(prediction=pred)
 
 if __name__ == "__main__":

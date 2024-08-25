@@ -1,0 +1,10 @@
+services:
+  feeder:
+    build:
+      context: ../../
+      dockerfile: deploy/feeder/Dockerfile
+    cap_add:
+      - NET_ADMIN
+    # network_mode: host
+    ports:
+      - "50053:50053"

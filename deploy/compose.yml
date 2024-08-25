@@ -1,2 +1,3 @@
 include:
   - model/compose.yml
+  - feeder/compose.yml

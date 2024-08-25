@@ -16,3 +16,5 @@ pandas
 grpcio
 grpcio-tools
 docker
+scapy
+cicflowmeter

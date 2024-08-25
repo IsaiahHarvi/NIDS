@@ -19,7 +19,6 @@ from src.services.offline_feeder.offline_feeder import OfflineFeeder
 from src.services.store.to_file import StoreFile
 
 
-
 @pytest.fixture(scope="module")
 def setup():
     store_service = StoreFile(file_name="offline_feeder.csv")

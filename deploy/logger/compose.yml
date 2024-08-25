@@ -1,0 +1,15 @@
+services:
+  logger:
+    build:
+      context: ../../
+      dockerfile: deploy/logger/Dockerfile
+    ports:
+      - "50055:50055"
+    # depends_on:
+    #   - feeder
+    #   - offline-feeder
+    #   - recurrent
+    #   - residual
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    image: logger

@@ -9,7 +9,8 @@ services:
         - PORT=50051
     ports:
       - "50051:50051"
-
+    image: recurrent
+    
   residual:
     build:
       context: ../../
@@ -21,3 +22,4 @@ services:
     ports:
       # - "50052:50051"  # expose port 50052 on the host, but map  to 50051 inside the container
       - "50052:50052"
+    image: residual

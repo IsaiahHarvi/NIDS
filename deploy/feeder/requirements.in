@@ -1,0 +1,6 @@
+grpcio
+grpcio-tools
+pandas
+icecream
+click
+numpy

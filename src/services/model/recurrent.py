@@ -1,9 +1,13 @@
 import torch
+import os
 from ai.BasicModule import BasicModule
-from icecream import ic
+
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server
+
+from icecream import ic
+ic.configureOutput(includeContext=False)
 
 class RecurrentModel(ComponentServicer):
     def __init__(self):
@@ -11,9 +15,15 @@ class RecurrentModel(ComponentServicer):
             "data/checkpoints/RNN.ckpt", 
             model_constructor_kwargs={"batch_size": 1}
         )
+        self.model.eval()
+        ic(f"Started on {os.environ.get('PORT')}")
 
-    def forward(self, request, context):
-        x = torch.tensor(request.input) 
+    def forward(self, msg: ComponentMessage, context):
+        if msg.health_check:
+            ic("Health check")
+            return ComponentResponse(output=msg.input)
+
+        x = torch.tensor(msg.input)
         match x.dim():
             case 1:
                 x = x.view(1, 1, -1)
@@ -24,8 +34,8 @@ class RecurrentModel(ComponentServicer):
 
         pred = torch.argmax(self.model(x), dim=1).item()
         # ic(pred)
-        return ComponentResponse(output=pred)
+        return ComponentResponse(prediction=pred)
 
 if __name__ == "__main__":
     service = RecurrentModel()
-    start_server(service, port=50051)
+    start_server(service, port=int(os.environ.get("PORT")))

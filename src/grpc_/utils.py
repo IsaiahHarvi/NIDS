@@ -1,3 +1,5 @@
+# python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. src/grpc_/services.proto
+
 def start_server(service, port=50051) -> None:
     import grpc
     from concurrent import futures

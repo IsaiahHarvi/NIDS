@@ -25,7 +25,7 @@ class DataModule(pl.LightningDataModule):
 
         df = pd.concat(dfs, ignore_index=True)
         df = df.drop(["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"], axis=1, errors="ignore")
-        
+        # ic(df) 
         x = df.select_dtypes(include=[float, int]).fillna(0)
         x.replace([np.inf, -np.inf], np.nan, inplace=True)
         x.fillna(x.mean(), inplace=True)

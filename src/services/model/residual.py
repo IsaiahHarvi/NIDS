@@ -1,10 +1,13 @@
 import torch
 import os
 from ai.BasicModule import BasicModule
-from icecream import ic
+
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server
+
+from icecream import ic
+ic.configureOutput(includeContext=False)
 
 class ResidualModel(ComponentServicer):
     def __init__(self):
@@ -19,7 +22,8 @@ class ResidualModel(ComponentServicer):
             ic("Health check")
             return ComponentResponse(output=msg.input)
 
-        x = torch.tensor(msg.input) 
+        x = torch.tensor(msg.input)
+        ic(x)
         match x.dim():
             case 1:
                 x = x.unsqueeze(0) # add batch dimension

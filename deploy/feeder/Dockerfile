@@ -5,13 +5,14 @@ ENV PORT=50053
 ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"
 ENV DURATION=10
-ENV HOST="localhost"
+# HOST is the name of the service that will be used to connect to the target service
+ENV HOST="residual"
 ENV TARGET_PORT=50052
 
 LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION,HOST,TARGET_PORT"
 
 RUN apt-get update && \
-    apt-get install -y tshark && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y tshark argus-client argus-server && \
     apt-get clean
 
 COPY deploy/feeder/requirements.txt /app/requirements.txt

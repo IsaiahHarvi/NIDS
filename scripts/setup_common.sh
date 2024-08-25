@@ -10,5 +10,5 @@ git config --global pull.rebase false
 docker system prune --volumes -af | true
 
 sudo apt update > /dev/null 2>&1 && sudo apt upgrade -y
-sudo apt install -y vim tmux neovim fzf \
-    dnsutils iputils-ping curl tshark wget
+sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux neovim fzf \
+    dnsutils iputils-ping curl tshark argus-client argus-server wget

@@ -1,5 +1,6 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 
+pip-tools
 numpy<2
 lightning
 torch
@@ -16,5 +17,3 @@ pandas
 grpcio
 grpcio-tools
 docker
-scapy
-cicflowmeter

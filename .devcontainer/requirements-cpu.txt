@@ -44,6 +44,8 @@ billiard==4.2.0
     # via celery
 black==24.8.0
     # via -r .devcontainer/requirements-cpu.in
+build==1.2.1
+    # via pip-tools
 celery==5.4.0
     # via
     #   dvc
@@ -56,8 +58,6 @@ cffi==1.17.0
     #   pygit2
 charset-normalizer==3.3.2
     # via requests
-cicflowmeter==0.2.0
-    # via -r .devcontainer/requirements-cpu.in
 click==8.1.7
     # via
     #   -r .devcontainer/requirements-cpu.in
@@ -66,6 +66,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   pip-tools
     #   typer
 click-didyoumean==0.3.1
     # via celery
@@ -232,7 +233,6 @@ networkx==3.3
 numpy==1.26.4
     # via
     #   -r .devcontainer/requirements-cpu.in
-    #   cicflowmeter
     #   contourpy
     #   matplotlib
     #   pandas
@@ -251,6 +251,7 @@ orjson==3.10.7
 packaging==24.1
     # via
     #   black
+    #   build
     #   dvc
     #   hydra-core
     #   lightning
@@ -270,6 +271,8 @@ pillow==10.4.0
     # via
     #   matplotlib
     #   torchvision
+pip-tools==7.4.1
+    # via -r .devcontainer/requirements-cpu.in
 platformdirs==3.11.0
     # via
     #   black
@@ -313,6 +316,10 @@ pyparsing==3.1.2
     #   grandalf
     #   matplotlib
     #   pydot
+pyproject-hooks==1.1.0
+    # via
+    #   build
+    #   pip-tools
 pytest==8.3.2
     # via -r .devcontainer/requirements-cpu.in
 python-dateutil==2.9.0.post0
@@ -331,7 +338,6 @@ pyyaml==6.0.2
     #   pytorch-lightning
 requests==2.32.3
     # via
-    #   cicflowmeter
     #   docker
     #   dvc
     #   dvc-studio-client
@@ -348,16 +354,10 @@ ruamel-yaml==0.18.6
     #   gto
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-scapy==2.5.0
-    # via
-    #   -r .devcontainer/requirements-cpu.in
-    #   cicflowmeter
 scikit-learn==1.5.1
     # via -r .devcontainer/requirements-cpu.in
 scipy==1.14.1
-    # via
-    #   cicflowmeter
-    #   scikit-learn
+    # via scikit-learn
 scmrepo==3.3.7
     # via
     #   dvc
@@ -446,10 +446,13 @@ voluptuous==0.15.2
     #   dvc-studio-client
 wcwidth==0.2.13
     # via prompt-toolkit
+wheel==0.44.0
+    # via pip-tools
 yarl==1.9.4
     # via aiohttp
 zc-lockfile==3.0.post1
     # via dvc
 
 # The following packages are considered to be unsafe in a requirements file:
+# pip
 # setuptools

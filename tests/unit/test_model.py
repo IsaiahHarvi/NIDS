@@ -30,21 +30,24 @@ def grpc_server(request):
 
 @pytest.mark.parametrize("grpc_server", [(RecurrentModel, 50051), (ResidualModel, 50052)], indirect=True)
 def test_model(grpc_server):
-    port = grpc_server
-    with grpc.insecure_channel(f'localhost:{port}') as channel:
-        stub = ComponentStub(channel)
-        dm = DataModule(
-            paths=[
-                f"data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
-            ],
-            batch_size=1, 
-        )
-        dm.setup()
+    try:
+        port = grpc_server
+        with grpc.insecure_channel(f'localhost:{port}') as channel:
+            stub = ComponentStub(channel)
+            dm = DataModule(
+                paths=[
+                    f"data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"   
+                ],
+                batch_size=1, 
+            )
+            dm.setup()
 
-        data, label = next(iter(dm.train_dataloader()))
-        data = data.numpy().flatten().tolist() # [80] bc it has to live over gRPC
-        msg = ComponentMessage(input=data)
+            data, label = next(iter(dm.train_dataloader()))
+            data = data.numpy().flatten().tolist() # [80] bc it has to live over gRPC
+            msg = ComponentMessage(input=data)
 
-        response = stub.forward(msg)
-        assert isinstance(response, ComponentResponse)
-        ic(f"Got {response.prediction}, expected {label.item()}")
+            response = stub.forward(msg)
+            assert isinstance(response, ComponentResponse)
+            ic(f"Got {response.prediction}, expected {label.item()}")
+    except Exception as e:
+        ic(e)

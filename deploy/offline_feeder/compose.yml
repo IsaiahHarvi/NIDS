@@ -1,10 +1,11 @@
 services:
-  feeder:
+  offline-feeder:
     build:
       context: ../../
-      dockerfile: deploy/feeder/Dockerfile
+      dockerfile: deploy/offline_feeder/Dockerfile
     cap_add:
       - NET_ADMIN
     # network_mode: host
+    shm_size: '1gb'
     ports:
-      - "50053:50053"
+      - "50054:50054"

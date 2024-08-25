@@ -1,0 +1,10 @@
+services:
+  offline-feeder:
+    build:
+      context: ../../
+      dockerfile: deploy/offline_feeder/Dockerfile
+    cap_add:
+      - NET_ADMIN
+    # network_mode: host
+    ports:
+      - "50054:50054"

@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+ARG PORT
+ENV PORT=${PORT}
+
 WORKDIR /app
 ENV PYTHONPATH=/app/src
 

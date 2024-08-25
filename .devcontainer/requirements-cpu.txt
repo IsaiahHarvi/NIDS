@@ -44,6 +44,8 @@ billiard==4.2.0
     # via celery
 black==24.8.0
     # via -r .devcontainer/requirements-cpu.in
+build==1.2.1
+    # via pip-tools
 celery==5.4.0
     # via
     #   dvc
@@ -64,6 +66,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   pip-tools
     #   typer
 click-didyoumean==0.3.1
     # via celery
@@ -248,6 +251,7 @@ orjson==3.10.7
 packaging==24.1
     # via
     #   black
+    #   build
     #   dvc
     #   hydra-core
     #   lightning
@@ -267,6 +271,8 @@ pillow==10.4.0
     # via
     #   matplotlib
     #   torchvision
+pip-tools==7.4.1
+    # via -r .devcontainer/requirements-cpu.in
 platformdirs==3.11.0
     # via
     #   black
@@ -310,6 +316,10 @@ pyparsing==3.1.2
     #   grandalf
     #   matplotlib
     #   pydot
+pyproject-hooks==1.1.0
+    # via
+    #   build
+    #   pip-tools
 pytest==8.3.2
     # via -r .devcontainer/requirements-cpu.in
 python-dateutil==2.9.0.post0
@@ -436,10 +446,13 @@ voluptuous==0.15.2
     #   dvc-studio-client
 wcwidth==0.2.13
     # via prompt-toolkit
+wheel==0.44.0
+    # via pip-tools
 yarl==1.9.4
     # via aiohttp
 zc-lockfile==3.0.post1
     # via dvc
 
 # The following packages are considered to be unsafe in a requirements file:
+# pip
 # setuptools

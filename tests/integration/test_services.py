@@ -20,7 +20,7 @@ def docker_compose():
             stderr=subprocess.PIPE
         )
 
-def test_docker_services(docker_compose):
+def test_services(docker_compose):
     result = subprocess.run(
         ["docker", "compose", "ps"],
         check=True,

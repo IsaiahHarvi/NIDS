@@ -1,7 +1,6 @@
-scapy
 grpcio
 grpcio-tools
 pandas
 icecream
-cicflowmeter
 click
+numpy

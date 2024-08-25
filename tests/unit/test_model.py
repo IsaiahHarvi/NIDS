@@ -42,13 +42,9 @@ def test_model(grpc_server):
         dm.setup()
 
         data, label = next(iter(dm.train_dataloader()))
-
         data = data.numpy().flatten().tolist() # [80] bc it has to live over gRPC
         msg = ComponentMessage(input=data)
 
         response = stub.forward(msg)
         assert isinstance(response, ComponentResponse)
         ic(f"Got {response.prediction}, expected {label.item()}")
-
-if __name__ == "__main__":
-    pytest.main(["-sv", "tests/unit/test_model.py"])

@@ -10,5 +10,6 @@ else
     pip3 install --no-cache-dir --user -r .devcontainer/requirements-cpu.txt -e .
 fi
 
+bash scripts/get_data.sh
 
 echo "Done."

@@ -11,10 +11,10 @@ from icecream import ic
 ic.configureOutput(includeContext=False)
 
 class OfflineFeeder(ComponentServicer):
-    def __init__(self, p2p: bool, host, port) -> None:
+    def __init__(self, p2p: bool, host, target_port) -> None:
         self.p2p = p2p
         self.host = host
-        self.port = port
+        self.port = target_port
         ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
@@ -34,18 +34,19 @@ class OfflineFeeder(ComponentServicer):
         ic(data.shape)
 
         if self.p2p:
-            self.send_to_model(data.tolist())
+            self.send(data.tolist())
             return ComponentResponse(output=[0.])
 
         return ComponentResponse(output=data.tolist())
 
-    def send_to_model(self, data: list) -> None:
+    def send(self, data: list) -> None:
         with grpc.insecure_channel(f'{self.host}:{self.port}') as channel:
-            model = ComponentStub(channel)
-            request = ComponentMessage(input=data)
-            response = model.forward(request)
-            ic(f"Model Response: {response.prediction}")
-
+            stub = ComponentStub(channel)
+            response = stub.forward(
+                ComponentMessage(input=data)
+            )
+            ic(response.output)
+            ic(response.prediction)
 
 if __name__ == "__main__":
     p2p: bool = os.environ.get("P2P", "true").lower() == "true"

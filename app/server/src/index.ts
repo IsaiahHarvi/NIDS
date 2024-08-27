@@ -7,6 +7,7 @@ const app = new Elysia()
   .use(cors())
   .use(swagger())
   .get("/", () => "Hello Elysia")
+  .get("/ping", () => ({ message: "pong" }))
   .post("/hello", () => "world")
   .use(
     staticPlugin({

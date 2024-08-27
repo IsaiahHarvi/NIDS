@@ -2,17 +2,16 @@
 Sends the data from the offline feeder service to the store to file service.
 For now, this is a unit test for both the offline feeder and the store-file service.
 """
+
 import os
 import pytest
 import grpc
 import threading
-import pandas as pd
 from time import sleep
-from concurrent import futures
 from icecream import ic
 
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server, ComponentStub
+from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.utils import start_server
 
 from src.services.offline_feeder.offline_feeder import OfflineFeeder
@@ -44,17 +43,16 @@ def setup():
 
     if os.path.exists("offline_feeder.csv"):
         os.remove("offline_feeder.csv")
-    
+
+
 def test_store(setup):
     """
     Use the offline feeder to send data to the store to file service
     """
     try:
-        with grpc.insecure_channel('localhost:50054') as channel:
+        with grpc.insecure_channel("localhost:50054") as channel:
             stub = ComponentStub(channel)
-            response = stub.forward(
-                ComponentMessage(input=[])
-            )
-            assert response.output == [0.], "The OfflineFeeder did not send data."
+            response = stub.forward(ComponentMessage(input=[]))
+            assert response.output == [0.0], "The OfflineFeeder did not send data."
     except Exception as e:
         ic(e)

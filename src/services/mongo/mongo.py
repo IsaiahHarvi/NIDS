@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 from icecream import ic
 
-HOST = os.environ.get("HOST", "localhost")
+HOST = os.environ.get("HOST", "mongo")
 PORT = int(os.environ.get("PORT", 27017))
 USER = os.environ.get("USER", "root")
 PASSWORD = os.environ.get("PASSWORD", "pass")
@@ -21,7 +21,7 @@ def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
 
     result = collection.insert_one({
         "name": "test",
-        "value": 123
+        "value": "Hello World!"
     })
     ic(f"Inserted document with _id: {result.inserted_id}")
 

@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 from icecream import ic
 
-HOST = os.environ.get("HOST", "mongo")
+HOST = os.environ.get("HOST", "localhost")
 PORT = int(os.environ.get("PORT", 27017))
 USER = os.environ.get("USER")
 PASSWORD = os.environ.get("PASSWORD")

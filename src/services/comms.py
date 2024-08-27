@@ -1,6 +1,7 @@
 """
 Simple method to interact with the gRPC services oustide of the test suite.
 """
+
 import click
 import grpc
 from src.grpc_.services_pb2 import ComponentMessage
@@ -26,7 +27,7 @@ def connect(port: int) -> None:
             # Connect to Model Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
-                request = ComponentMessage(input=[1., 2., 3.], health_check=True)
+                request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
         case 50053 | 50054 | 50055:
@@ -39,7 +40,7 @@ def connect(port: int) -> None:
         case _:
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
-                request = ComponentMessage(input=[0.], health_check=True)
+                request = ComponentMessage(input=[0.0], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
 

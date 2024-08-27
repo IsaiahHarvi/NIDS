@@ -18,3 +18,4 @@ grpcio
 grpcio-tools
 docker
 pymongo
+pylint

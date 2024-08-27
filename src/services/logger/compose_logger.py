@@ -3,7 +3,9 @@ import docker
 from threading import Thread
 
 from icecream import ic
+
 ic.configureOutput(includeContext=False, prefix="")
+
 
 class Logger:
     def __init__(self):
@@ -17,9 +19,9 @@ class Logger:
         try:
             containers = self.client.containers.list()
             services = [
-                container.name for container in containers 
-                if 'nids-' in container.name 
-                and 'logger' not in container.name
+                container.name
+                for container in containers
+                if "nids-" in container.name and "logger" not in container.name
             ]
             ic(f"Identified services: {services}")
             return services
@@ -45,11 +47,12 @@ class Logger:
             container = self.client.containers.get(name)
             for line in container.logs(stream=True):
                 out = f"{name}{' ' * (spc - len(name))}| {line.strip().decode('utf-8')}"
-                # ic(out) 
+                # ic(out)
         except Exception as e:
             ic(f"Error occurred while monitoring {name}: {e}")
         except KeyboardInterrupt:
             ic(f"SIGINT received, shutting down {name}...")
+
 
 if __name__ == "__main__":
     Logger()

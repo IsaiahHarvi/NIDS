@@ -1,7 +1,12 @@
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
 class ComponentMessage:
-    input: list[float]
+    input: List[float]
     health_check: bool
 
+@dataclass
 class ComponentResponse:
-    output: list[float]
+    output: List[float]
     prediction: int

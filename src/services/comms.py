@@ -4,10 +4,11 @@ Simple method to interact with the gRPC services oustide of the test suite.
 
 import click
 import grpc
-from src.grpc_.services_pb2 import ComponentMessage
-from src.grpc_.services_pb2_grpc import ComponentStub
 
 from icecream import ic
+
+from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2_grpc import ComponentStub
 
 
 @click.command()

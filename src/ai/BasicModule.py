@@ -1,9 +1,9 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import lightning.pytorch as pl
 
 import numpy as np
+from torch import nn
+from torch import optim
 from icecream import ic
 
 

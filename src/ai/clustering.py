@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 )
 def main(path: str, model_type: str) -> None:
     df = load_data(path)
-    df, x_pca, y, scaler = process_data(df)
+    df, x_pca, y, _ = process_data(df)
     ic(df["Label"].unique())
 
     model = train(x_pca, y, model_type)
@@ -80,10 +80,7 @@ def get_metrics(df: pd.DataFrame):
 
 def analyze_predictions(df: pd.DataFrame, model, x_pca):
     predictions = model.predict(x_pca)
-    label_mapping = {
-        i: label
-        for i, label in enumerate(df["Label"].astype("category").cat.categories)
-    }
+    label_mapping = dict(enumerate(df["Label"].astype("category").cat.categories))
     df["PredictedLabel"] = pd.Series(predictions).map(label_mapping)
     return df
 
@@ -107,7 +104,7 @@ def plot_clusters(x_pca, predictions, model_name):
     )
 
     handles, _ = scatter.legend_elements()
-    legend_labels = [label for label in unique_labels]
+    legend_labels = list(unique_labels)
     plt.legend(handles, legend_labels, title="Predicted Labels")
     plt.xlabel("PCA 1")
     plt.ylabel("PCA 2")

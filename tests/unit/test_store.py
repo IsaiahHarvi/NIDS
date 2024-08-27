@@ -7,13 +7,11 @@ import os
 import pytest
 import grpc
 import threading
-import pandas as pd
 from time import sleep
-from concurrent import futures
 from icecream import ic
 
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server, ComponentStub
+from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.utils import start_server
 
 from src.services.offline_feeder.offline_feeder import OfflineFeeder

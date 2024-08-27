@@ -17,3 +17,4 @@ pandas
 grpcio
 grpcio-tools
 docker
+pymongo

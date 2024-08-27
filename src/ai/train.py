@@ -1,5 +1,4 @@
 import os
-import torch
 import lightning.pytorch as pl
 from lightning.pytorch.callbacks import ModelCheckpoint
 import click
@@ -30,7 +29,7 @@ def main(epochs, batch_size, target_batch, constructor, all_data):
         ]
     else:
         paths = [
-            f"data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+            "data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
             # "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
         ]

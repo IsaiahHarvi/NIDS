@@ -25,6 +25,7 @@
 	"runArgs": [
 		"--gpus=all",
 		"--shm-size=16g",
-		"--env-file", ".devcontainer/python.env"
+		"--env-file", ".devcontainer/python.env",
+		// "--network", "host"
 	]
 }

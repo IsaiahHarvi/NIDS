@@ -2,7 +2,7 @@
 
 bash scripts/setup_devcontainer.sh
 
-bun i 
-npm i -g bun
-
 cd app/client
+
+npm i -g bun
+bun i 

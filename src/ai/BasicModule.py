@@ -1,10 +1,11 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import lightning.pytorch as pl
 
 import numpy as np
+from torch import nn
+from torch import optim
 from icecream import ic
+
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_features, hidden_size):
@@ -18,6 +19,7 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         out = self.net(x)
         return nn.LeakyReLU()(out + x)
+
 
 class ResidualNetwork(pl.LightningModule):
     def __init__(self, in_features, hidden_size, out_features, num_blocks=3):
@@ -36,8 +38,11 @@ class ResidualNetwork(pl.LightningModule):
             out = out.squeeze(1)
         return out
 
+
 class RNN(nn.Module):
-    def __init__(self, in_features, hidden_size, out_features, batch_size, batch_first=True):
+    def __init__(
+        self, in_features, hidden_size, out_features, batch_size, batch_first=True
+    ):
         super(RNN, self).__init__()
         self.rnn = nn.RNN(in_features, hidden_size, batch_first=batch_first)
         self.linear = nn.Linear(hidden_size, out_features)
@@ -52,10 +57,20 @@ class RNN(nn.Module):
 
 
 class BasicModule(pl.LightningModule):
-    def __init__(self, model_constructor, in_features, hidden_size, out_features, lr=0.001, model_constructor_kwargs={}):
+    def __init__(
+        self,
+        model_constructor,
+        in_features,
+        hidden_size,
+        out_features,
+        lr=0.001,
+        model_constructor_kwargs={},
+    ):
         super(BasicModule, self).__init__()
         self.save_hyperparameters()
-        self.constructor = model_constructor(in_features, hidden_size, out_features, **model_constructor_kwargs)
+        self.constructor = model_constructor(
+            in_features, hidden_size, out_features, **model_constructor_kwargs
+        )
         self.criterion = nn.CrossEntropyLoss()
         self.lr = lr
         self.validation_outputs = []
@@ -119,15 +134,25 @@ class BasicModule(pl.LightningModule):
 
     def log_confusion_matrix(self, preds, labels, stage):
         # we import here to minimize the deps in the model service
-        import matplotlib; matplotlib.use("Agg")
+        import matplotlib
+
+        matplotlib.use("Agg")
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
         from sklearn.metrics import ConfusionMatrixDisplay
 
-        cm = ConfusionMatrix(num_classes=self.num_classes, task="multiclass")(preds, labels).cpu().numpy()
+        cm = (
+            ConfusionMatrix(num_classes=self.num_classes, task="multiclass")(
+                preds, labels
+            )
+            .cpu()
+            .numpy()
+        )
 
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(self.num_classes))
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm, display_labels=range(self.num_classes)
+        )
         fig, ax = plt.subplots(figsize=(8, 8))
         disp.plot(ax=ax, cmap="Blues")
         plt.title(f"{stage.capitalize()} Confusion Matrix")

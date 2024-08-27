@@ -19,5 +19,8 @@
 			]
 		}
 	},
-	"runArgs": ["--env-file", ".devcontainer/python.env"]
+	"runArgs": [
+		"--env-file", ".devcontainer/python.env",
+		// "--network", "host"
+	]
 }

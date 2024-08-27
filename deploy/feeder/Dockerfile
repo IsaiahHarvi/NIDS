@@ -6,7 +6,7 @@ ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"
 ENV DURATION=10
 # HOST is the name of the service that will be used to connect to the target service
-ENV HOST="localhost"
+ENV HOST="residual"
 ENV TARGET_PORT=50052
 
 LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION,HOST,TARGET_PORT"

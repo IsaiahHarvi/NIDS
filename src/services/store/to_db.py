@@ -10,7 +10,11 @@ from icecream import ic
 ic.configureOutput(includeContext=False)
 
 class StoreDB(ComponentServicer):
-    def __init__(self, file_name: str) -> None:
+    def __init__(self, host, port, user, name) -> None:
+        self.host = host
+        self.port = port
+        self.user = user
+        self.name = name
         self.output_file = file_name
         ic(f"Started on {os.environ.get('PORT')}")
 
@@ -19,13 +23,27 @@ class StoreDB(ComponentServicer):
             ic("Health check")
             return ComponentResponse(output=msg.input)
 
+        ic("Started Mongo-client")
+        client = MongoClient(f"mongodb://{USER}:{PASSWORD}@{HOST}:{PORT}/")
+        ic("Created client at {HOST}:{PORT}")
+        db = client["test_db"]
+        collection = db["test_collection"]
+
+        result = collection.insert_one({
+            "name": "test",
+            "value": 123
+        })
+        ic(f"Inserted document with _id: {result.inserted_id}")
+
+        document = collection.find_one({"name": "test"})
+        ic(f"Retrieved document: {document}")
+        return collection
         return ComponentResponse(output=[0.])
 
 
 if __name__ == "__main__":
     from src.services.mongo.mongo import USER, PASSWORD
-
-    HOST = os.environ.get("HOST", "localhost")
+    HOST = os.environ.get("HOST", "mongo")
     PORT = int(os.environ.get("TARGET_PORT", 27017))
 
     service = StoreDB(

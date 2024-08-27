@@ -94,6 +94,8 @@ distro==1.9.0
     # via
     #   dvc
     #   iterative-telemetry
+dnspython==2.6.1
+    # via pymongo
 docker==7.1.0
     # via -r .devcontainer/requirements-cpu.in
 dpath==2.2.0
@@ -308,6 +310,8 @@ pygtrie==2.5.0
     #   dvc-data
     #   scmrepo
     #   sqltrie
+pymongo==4.8.0
+    # via -r .devcontainer/requirements-cpu.in
 pynvml==11.5.3
     # via dvclive
 pyparsing==3.1.2

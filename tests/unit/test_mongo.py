@@ -8,19 +8,19 @@ from icecream import ic
 from src.grpc_.utils import wait_for_services
 
 @pytest.fixture(scope="session", autouse=True)
-@pytest.mark.slow()
 def setup_mongo():
     subprocess.run(
         ["docker-compose", "-f", "deploy/mongo/compose.yml", "up", "-d"], check=True
     )
     wait_for_services(["mongo", "mongo-express"], timeout=30)
-    time.sleep(10) # wait for them to initialize
+    time.sleep(10)  # wait for them to initialize
     yield
     subprocess.run(
         ["docker-compose", "-f", "deploy/mongo/compose.yml", "down"], check=True
     )
 
-@pytest.mark.skip("This test is not working, not sue why.")
+@pytest.mark.slow # the setup is slow but we have to mark here
+@pytest.mark.skip("This test is not working, not sure why.")
 def test_mongo():
     host = os.environ.get("host", "mongo")
     port = int(os.environ.get("port", 27017))

@@ -40,3 +40,6 @@ jobs:
 
     - name: Run pytest
       run: pytest -sv
+
+    - name: Lint
+      run: pylint src/

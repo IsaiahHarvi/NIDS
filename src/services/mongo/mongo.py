@@ -7,9 +7,10 @@ PORT = int(os.environ.get("PORT", 27017))
 USER = os.environ.get("USER")
 PASSWORD = os.environ.get("PASSWORD")
 
+
 def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
     """
-    This is basically just a test to make sure that we can connect to 
+    This is basically just a test to make sure that we can connect to
     the mongo service. But, because we actually have a (for now unused) mongo-client service,
     this will stay outside of the test dir .
     """
@@ -19,10 +20,7 @@ def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
     db = client["test_db"]
     collection = db["test_collection"]
 
-    result = collection.insert_one({
-        "name": "test",
-        "value": 123
-    })
+    result = collection.insert_one({"name": "test", "value": 123})
     ic(f"Inserted document with _id: {result.inserted_id}")
 
     document = collection.find_one({"name": "test"})

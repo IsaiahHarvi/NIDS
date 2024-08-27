@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.1.0",
+    "@elysiajs/static": "^1.1.0",
+    "@elysiajs/swagger": "^1.1.1",
+    "elysia": "latest",
+    "mongoose": "^8.5.4"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "module": "src/index.js"
+}

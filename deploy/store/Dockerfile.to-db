@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # points to mongo service
 ENV PORT=50057
-ENV HOST="mongo" 
+ENV HOST="localhost" 
 ENV TARGET_PORT=27017
 LABEL ENVS="HOST,TARGET_PORT"
 

@@ -4,7 +4,7 @@ ENV PORT=50054
 
 # HOST is the name of the service that will be used to connect to the target service
 ENV P2P="true"
-ENV HOST="residual"
+ENV HOST="localhost"
 ENV TARGET_PORT=50052
 
 LABEL ENV_VARS="P2P,HOST,TARGET_PORT"

@@ -12,6 +12,9 @@
 	"capAdd": [
 		"NET_ADMIN"
 	],
+	"runArgs": [
+		"--network", "host"
+	],
 	"postCreateCommand": "sudo chmod +x scripts/*.sh && bash scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {

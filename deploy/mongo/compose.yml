@@ -1,0 +1,39 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_SERVER: mongo
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+
+  mongo-client:
+    build:
+      context: ../../
+      dockerfile: deploy/mongo/Dockerfile
+    container_name: mongo-client
+    depends_on:
+      - mongo
+    environment:
+      HOST: mongo
+      PORT: 27017
+      USER: root
+      PASSWORD: pass
+
+volumes:
+  mongo_data:

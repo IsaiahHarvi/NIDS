@@ -1,0 +1,5 @@
+[MASTER]
+ignore=src/grpc_,src/ai
+
+[MESSAGES CONTROL]
+disable=E1120,C0114,C0116

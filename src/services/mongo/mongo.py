@@ -4,8 +4,8 @@ from icecream import ic
 
 HOST = os.environ.get("HOST", "mongo")
 PORT = int(os.environ.get("PORT", 27017))
-USER = os.environ.get("USER")
-PASSWORD = os.environ.get("PASSWORD")
+USER = os.environ.get("USER", "root")
+PASSWORD = os.environ.get("PASSWORD", "pass")
 
 
 def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
@@ -20,7 +20,10 @@ def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
     db = client["test_db"]
     collection = db["test_collection"]
 
-    result = collection.insert_one({"name": "test", "value": 123})
+    result = collection.insert_one({
+        "name": "test",
+        "value": "Hello World!"
+    })
     ic(f"Inserted document with _id: {result.inserted_id}")
 
     document = collection.find_one({"name": "test"})

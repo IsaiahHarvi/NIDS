@@ -2,18 +2,15 @@ services:
   store-file:
     build:
       context: ../../
-      dockerfile: deploy/store/Dockerfile
-      args:
-        - SERVICE_FILE_NAME=to_file.py
-        - PORT=50056
+      dockerfile: deploy/store/Dockerfile.to-file
     ports:
       - "50056:50056"
     image: store-file
 
-  # store-db: TODO
-  #   build:
-  #     context: ../../
-  #     dockerfile: deploy/store/Dockerfile
-  #   ports:
-  #     - "5005X:5005X"
-  #   image: store-db
+  store-db: 
+    build:
+      context: ../../
+      dockerfile: deploy/store/Dockerfile.to-db
+    ports:
+      - "50057:50057"
+    image: store-db

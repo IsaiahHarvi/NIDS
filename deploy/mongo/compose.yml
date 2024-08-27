@@ -22,18 +22,5 @@ services:
     depends_on:
       - mongo
 
-  mongo-client:
-    build:
-      context: ../../
-      dockerfile: deploy/mongo/Dockerfile
-    container_name: mongo-client
-    depends_on:
-      - mongo
-    environment:
-      HOST: mongo
-      PORT: 27017
-      USER: root
-      PASSWORD: pass
-
 volumes:
   mongo_data:

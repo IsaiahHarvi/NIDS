@@ -36,6 +36,13 @@ def connect(port: int) -> None:
                 request = ComponentMessage(input=[])
                 response = stub.forward(request)
                 ic(response.output)
+        case 50056 | 50057:
+            # Connect to Store Services
+            with grpc.insecure_channel(f"localhost:{port}") as channel:
+                stub = ComponentStub(channel)
+                request = ComponentMessage(input=[float(i) for i in range(100)], health_check=False)
+                response = stub.forward(request)
+                ic(response.output)
         case _:
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)

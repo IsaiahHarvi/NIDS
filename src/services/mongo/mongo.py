@@ -4,8 +4,8 @@ from icecream import ic
 
 HOST = os.environ.get("HOST", "localhost")
 PORT = int(os.environ.get("PORT", 27017))
-USER = os.environ.get("USER")
-PASSWORD = os.environ.get("PASSWORD")
+USER = os.environ.get("USER", "root")
+PASSWORD = os.environ.get("PASSWORD", "pass")
 
 def mongo_client(user=HOST, password=PASSWORD, host=HOST, port=PORT):
     """

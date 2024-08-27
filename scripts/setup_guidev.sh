@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-bash scripts/setup_common.sh
+bash scripts/setup_devcontainer.sh
 
+bun i 
 npm i -g bun
+
+cd app/client

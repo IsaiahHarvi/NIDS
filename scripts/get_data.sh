@@ -16,13 +16,19 @@ CSV_FILES=(
 )
 
 for FILE in "${CSV_FILES[@]}"; do
-    URL="http://${IP}:${PORT}/csv/${FILE}"
-    wget -O "data/CIC/${FILE}" "${URL}"
+    DEST="data/CIC/${FILE}"
 
-    if [ $? -eq 0 ]; then
-        echo "Downloaded ${FILE}"
+    if [ -f "${DEST}" ]; then
+        echo "${FILE} exists, skipping..."
     else
-        echo "Failed downloading ${FILE}."
-        exit 1
+        URL="http://${IP}:${PORT}/csv/${FILE}"
+        wget -O "${DEST}" "${URL}"
+
+        if [ $? -eq 0 ]; then
+            echo "Downloaded ${FILE}"
+        else
+            echo "Failed downloading ${FILE}."
+            exit 1
+        fi
     fi
 done

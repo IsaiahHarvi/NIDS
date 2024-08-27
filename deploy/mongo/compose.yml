@@ -30,7 +30,7 @@ services:
     depends_on:
       - mongo
     environment:
-      HOST: localhost
+      HOST: mongo
       PORT: 27017
       USER: root
       PASSWORD: pass

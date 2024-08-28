@@ -41,11 +41,10 @@ class StoreDB(ComponentServicer):
 
 
 if __name__ == "__main__":
-    from src.services.mongo.mongo import USER, PASSWORD
-    HOST = os.environ.get("HOST", "mongo")
-    PORT = int(os.environ.get("TARGET_PORT", 27017))
+    host = os.environ.get("HOST", "mongo")
+    port = int(os.environ.get("TARGET_PORT", 27017))
 
     service = StoreDB(
-        HOST, PORT, USER, PASSWORD
+        host, port, "root", "pass"
     )
     start_server(service, port=int(os.environ.get("PORT", 50057)))

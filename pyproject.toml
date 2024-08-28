@@ -1,6 +1,5 @@
 [tool.black]
 exclude = '''
-/(
-    src/grpc_
-)
-/'''
+^/src/grpc_|
+^/src/ai/train\.py$
+'''

@@ -5,7 +5,7 @@ Simple method to interact with the gRPC services oustide of the test suite.
 import click
 import grpc
 import numpy as np
-from time import sleep
+import time
 from icecream import ic
 
 from src.grpc_.services_pb2 import ComponentMessage
@@ -31,7 +31,8 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
             # Connect to Model Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
-                request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
+                request = ComponentMessage(
+                    input=[1.0, 2.0, 3.0], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
         case 50053 | 50054 | 50055:
@@ -46,11 +47,13 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 while True:
                     stub = ComponentStub(channel)
-                    request = ComponentMessage(input=[np.random.uniform(1, 9000) for _ in range(80)])
+                    request = ComponentMessage(
+                        input=[np.random.uniform(1, 9000) for _ in range(80)])
                     response = stub.forward(request)
                     # ic(response.output)
-                    if not live: break
-                    sleep(sleep)
+                    if not live:
+                        break
+                    time.sleep(sleep)
 
         case _:
             with grpc.insecure_channel(f"localhost:{port}") as channel:

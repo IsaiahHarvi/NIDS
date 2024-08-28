@@ -20,7 +20,6 @@ def setup_mongo():
     )
 
 @pytest.mark.slow # the setup is slow but we have to mark here
-@pytest.mark.skip("This test is not working, not sure why.")
 def test_mongo():
     host = os.environ.get("host", "mongo")
     port = int(os.environ.get("port", 27017))

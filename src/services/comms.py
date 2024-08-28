@@ -7,7 +7,7 @@ import grpc
 
 from icecream import ic
 
-from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2 import ComponentMessage
 from src.grpc_.services_pb2_grpc import ComponentStub
 
 
@@ -42,7 +42,7 @@ def connect(port: int) -> None:
             # Connect to Store Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
-                request = ComponentMessage(input=[float(i) for i in range(100)], health_check=False)
+                request = ComponentMessage(input=[float(i) for i in range(10)])
                 response = stub.forward(request)
                 ic(response.output)
         case _:

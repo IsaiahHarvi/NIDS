@@ -5,7 +5,7 @@ Simple method to interact with the gRPC services oustide of the test suite.
 import click
 import grpc
 import numpy as np
-import time
+from time import sleep
 from icecream import ic
 
 from src.grpc_.services_pb2 import ComponentMessage
@@ -14,17 +14,18 @@ from src.grpc_.services_pb2_grpc import ComponentStub
 
 @click.command()
 @click.option("--port", default=50054, help="Port of the service to connect to.")
-@click.option("--interactive", "-i", is_flag=True, default=False)
-@click.option("--live", "-l", is_flag=True, default=False)
-def main(port: int, interactive: bool, live: bool) -> None:
+@click.option("--interactive", "-i", is_flag=True, default=False, help="Pass in ports interactively.")
+@click.option("--live", "-l", is_flag=True, default=False, help="Continue to generate samples for services that support it.")
+@click.option("--sleep", "-s", default=7, help="Time to sleep between requests when running in live mode.")
+def main(port: int, interactive: bool, live: bool, sleep: int) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
     else:
-        connect(port, live)
+        connect(port, live, sleep)
 
 
-def connect(port: int, live: bool) -> None:
+def connect(port: int, live: bool, sleep: int = 7) -> None:
     match port:
         case 50051 | 50052:
             # Connect to Model Services
@@ -49,7 +50,7 @@ def connect(port: int, live: bool) -> None:
                     response = stub.forward(request)
                     # ic(response.output)
                     if not live: break
-                    time.sleep(3)
+                    sleep(sleep)
 
         case _:
             with grpc.insecure_channel(f"localhost:{port}") as channel:

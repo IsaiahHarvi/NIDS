@@ -10,6 +10,7 @@
     "@elysiajs/static": "^1.1.0",
     "@elysiajs/swagger": "^1.1.1",
     "elysia": "latest",
+    "mongodb": "^6.8.0",
     "mongoose": "^8.5.4"
   },
   "devDependencies": {

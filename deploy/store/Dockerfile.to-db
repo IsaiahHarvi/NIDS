@@ -13,7 +13,6 @@ WORKDIR /app
 ENV PYTHONPATH=/app/src
 
 COPY src/grpc_ /app/src/grpc_
-COPY src/services/mongo/mongo.py /app/src/services/mongo/mongo.py
 COPY src/services/store/to_db.py /app/main.py
 
 CMD ["python", "main.py"]

@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from src.grpc_.types import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server
 

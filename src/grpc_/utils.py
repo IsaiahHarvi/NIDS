@@ -20,7 +20,7 @@ def start_server(
     else:
         return server
     
-def wait_for_services(services: list, timeout=60):
+def wait_for_services(services: list, timeout=60, init_time=5):
     """
     Wait for the specified services to appear in `docker ps`.
         """
@@ -30,7 +30,8 @@ def wait_for_services(services: list, timeout=60):
     while (time.time() - start_time) < timeout:
         output = subprocess.check_output(["docker", "ps"], text=True)
         if all(service in output for service in services):
+            time.sleep(init_time)
             return
         time.sleep(1)
-    
+
     raise RuntimeError(f"Services did not start within {timeout} seconds: {services}")

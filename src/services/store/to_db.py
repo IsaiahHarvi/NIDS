@@ -7,6 +7,7 @@ from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server
 
 from icecream import ic
+
 ic.configureOutput(includeContext=False)
 
 
@@ -24,27 +25,25 @@ class StoreDB(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         try:
-            client = MongoClient(f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/")
+            client = MongoClient(
+                f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/"
+            )
             ic(f"Created client at {self.host}:{self.port}")
             db = client["store_service"]
             collection = db["default"]
 
-            result = collection.insert_one({
-                "input": list(msg.input)
-            })
+            result = collection.insert_one({"input": list(msg.input)})
             ic(result.inserted_id)
         except Exception as e:
             ic(e)
-            return ComponentResponse(output=[1.])
+            return ComponentResponse(output=[1.0])
 
-        return ComponentResponse(output=[0.])
+        return ComponentResponse(output=[0.0])
 
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "mongo")
     port = int(os.environ.get("TARGET_PORT", 27017))
 
-    service = StoreDB(
-        host, port, "root", "pass"
-    )
+    service = StoreDB(host, port, "root", "pass")
     start_server(service, port=int(os.environ.get("PORT", 50057)))

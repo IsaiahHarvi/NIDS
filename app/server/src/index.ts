@@ -3,6 +3,7 @@ import { swagger } from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 import { staticPlugin } from "@elysiajs/static";
 import { initializeDatabase } from "./database";
+import { ClientRoutes } from "./routes/clientRoutes";
 
 async function startServer() {
   await initializeDatabase();
@@ -23,6 +24,8 @@ async function startServer() {
     .get("*", async () => {
       return Bun.file("./dist/index.html");
     })
+    //this is where you will use the routes from different files
+    .use(ClientRoutes)
     .listen(3000);
 
   console.log(

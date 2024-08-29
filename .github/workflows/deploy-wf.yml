@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  buid:
+  build:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}/src

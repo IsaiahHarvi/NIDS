@@ -7,7 +7,7 @@ on:
       - closed
 
 jobs:
-  send_webhook:
+  review_hook:
     if: github.event.action == 'ready_for_review'
     runs-on: ubuntu-latest
     steps:
@@ -19,7 +19,7 @@ jobs:
         -d "{\"content\": \"**${{ github.event.pull_request.title }}** is \`\`\`ready for review\`\`\` ${{ github.event.pull_request.html_url }}\"}" \
         $DISCORD_WEBHOOK_URL
 
-  if_merged:
+  merged_hook:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:

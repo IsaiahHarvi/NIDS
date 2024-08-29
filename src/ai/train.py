@@ -8,7 +8,7 @@ from icecream import ic
 from dvclive.lightning import DVCLiveLogger
 
 from ai.DataModule import DataModule
-from ai.BasicModule import BasicModule, RNN, ResidualNetwork
+from ai.BasicModule import BasicModule, ResidualNetwork
 
 @click.command()
 @click.option("--epochs", default=1000)

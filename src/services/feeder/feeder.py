@@ -35,8 +35,15 @@ class Feeder(ComponentServicer):
         flow_row = flow_data.iloc[0].values
         flow_row = self.preprocess_flow_row(flow_row).tolist()
 
-        send(data=flow_row, host="store-db", port=50057)  # to mongo
-        send(data=flow_row, host=self.host, port=self.port)  # to model
+        send(
+            msg=ComponentMessage(
+                input=flow_row, collection_name=self.__class__.__name__
+            ),
+            host="store-db",
+            port=50057,
+        )
+
+        send(msg=ComponentMessage(input=flow_row), host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 

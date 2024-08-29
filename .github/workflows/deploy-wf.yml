@@ -1,0 +1,73 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+    
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
+
+    - name: Install Python Dependencies
+      run: |
+        pip install --no-cache-dir -r .devcontainer/requirements-cpu.txt -e .
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install bun
+      run: |
+        npm install -g bun
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements-cpu.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache bun dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.bun
+        key: ${{ runner.os }}-bun-${{ hashFiles('app/**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Verify Setup
+      run: |
+        git lfs install
+        git lfs pull
+        echo $PWD
+        echo "PYTHONPATH is: $PYTHONPATH"
+
+    - name: Run Docker Services
+      run: docker compose up --build -d
+
+    - name: Run Client
+      run: |
+        cd app/client
+        bun install
+        bun dev &
+
+    - name: Run Server
+      run: |
+        cd app/server
+        bun install
+        bun dev &

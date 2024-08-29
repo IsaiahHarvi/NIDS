@@ -38,8 +38,17 @@ class OfflineFeeder(ComponentServicer):
         data = sample.flatten()
         ic(data.shape)
 
-        send(data=data.tolist(), host="store-db", port=50057)  # to mongo
-        send(self.host, self.port, data.tolist())
+        send(
+            msg=ComponentMessage(
+                input=data.tolist(), collection_name=self.__class__.__name__
+            ),
+            host="store-db",
+            port=50057,
+        )
+
+        send(
+            msg=ComponentMessage(input=data.tolist()), host=self.host, port=self.port
+        )
 
         return ComponentResponse(output=[0.0])
 

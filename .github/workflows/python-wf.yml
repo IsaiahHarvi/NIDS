@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}/src
+      WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.11

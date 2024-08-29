@@ -10,7 +10,7 @@ import threading
 from time import sleep
 from icecream import ic
 
-from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2 import ComponentMessage
 from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.utils import start_server
 

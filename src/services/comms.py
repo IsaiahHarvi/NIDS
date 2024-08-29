@@ -2,27 +2,47 @@
 Simple method to interact with the gRPC services oustide of the test suite.
 """
 
+import time
 import click
 import grpc
-
+import numpy as np
 from icecream import ic
 
-from src.grpc_.types import ComponentMessage
+from src.grpc_.services_pb2 import ComponentMessage
 from src.grpc_.services_pb2_grpc import ComponentStub
 
 
 @click.command()
 @click.option("--port", default=50054, help="Port of the service to connect to.")
-@click.option("--interactive", "-i", is_flag=True, default=False)
-def main(port: int, interactive: bool) -> None:
+@click.option(
+    "--interactive",
+    "-i",
+    is_flag=True,
+    default=False,
+    help="Pass in ports interactively.",
+)
+@click.option(
+    "--live",
+    "-l",
+    is_flag=True,
+    default=False,
+    help="Continue to generate samples for services that support it.",
+)
+@click.option(
+    "--sleep",
+    "-s",
+    default=7,
+    help="Time to sleep between requests when running in live mode.",
+)
+def main(port: int, interactive: bool, live: bool, sleep: int) -> None:
     if interactive:
         while True:
-            connect(port=int(input("PORT: ")))
+            connect(port=int(input("PORT: ")), live=False)
     else:
-        connect(port)
+        connect(port, live, sleep)
 
 
-def connect(port: int) -> None:
+def connect(port: int, live: bool, sleep: int = 7) -> None:
     match port:
         case 50051 | 50052:
             # Connect to Model Services
@@ -41,10 +61,17 @@ def connect(port: int) -> None:
         case 50056 | 50057:
             # Connect to Store Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
-                stub = ComponentStub(channel)
-                request = ComponentMessage(input=[float(i) for i in range(100)], health_check=False)
-                response = stub.forward(request)
-                ic(response.output)
+                while True:
+                    stub = ComponentStub(channel)
+                    request = ComponentMessage(
+                        input=[np.random.uniform(1, 9000) for _ in range(80)]
+                    )
+                    response = stub.forward(request)
+                    # ic(response.output)
+                    if not live:
+                        break
+                    time.sleep(sleep)
+
         case _:
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)

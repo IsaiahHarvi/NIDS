@@ -9,6 +9,7 @@ service Component {
 message ComponentMessage {
   repeated float input = 1;
   bool health_check = 2; // Will make the component pass through the input data without any processing
+  string collection_name = 3; 
 }
 
 message ComponentResponse {

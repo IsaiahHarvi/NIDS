@@ -9,36 +9,30 @@ from src.grpc_.utils import start_server
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
 
-from src.services.model.recurrent import RecurrentModel
-from src.services.model.residual import ResidualModel
+from src.services.model.model import NeuralNetwork
 
 from src.ai.DataModule import DataModule
 
 
 @pytest.fixture(scope="module")
-def grpc_server(request):
+def grpc_server():
     os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
     os.system("docker container prune -f > /dev/null 2>&1")
     os.system("docker image prune -f > /dev/null 2>&1")
 
-    model_class, port = request.param
     server_process = multiprocessing.Process(
-        target=start_server, args=(model_class(), port)
+        target=start_server, args=(NeuralNetwork("data/checkpoints/ResidualNetwork.ckpt"), 50052)
     )
     server_process.start()
     time.sleep(1)
-    yield port
+    yield
     server_process.terminate()
     server_process.join()
 
 
-@pytest.mark.parametrize(
-    "grpc_server", [(RecurrentModel, 50051), (ResidualModel, 50052)], indirect=True
-)
 def test_model(grpc_server):
     try:
-        port = grpc_server
-        with grpc.insecure_channel(f"localhost:{port}") as channel:
+        with grpc.insecure_channel(f"localhost:{50052}") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
                 paths=[f"data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"],
@@ -53,5 +47,6 @@ def test_model(grpc_server):
             response = stub.forward(msg)
             assert isinstance(response, ComponentResponse)
             ic(f"Got {response.prediction}, expected {label.item()}")
+
     except Exception as e:
         ic(e)

@@ -1,12 +1,10 @@
 services:
-  residual:
+  neural-network:
     build:
       context: ../../
       dockerfile: deploy/model/Dockerfile
       args:
         - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
-        - FILE_NAME=residual.py
-        - PORT=50052
     ports:
       - "50052:50052"
-    image: residual
+    image: neural-network

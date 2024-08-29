@@ -5,6 +5,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: pass
+    extra_hosts:
+      - mongo:127.0.0.1
     ports:
       - "27017:27017"
     volumes:

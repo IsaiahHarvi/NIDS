@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
   Home,
-  Package,
   Sparkles,
   Crosshair,
   ScrollText,
@@ -101,10 +100,10 @@ export function Navbar(): JSX.Element {
           pathCheck="/logs"
         />
         <LinkItem
-          to="/test"
+          to="/attack-control"
           icon={Crosshair}
-          label="test Informaton"
-          pathCheck="/test"
+          label="Attack Control"
+          pathCheck="/attack-control"
         />
         <LinkItem
           to="/status"

@@ -3,7 +3,7 @@ FROM python:3.11-slim
 ENV PORT=50054
 
 # HOST is the name of the service that will be used to connect to the target service
-ENV HOST="residual"
+ENV HOST="neural-network"
 ENV TARGET_PORT=50052
 
 LABEL ENV_VARS="HOST,TARGET_PORT"

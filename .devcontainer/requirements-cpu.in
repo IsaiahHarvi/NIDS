@@ -19,3 +19,4 @@ grpcio-tools
 docker
 pymongo
 pylint
+wandb

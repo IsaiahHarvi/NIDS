@@ -1,25 +1,10 @@
 services:
-  recurrent:
-    build:
-      context: ../../
-      dockerfile: deploy/model/Dockerfile
-      args:
-        - MODEL_PATH=data/checkpoints/RNN.ckpt
-        - FILE_NAME=recurrent.py
-        - PORT=50051
-    ports:
-      - "50051:50051"
-    image: recurrent
-    
-  residual:
+  neural-network:
     build:
       context: ../../
       dockerfile: deploy/model/Dockerfile
       args:
         - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
-        - FILE_NAME=residual.py
-        - PORT=50052
     ports:
-      # - "50052:50051"  # expose port 50052 on the host, but map  to 50051 inside the container
       - "50052:50052"
-    image: residual
+    image: neural-network

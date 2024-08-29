@@ -1,7 +1,6 @@
 FROM python:3.11-slim
 
-ARG PORT
-ENV PORT=${PORT}
+ENV PORT=50052
 
 WORKDIR /app
 ENV PYTHONPATH=/app/src
@@ -13,8 +12,7 @@ COPY src/grpc_ /app/src/grpc_
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
 
 ARG MODEL_PATH
-ARG FILE_NAME
 COPY $MODEL_PATH /app/${MODEL_PATH}
-COPY src/services/model/${FILE_NAME} /app/main.py
+COPY src/services/model/model.py /app/main.py
 
 CMD ["python", "main.py"]

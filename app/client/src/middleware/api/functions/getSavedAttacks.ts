@@ -3,7 +3,8 @@ import type { Attack } from "../../../../../types/client-types";
 
 export async function getSavedAttacks(): Promise<Attack[] | null> {
   try {
-    const fetchedData = await restGet("/saved_attacks");
+    const fetchedData = await restGet("/client/saved_attacks");
+    console.log(fetchedData);
     return fetchedData as Attack[];
   } catch (error) {
     console.error("Error fetching saved attacks:", error);

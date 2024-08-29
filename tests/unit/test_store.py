@@ -26,7 +26,7 @@ def setup():
     store_thread.start()
     sleep(1)
 
-    feeder_service = OfflineFeeder(p2p=True, host="localhost", target_port=50056)
+    feeder_service = OfflineFeeder(host="localhost", target_port=50056)
     feeder_server = start_server(feeder_service, 50054, wait_for_termination=False)
 
     feeder_thread = threading.Thread(target=feeder_server.wait_for_termination)

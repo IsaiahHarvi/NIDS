@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  buid:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}/src
@@ -66,10 +66,10 @@ jobs:
       run: |
         cd app/client
         bun install
-        bun dev
+        bun dev &
 
     - name: Run Server
       run: |
         cd app/server
         bun install
-        bun dev
+        bun dev &

@@ -1,15 +1,20 @@
-import grpc
-
 # python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. src/grpc_/services.proto
+
+import time 
+import subprocess
+import grpc
+from concurrent import futures
+
+from src.grpc_.services_pb2 import ComponentMessage
+from src.grpc_.services_pb2_grpc import ComponentStub
+from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
+
+from icecream import ic
 
 
 def start_server(
     service, port, wait_for_termination: bool = True
 ) -> None | grpc.Server:
-    import grpc
-    from concurrent import futures
-    from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
-
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     add_ComponentServicer_to_server(service, server)
     server.add_insecure_port(f"[::]:{port}")
@@ -21,13 +26,10 @@ def start_server(
     else:
         return server
 
-
 def wait_for_services(services: list, timeout=60, init_time=5):
     """
     Wait for the specified services to appear in `docker ps`.
     """
-    import time, subprocess
-
     start_time = time.time()
     while (time.time() - start_time) < timeout:
         output = subprocess.check_output(["docker", "ps"], text=True)
@@ -37,3 +39,14 @@ def wait_for_services(services: list, timeout=60, init_time=5):
         time.sleep(1)
 
     raise RuntimeError(f"Services did not start within {timeout} seconds: {services}")
+
+def send(host: str, port: int, data: list[float]) -> None:
+    ic("Sending data to", host, port)
+    try:
+        with grpc.insecure_channel(f"{host}:{port}") as channel:
+            stub = ComponentStub(channel)
+            response = stub.forward(ComponentMessage(input=data))
+            ic(response.output)
+            ic(response.prediction)
+    except Exception as e:
+        ic("Send Failed.", e)

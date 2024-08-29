@@ -35,8 +35,8 @@ class Feeder(ComponentServicer):
         flow_row = flow_data.iloc[0].values
         flow_row = self.preprocess_flow_row(flow_row).tolist()
 
-        send(data=flow_row, host="store-db", port=50057) # to mongo
-        send(data=flow_row, host=self.host, port=self.port) # to model
+        send(data=flow_row, host="store-db", port=50057)  # to mongo
+        send(data=flow_row, host=self.host, port=self.port)  # to model
 
         return ComponentResponse(output=[0.0])
 
@@ -97,6 +97,7 @@ class Feeder(ComponentServicer):
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row
+
 
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")

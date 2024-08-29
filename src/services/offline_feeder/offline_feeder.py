@@ -38,11 +38,12 @@ class OfflineFeeder(ComponentServicer):
         data = sample.flatten()
         ic(data.shape)
 
-        send(data=data.tolist(), host="store-db", port=50057) # to mongo
+        send(data=data.tolist(), host="store-db", port=50057)  # to mongo
         send(self.host, self.port, data.tolist())
 
         return ComponentResponse(output=[0.0])
-    
+
+
 if __name__ == "__main__":
     host = os.environ.get("HOST", "localhost")
     target_port = int(os.environ.get("TARGET_PORT", 50052))

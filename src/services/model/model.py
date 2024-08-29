@@ -13,9 +13,7 @@ ic.configureOutput(includeContext=False)
 
 class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
-        self.model = BasicModule.load_from_checkpoint(
-            ckpt_path
-        )
+        self.model = BasicModule.load_from_checkpoint(ckpt_path)
         self.model.eval()
         ic(f"Started on {os.environ.get('PORT')}")
 

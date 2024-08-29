@@ -39,23 +39,6 @@ class ResidualNetwork(pl.LightningModule):
         return out
 
 
-class RNN(nn.Module):
-    def __init__(
-        self, in_features, hidden_size, out_features, batch_size, batch_first=True
-    ):
-        super(RNN, self).__init__()
-        self.rnn = nn.RNN(in_features, hidden_size, batch_first=batch_first)
-        self.linear = nn.Linear(hidden_size, out_features)
-        self.hidden_size = hidden_size
-        self.batch_size = batch_size
-
-    def forward(self, x):
-        h0 = torch.zeros(1, x.size(0), self.hidden_size).to(x.device)
-        out, _ = self.rnn(x, h0)
-        out = self.linear(out)
-        return out[:, -1, :]
-
-
 class BasicModule(pl.LightningModule):
     def __init__(
         self,

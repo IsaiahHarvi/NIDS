@@ -103,7 +103,7 @@ if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")
     file_name = os.environ.get("FILE_NAME", "capture.pcap")
     duration = int(os.environ.get("DURATION", 10))
-    host = os.environ.get("HOST", "residual")
+    host = os.environ.get("HOST", "neural-network")
     target_port = int(os.environ.get("TARGET_PORT", 50052))
 
     service = Feeder(interface, file_name, duration, host, target_port)

@@ -30,10 +30,13 @@ class StoreDB(ComponentServicer):
             )
             ic(f"Created client at {self.host}:{self.port}")
             db = client["store_service"]
-            collection = db["default"]
+            collection_name = (
+                "default" if not msg.collection_name else msg.collection_name
+            )
+            collection = db[collection_name]
 
             result = collection.insert_one({"input": list(msg.input)})
-            ic(result.inserted_id)
+            ic(result.inserted_id, collection_name)
         except Exception as e:
             ic(e)
             return ComponentResponse(output=[1.0])

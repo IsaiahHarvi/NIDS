@@ -40,12 +40,11 @@ def wait_for_services(services: list, timeout=60, init_time=5):
 
     raise RuntimeError(f"Services did not start within {timeout} seconds: {services}")
 
-def send(host: str, port: int, data: list[float]) -> None:
+def send(msg: ComponentMessage, host: str, port: int) -> None:
     ic("Sending data to", host, port)
     try:
         with grpc.insecure_channel(f"{host}:{port}") as channel:
-            stub = ComponentStub(channel)
-            response = stub.forward(ComponentMessage(input=data))
+            response = ComponentStub(channel).forward(msg)
             ic(response.output)
             ic(response.prediction)
     except Exception as e:

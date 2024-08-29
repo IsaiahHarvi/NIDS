@@ -44,4 +44,4 @@ jobs:
       run: pytest -sv
 
     - name: Lint
-      run: pylint src/
+      run: pylint src/ # || true # or true to give warnings instead of failing.

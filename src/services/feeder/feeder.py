@@ -33,10 +33,10 @@ class Feeder(ComponentServicer):
         )
         flow_data = pd.read_csv(flow_csv)
         flow_row = flow_data.iloc[0].values
-        flow_row = self.preprocess_flow_row(flow_row)
-        ic(flow_row)
+        flow_row = self.preprocess_flow_row(flow_row).tolist()
 
-        send(data=flow_csv, host=self.host, port=self.port)
+        send(data=flow_row, host="store-db", port=50057) # to mongo
+        send(data=flow_row, host=self.host, port=self.port) # to model
 
         return ComponentResponse(output=[0.0])
 

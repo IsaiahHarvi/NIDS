@@ -43,9 +43,7 @@ class Feeder(ComponentServicer):
             port=50057,
         )
 
-        send(
-            msg=ComponentMessage(input=flow_row), host=self.host, port=self.port
-        )
+        send(msg=ComponentMessage(input=flow_row), host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 

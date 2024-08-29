@@ -46,9 +46,7 @@ class OfflineFeeder(ComponentServicer):
             port=50057,
         )
 
-        send(
-            msg=ComponentMessage(input=data.tolist()), host=self.host, port=self.port
-        )
+        send(msg=ComponentMessage(input=data.tolist()), host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 

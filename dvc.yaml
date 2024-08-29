@@ -6,7 +6,7 @@ plots:
 stages:
   train_residual:
     cmd: >
-      python src/ai/train.py  --epochs 20
+      python src/ai/train.py
       --batch_size 256
       --constructor ResidualNetwork
       --all_data
@@ -18,18 +18,5 @@ stages:
     metrics:
     - dvclive/metrics.json
 
-  train_recurrent:
-    cmd: >
-      python src/ai/train.py  --epochs 10
-      --batch_size 64
-      --constructor RNN
-      --all_data
-    deps:
-    - src/ai/train.py
-    - data/CIC
-    outs:
-    - data/checkpoints/RNN.ckpt
-    metrics:
-    - dvclive/metrics.json
 params:
 - dvclive/params.yaml

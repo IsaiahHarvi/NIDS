@@ -8,8 +8,9 @@ services:
     depends_on:
       - feeder
       - offline-feeder
-      - recurrent
-      - residual
+      - neural-network
+      - store-db
+      - store-file
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     image: logger

@@ -44,7 +44,7 @@ def main(port: int, interactive: bool, live: bool, sleep: int) -> None:
 
 def connect(port: int, live: bool, sleep: int = 7) -> None:
     match port:
-        case 50051 | 50052:
+        case 50052:
             # Connect to Model Services
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)

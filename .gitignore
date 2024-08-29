@@ -171,3 +171,5 @@ DvcLiveLogger/
 scripts/setup_git_personal.sh
 data/CIC/*
 !data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+.devcontainer/wandb.env
+wandb/

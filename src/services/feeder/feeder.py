@@ -35,8 +35,8 @@ class Feeder(ComponentServicer):
         flow_row = flow_data.iloc[0].values
         flow_row = self.preprocess_flow_row(flow_row).tolist()
 
-        send(data=flow_row, host="store-db", port=50057) # to mongo
-        send(data=flow_row, host=self.host, port=self.port) # to model
+        send(data=flow_row, host="store-db", port=50057)  # to mongo
+        send(data=flow_row, host=self.host, port=self.port)  # to model
 
         return ComponentResponse(output=[0.0])
 
@@ -98,11 +98,12 @@ class Feeder(ComponentServicer):
 
         return numeric_row
 
+
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")
     file_name = os.environ.get("FILE_NAME", "capture.pcap")
     duration = int(os.environ.get("DURATION", 10))
-    host = os.environ.get("HOST", "residual")
+    host = os.environ.get("HOST", "neural-network")
     target_port = int(os.environ.get("TARGET_PORT", 50052))
 
     service = Feeder(interface, file_name, duration, host, target_port)

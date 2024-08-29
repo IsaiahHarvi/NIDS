@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const baseUrl = "/api/v1";
+export const baseUrl = "/api";
 
 export const parseData = (date: string | Date): Date => {
   return date instanceof Date ? date : new Date(date);

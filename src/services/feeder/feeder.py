@@ -1,4 +1,3 @@
-import grpc
 import pandas as pd
 import subprocess
 import os
@@ -6,7 +5,7 @@ import numpy as np
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
-from src.grpc_.utils import start_server
+from src.grpc_.utils import start_server, send
 
 from icecream import ic
 
@@ -32,9 +31,12 @@ class Feeder(ComponentServicer):
         flow_csv = self.argus_to_flow_csv(
             argus, self.file_name.replace(".pcap", "_flows.csv")
         )
+        flow_data = pd.read_csv(flow_csv)
+        flow_row = flow_data.iloc[0].values
+        flow_row = self.preprocess_flow_row(flow_row)
+        ic(flow_row)
 
-        # p2p
-        self.flow_to_model(flow_csv, self.host, self.port)
+        send(data=flow_csv, host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 
@@ -95,19 +97,6 @@ class Feeder(ComponentServicer):
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row
-
-    def flow_to_model(self, flow_csv, model_host, model_port) -> None:
-        flow_data = pd.read_csv(flow_csv)
-        flow_row = flow_data.iloc[0].values
-        flow_row = self.preprocess_flow_row(flow_row)
-        ic(flow_row)
-
-        with grpc.insecure_channel(f"{model_host}:{model_port}") as channel:
-            stub = ComponentStub(channel)
-            request = ComponentMessage(input=flow_row.tolist())
-            response = stub.forward(request)
-            print(f"Model Prediction: {response.output}")
-
 
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")

@@ -5,7 +5,7 @@ import pandas as pd
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
-from src.grpc_.utils import start_server
+from src.grpc_.utils import start_server, send
 
 from icecream import ic
 
@@ -13,8 +13,7 @@ ic.configureOutput(includeContext=False)
 
 
 class OfflineFeeder(ComponentServicer):
-    def __init__(self, p2p: bool, host, target_port) -> None:
-        self.p2p = p2p
+    def __init__(self, host, target_port) -> None:
         self.host = host
         self.port = target_port
         ic(f"Started on {os.environ.get('PORT')}")
@@ -39,24 +38,13 @@ class OfflineFeeder(ComponentServicer):
         data = sample.flatten()
         ic(data.shape)
 
-        if self.p2p:
-            self.send(data.tolist())
-            return ComponentResponse(output=[0.0])
+        send(self.host, self.port, data.tolist())
 
-        return ComponentResponse(output=data.tolist())
-
-    def send(self, data: list) -> None:
-        with grpc.insecure_channel(f"{self.host}:{self.port}") as channel:
-            stub = ComponentStub(channel)
-            response = stub.forward(ComponentMessage(input=data))
-            ic(response.output)
-            ic(response.prediction)
-
-
+        return ComponentResponse(output=[0.0])
+    
 if __name__ == "__main__":
-    p2p: bool = os.environ.get("P2P", "true").lower() == "true"
     host = os.environ.get("HOST", "localhost")
     target_port = int(os.environ.get("TARGET_PORT", 50052))
 
-    service = OfflineFeeder(p2p, host, target_port)
+    service = OfflineFeeder(host, target_port)
     start_server(service, port=int(os.environ.get("PORT")))

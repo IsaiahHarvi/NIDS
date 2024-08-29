@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as LogsIndexImport } from './routes/logs/index'
 import { Route as HelpIndexImport } from './routes/help/index'
+import { Route as AttackControlIndexImport } from './routes/attack-control/index'
 
 // Create Virtual Routes
 
@@ -43,6 +44,11 @@ const HelpIndexRoute = HelpIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AttackControlIndexRoute = AttackControlIndexImport.update({
+  path: '/attack-control/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -59,6 +65,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/attack-control/': {
+      id: '/attack-control/'
+      path: '/attack-control'
+      fullPath: '/attack-control'
+      preLoaderRoute: typeof AttackControlIndexImport
       parentRoute: typeof rootRoute
     }
     '/help/': {
@@ -83,6 +96,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
+  AttackControlIndexRoute,
   HelpIndexRoute,
   LogsIndexRoute,
 })
@@ -97,6 +111,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/about",
+        "/attack-control/",
         "/help/",
         "/logs/"
       ]
@@ -106,6 +121,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/attack-control/": {
+      "filePath": "attack-control/index.tsx"
     },
     "/help/": {
       "filePath": "help/index.tsx"

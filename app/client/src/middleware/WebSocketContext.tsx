@@ -24,7 +24,7 @@ export const WebSocketContext = createContext<WebSocketContextProps>(
 
 export default function WebSocketContextProvider({ children }: Wrapper) {
   const client_store = useClientStore();
-  const url = "ws://localhost:3000/api/ws";
+  const url = "ws://localhost:3000/api /ws";
 
   const { sendMessage, lastJsonMessage, readyState } = useWebSocket(url, {
     onOpen: () => {

@@ -45,21 +45,21 @@ def main(port: int, interactive: bool, live: bool, sleep: int) -> None:
 def connect(port: int, live: bool, sleep: int = 7) -> None:
     match port:
         case 50052:
-            # Connect to Model Services
+            # Connect to Neural Network Service
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
                 request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
         case 50053 | 50054 | 50055:
-            # Connect to Feeder or Logger Services
+            # Connect to Feeder, Offline-Feeder, or Logger
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 stub = ComponentStub(channel)
                 request = ComponentMessage(input=[])
                 response = stub.forward(request)
                 ic(response.output)
         case 50056 | 50057:
-            # Connect to Store Services
+            # Connect to Store-DB or Store-File
             with grpc.insecure_channel(f"localhost:{port}") as channel:
                 while True:
                     stub = ComponentStub(channel)

@@ -34,9 +34,11 @@ class StoreDB(ComponentServicer):
                 "default" if not msg.collection_name else msg.collection_name
             )
             collection = db[collection_name]
-
-            result = collection.insert_one({"input": list(msg.input)})
+            result = collection.insert_one(
+                {"input": list(msg.input), "prediction": int(msg.prediction)}
+            )
             ic(result.inserted_id, collection_name)
+
         except Exception as e:
             ic(e)
             return ComponentResponse(output=[1.0])

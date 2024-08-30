@@ -6,7 +6,7 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2.11.0": {},
 		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/devcontainers/features/git-lfs:1": {
-			"autoPull": true
+			"autoPull": false
 		}
 	},
 	"capAdd": [

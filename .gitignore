@@ -170,5 +170,6 @@ DvcLiveLogger/
 *.png
 scripts/setup_git_personal.sh
 data/CIC/*.csv
+!data/CIC/test_data.csv
 .devcontainer/wandb.env
 wandb/

@@ -45,7 +45,7 @@ def send(msg: ComponentMessage, host: str, port: int) -> None:
     try:
         with grpc.insecure_channel(f"{host}:{port}") as channel:
             response = ComponentStub(channel).forward(msg)
-            ic(response.output)
-            ic(response.prediction)
+            # # ic(response.output)
+            # ic(response.prediction)
     except Exception as e:
         ic("Send Failed.", e)

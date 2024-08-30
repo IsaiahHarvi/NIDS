@@ -2,8 +2,9 @@
 
 pip-tools
 numpy<2
-torch
 lightning
+torch
+torchvision
 matplotlib
 icecream
 pytest
@@ -11,7 +12,6 @@ click
 dvc
 dvclive>=3
 scikit-learn
-torchvision
 black
 pandas
 grpcio

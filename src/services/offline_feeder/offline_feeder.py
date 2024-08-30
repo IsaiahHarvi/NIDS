@@ -23,7 +23,7 @@ class OfflineFeeder(ComponentServicer):
             ic("Health check")
             return ComponentResponse(output=msg.input)
 
-        df = pd.read_csv("data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv")
+        df = pd.read_csv("data/CIC/test_data.csv")
         df = df.select_dtypes(include=[np.number])
         df = df.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],

@@ -3,14 +3,19 @@ import { swagger } from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 import { staticPlugin } from "@elysiajs/static";
 import { initializeDatabase } from "./database";
-import { ClientRoutes } from "./routes/clientRoutes";
+import { websocketRoute, ClientRoutes } from "./routes";
 
 async function startServer() {
   await initializeDatabase();
 
   const app = new Elysia()
-    .use(cors())
     .use(swagger())
+    .use(
+      cors({
+        origin: ({ headers }) => headers.get("origin") === "*",
+        credentials: true,
+      })
+    )
     .get("/", () => "Hello Elysia")
     .get("/ping", () => ({ message: "pong" }))
     .post("/hello", () => "world")
@@ -26,6 +31,7 @@ async function startServer() {
     })
     //this is where you will use the routes from different files
     .use(ClientRoutes)
+    .use(websocketRoute)
     .listen(3000);
 
   console.log(

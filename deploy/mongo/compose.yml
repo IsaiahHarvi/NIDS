@@ -1,23 +1,30 @@
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:jammy
     container_name: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: pass
-    extra_hosts:
-      - mongo:127.0.0.1
+      MONGO_REPLICA_SET_NAME: rs0
     ports:
       - "27017:27017"
     volumes:
+      - /workspaces/NIDS/deploy/mongo/init_replset.js:/docker-entrypoint-initdb.d/01-init_replset.js:ro
       - mongo_data:/data/db
+    extra_hosts:
+      - mongo:127.0.0.1
+    healthcheck:
+      test: echo "rs.status()" | mongosh --port 27017
+      interval: 5s
+      timeout: 30s
+      start_period: 30s
+      retries: 30
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--quiet", "--noauth"]
 
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: pass
       ME_CONFIG_MONGODB_SERVER: mongo
     ports:
       - "8081:8081"

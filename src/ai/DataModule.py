@@ -50,7 +50,8 @@ class DataModule(pl.LightningDataModule):
 
         x_tensor = torch.tensor(x, dtype=torch.float32)
         y_tensor = torch.tensor(y.values, dtype=torch.long)
-
+        # ic(x_tensor.shape, y_tensor.shape)
+        
         dataset = TensorDataset(x_tensor.unsqueeze(1), y_tensor)
         train_size = int((1 - self.val_split) * len(dataset))
         val_size = len(dataset) - train_size

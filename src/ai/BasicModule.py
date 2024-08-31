@@ -1,7 +1,6 @@
 import torch
 import lightning.pytorch as pl
 
-import numpy as np
 from torch import nn
 from torch import optim
 from icecream import ic
@@ -12,8 +11,10 @@ class ResidualBlock(nn.Module):
         super(ResidualBlock, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(in_features, hidden_size),
+            nn.BatchNorm1d(hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, in_features),
+            nn.BatchNorm1d(in_features),
         )
 
     def forward(self, x):
@@ -22,22 +23,25 @@ class ResidualBlock(nn.Module):
 
 
 class ResidualNetwork(pl.LightningModule):
-    def __init__(self, in_features, hidden_size, out_features, num_blocks=3):
+    def __init__(self, in_channels, hidden_size, out_features, num_blocks=3):
         super(ResidualNetwork, self).__init__()
         self.save_hyperparameters()
 
-        self.net = nn.Sequential(
-            nn.Linear(in_features, hidden_size),
-            *[ResidualBlock(hidden_size, hidden_size) for _ in range(num_blocks)],
-            nn.Linear(hidden_size, out_features),
+        self.conv_layer = nn.Conv1d(1, in_channels, kernel_size=3, padding=1)
+        self.flatten_size = in_channels * 80
+        self.linear_layer = nn.Linear(self.flatten_size, hidden_size)
+        self.residual_blocks = nn.Sequential(
+            *[ResidualBlock(hidden_size, hidden_size) for _ in range(num_blocks)]
         )
+        self.output_layer = nn.Linear(hidden_size, out_features)
 
     def forward(self, x):
-        out = self.net(x)
-        if out.ndim == 3:
-            out = out.squeeze(1)
-        return out
-
+        x = self.conv_layer(x)
+        x = x.view(x.size(0), -1)
+        x = self.linear_layer(x) 
+        x = self.residual_blocks(x)
+        x = self.output_layer(x)
+        return x
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -118,20 +122,14 @@ class BasicModule(pl.LightningModule):
     def log_confusion_matrix(self, preds, labels, stage):
         # we import here to minimize the deps in the model service
         import matplotlib
-
         matplotlib.use("Agg")
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
         from sklearn.metrics import ConfusionMatrixDisplay
 
-        cm = (
-            ConfusionMatrix(num_classes=self.num_classes, task="multiclass")(
-                preds, labels
-            )
-            .cpu()
-            .numpy()
-        )
+        cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(preds.device)
+        cm = cm_metric(preds, labels).cpu().numpy()
 
         disp = ConfusionMatrixDisplay(
             confusion_matrix=cm, display_labels=range(self.num_classes)

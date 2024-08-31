@@ -32,7 +32,7 @@ def main(epochs, batch_size, target_batch, constructor, all_data):
         paths = [
             "data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-            # "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
+            "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
         ]
 
     constructor = {"ResidualNetwork": ResidualNetwork}[constructor]
@@ -48,7 +48,7 @@ def train(epochs, batch_size, target_batch, paths, constructor):
     )
     dm.setup()
     ic(dm.n_classes)
-
+    ic(dm.train_dataset[0][0].shape)
     model = BasicModule(
         model_constructor=constructor,
         in_features=dm.train_dataset[0][0].shape[1], # this param is not strictly necessary, but its nice metadata
@@ -56,7 +56,7 @@ def train(epochs, batch_size, target_batch, paths, constructor):
         out_features=dm.n_classes,
         lr=0.001,
         model_constructor_kwargs={
-            "num_blocks": 3,  # used for ResidualNetwork
+            "num_blocks": 3,
         },
     )
 
@@ -87,8 +87,8 @@ def train(epochs, batch_size, target_batch, paths, constructor):
         logger=[DVCLiveLogger(), WandbLogger()],
         accumulate_grad_batches=(max(1, target_batch // batch_size)),
         callbacks=[ckpt, early_stop],
-        # accelerator="gpu" if torch.cuda.is_available() else "cpu",
-        # devices=torch.cuda.device_count() if torch.cuda.is_available() else os.cpu_count()
+        accelerator="gpu",
+        devices="auto",
     )
 
     trainer.fit(model, dm.train_dataloader(), dm.val_dataloader())

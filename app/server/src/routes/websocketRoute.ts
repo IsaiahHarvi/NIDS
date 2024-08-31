@@ -1,8 +1,11 @@
 import { Elysia } from "elysia";
+import { storeServicesChangeStream, clientChangeStream } from "../controllers";
 
-export const websocketRoute = new Elysia().ws("/api/v1/ws", {
+export const websocketRoute = new Elysia().ws("/api/ws", {
   open: (ws) => {
     console.log("WebSocket connection opened.");
+    storeServicesChangeStream(ws);
+    clientChangeStream(ws);
   },
   close: (ws) => {
     console.log("WebSocket connection closed.");

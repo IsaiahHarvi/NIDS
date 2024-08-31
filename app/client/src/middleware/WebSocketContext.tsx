@@ -2,38 +2,40 @@
 //   handleTcaiStatusData,
 //   handleLoggerComponentsData,
 // } from "@/lib/websocket-utils";
-// import { handleVSUTData } from "@/middleware/websocket-utils/vsut-handlers";
 import { createContext, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
-import { ReadyState } from "react-use-websocket";
-// import { useVsutStore } from "./stores/vsut-store";
-// import { useClientStore } from "./stores/client-store";
-import { useClientStore } from "@/stores/client-store";
-// import { useTcaiLogsStore } from "./stores/tcai-logs-store";
-// import { useLoggerComponentsStore } from "./stores/logger-components-store";
-// import { useTransientPulseStore } from "./stores/transient-pulse-store";
+// import { ReadyState } from "react-use-websocket";
+// import { useClientStore } from "@/stores/client-store";
+import { useServicesStore } from "@/stores/services-store";
 import { WebSocketSchema } from "@/lib/zod-schemas/websocket-schemas";
 import type {
   Wrapper,
   WebSocketContextProps,
 } from "../../../types/websocket-types";
+import {
+  handleFeederInsert,
+  handleFeederDelete,
+  handleNeuralNetworkInsert,
+  handleNeuralNetworkDelete,
+  handleOfflineFeederInsert,
+  handleOfflineFeederDelete,
+  handleDefaultInsert,
+  handleDefaultDelete,
+} from "@/lib/websocket-utils";
 
 export const WebSocketContext = createContext<WebSocketContextProps>(
   {} as WebSocketContextProps
 );
 
 export default function WebSocketContextProvider({ children }: Wrapper) {
-  const client_store = useClientStore();
-  const url = "ws://localhost:3000/api /ws";
+  const services_store = useServicesStore();
+  const url = "ws://localhost:3000/api/ws";
 
-  const { sendMessage, lastJsonMessage, readyState } = useWebSocket(url, {
+  const { sendMessage, lastJsonMessage } = useWebSocket(url, {
     onOpen: () => {
       sendMessage("Hello From Client");
     },
     onError: (e) => console.log("WebSocket error: ", e),
-    heartbeat: {
-      message: "ping",
-    },
   });
 
   useEffect(() => {
@@ -43,22 +45,58 @@ export default function WebSocketContextProvider({ children }: Wrapper) {
       if (message.type === undefined) return;
       switch (message.type) {
         case "pong":
-          // console.log("Received pong message.");
           break;
         case "test":
-          // console.log("Received test message.");
           break;
-        case "tcai_logs":
-          // console.log("Received tcai logs: ", message.payload);
+        case "current_attack_insert":
           if (message.payload === undefined) return;
-          handleTcaiStatusData(JSON.stringify(message.payload), tcai_store);
+          // handleCurrentAttackInsert(JSON.stringify(message.payload), client_store);
           break;
-        case "logger_component":
-          // console.log("Received logger component data: ", message.payload);
-          handleLoggerComponentsData(
+        case "current_attack_delete":
+          break;
+        case "feeder_insert":
+          console.log("feeder_insert message: ", message.payload);
+          handleFeederInsert(JSON.stringify(message.payload), services_store);
+          break;
+        case "feeder_delete":
+          console.log("feeder_delete message: ", message.payload);
+          handleFeederDelete(JSON.stringify(message.payload), services_store);
+          break;
+        case "neural_network_insert":
+          console.log("neural_network_insert message: ", message.payload);
+          handleNeuralNetworkInsert(
             JSON.stringify(message.payload),
-            logger_store
+            services_store
           );
+          break;
+        case "neural_network_delete":
+          console.log("neural_network_delete message: ", message.payload);
+          handleNeuralNetworkDelete(
+            JSON.stringify(message.payload),
+            services_store
+          );
+          break;
+        case "offline_feeder_insert":
+          console.log("offline_feeder_insert message: ", message.payload);
+          handleOfflineFeederInsert(
+            JSON.stringify(message.payload),
+            services_store
+          );
+          break;
+        case "offline_feeder_delete":
+          console.log("offline_feeder_delete message: ", message.payload);
+          handleOfflineFeederDelete(
+            JSON.stringify(message.payload),
+            services_store
+          );
+          break;
+        case "default_insert":
+          console.log("default_insert message: ", message.payload);
+          handleDefaultInsert(JSON.stringify(message.payload), services_store);
+          break;
+        case "default_delete":
+          console.log("default_delete message: ", message.payload);
+          handleDefaultDelete(JSON.stringify(message.payload), services_store);
           break;
       }
     } catch (error) {
@@ -66,22 +104,22 @@ export default function WebSocketContextProvider({ children }: Wrapper) {
     }
   }, [lastJsonMessage]);
 
-  const updateConnectionStatus = (rs: string) => {
-    client_store.setConnectionStatus(rs);
-  };
+  // const updateConnectionStatus = (rs: string) => {
+  //   client_store.setConnectionStatus(rs);
+  // };
 
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: "Connecting",
-    [ReadyState.OPEN]: "Open",
-    [ReadyState.CLOSING]: "Closing",
-    [ReadyState.CLOSED]: "Closed",
-    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-  }[readyState];
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: "Connecting",
+  //   [ReadyState.OPEN]: "Open",
+  //   [ReadyState.CLOSING]: "Closing",
+  //   [ReadyState.CLOSED]: "Closed",
+  //   [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+  // }[readyState];
 
-  useEffect(() => {
-    // console.log("WebSocket connection status: ", connectionStatus);
-    updateConnectionStatus(connectionStatus);
-  }, [readyState]);
+  // useEffect(() => {
+  //   // console.log("WebSocket connection status: ", connectionStatus);
+  //   updateConnectionStatus(connectionStatus);
+  // }, [readyState]);
 
   // this is just an example of how to send a message
   // keeping it so we can use it as a reference if we ever need it

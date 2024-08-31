@@ -2,7 +2,8 @@ import { MongoClient, Db } from "mongodb";
 import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
-const MONGO_URL = "mongodb://root:pass@host.docker.internal:27017/";
+// const MONGO_URL = "mongodb://root:pass@host.docker.internal:27017/";
+const MONGO_URL = "mongodb://host.docker.internal:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;

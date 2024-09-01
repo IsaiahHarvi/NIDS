@@ -2,6 +2,7 @@ stages:
   train_residual:
     cmd: >
       python src/ai/train.py
+      --lr 0.0001
       --batch_size 256
       --constructor ResidualNetwork
       --all_data
@@ -17,6 +18,3 @@ params:
 - dvclive/params.yaml
 metrics:
 - dvclive/metrics.json
-plots:
-- dvclive/plots/metrics:
-    x: step

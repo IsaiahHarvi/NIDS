@@ -6,6 +6,7 @@ import numpy as np
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
+from sklearn.preprocessing import MinMaxScaler
 
 from icecream import ic
 
@@ -34,16 +35,17 @@ class Feeder(ComponentServicer):
         flow_data = pd.read_csv(flow_csv)
         flow_row = flow_data.iloc[0].values
         flow_row = self.preprocess_flow_row(flow_row).tolist()
+        x = MinMaxScaler().fit_transform(flow_row).tolist()
 
         send(
             msg=ComponentMessage(
-                input=flow_row, collection_name=self.__class__.__name__
+                input=x, collection_name=self.__class__.__name__
             ),
             host="store-db",
             port=50057,
         )
 
-        send(msg=ComponentMessage(input=flow_row), host=self.host, port=self.port)
+        send(msg=ComponentMessage(input=x), host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 

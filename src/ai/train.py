@@ -84,8 +84,9 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr):
         project="NIDS",
         config={
             "epochs": epochs,
-            "batch_size": batch_size
-        }
+            "batch_size": batch_size,
+        },
+        group="DDP"
     )
     wandb.require("core")
 

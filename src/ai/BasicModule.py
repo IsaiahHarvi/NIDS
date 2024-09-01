@@ -110,8 +110,8 @@ class BasicModule(pl.LightningModule):
         loss = self.criterion(outputs, y)
         preds = outputs.argmax(dim=1)
         acc = (preds == y).float().mean()
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", acc, prog_bar=True)
+        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
+        self.log("val_acc", acc, prog_bar=True, sync_dist=True)
         self.validation_outputs.append((preds, y))
         return loss
 

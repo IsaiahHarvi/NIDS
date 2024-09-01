@@ -6,6 +6,7 @@ import pandas as pd
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
+from sklearn.preprocessing import MinMaxScaler
 
 from icecream import ic
 
@@ -38,15 +39,17 @@ class OfflineFeeder(ComponentServicer):
         data = sample.flatten()
         ic(data.shape)
 
+        x = MinMaxScaler().fit_transform(data).tolist()
+
         send(
             msg=ComponentMessage(
-                input=data.tolist(), collection_name=self.__class__.__name__
+                input=x, collection_name=self.__class__.__name__
             ),
             host="store-db",
             port=50057,
         )
 
-        send(msg=ComponentMessage(input=data.tolist()), host=self.host, port=self.port)
+        send(msg=ComponentMessage(input=x), host=self.host, port=self.port)
 
         return ComponentResponse(output=[0.0])
 

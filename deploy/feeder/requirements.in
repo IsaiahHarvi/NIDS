@@ -3,4 +3,5 @@ grpcio-tools
 pandas
 icecream
 click
-numpy
+numpy<2
+sscikit-learn

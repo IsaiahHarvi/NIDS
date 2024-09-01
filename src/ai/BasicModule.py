@@ -2,46 +2,65 @@ import torch
 import lightning.pytorch as pl
 
 from torch import nn
+from torch.nn import functional as F
 from torch import optim
 from icecream import ic
 
 
-class ResidualBlock(nn.Module):
-    def __init__(self, in_features, hidden_size):
-        super(ResidualBlock, self).__init__()
+class ResidualUnit(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(ResidualUnit, self).__init__()
         self.net = nn.Sequential(
+            nn.Linear(in_features, out_features),
+            nn.BatchNorm1d(out_features),
+            nn.ReLU(),
+            nn.Linear(out_features, out_features),
+            nn.BatchNorm1d(out_features),
+        )
+
+    def forward(self, x):
+        return F.leaky_relu(self.net(x))
+
+class ResidualNetwork(nn.Module):
+    def __init__(self, in_features, hidden_size, out_features, num_layers=4):
+        super(ResidualNetwork, self).__init__()
+        self.net = nn.Sequential(
+            nn.Sequential(
+                nn.Linear(in_features, hidden_size),
+                nn.ReLU(),
+            ),
+            nn.Sequential(
+                *[ResidualUnit(hidden_size, hidden_size) for _ in range(num_layers)]
+            ),
+            nn.Linear(hidden_size, out_features)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+class Autoencoder(nn.Module):
+    def __init__(self, in_features, hidden_size, out_features):
+        super(Autoencoder, self).__init__()
+        self.encoder = nn.Sequential(
             nn.Linear(in_features, hidden_size),
-            nn.BatchNorm1d(hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, 64),
+            nn.ReLU(),
+            nn.Linear(32, out_features)
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(out_features, 32),
+            nn.ReLU(),
+            nn.Linear(64, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, in_features),
-            nn.BatchNorm1d(in_features),
+            nn.Sigmoid()
         )
 
     def forward(self, x):
-        out = self.net(x)
-        return nn.LeakyReLU()(out + x)
+        return self.decoder(self.encoder(x))
 
-
-class ResidualNetwork(pl.LightningModule):
-    def __init__(self, in_channels, hidden_size, out_features, num_blocks=3):
-        super(ResidualNetwork, self).__init__()
-        self.save_hyperparameters()
-
-        self.conv_layer = nn.Conv1d(1, in_channels, kernel_size=3, padding=1)
-        self.flatten_size = in_channels * 80
-        self.linear_layer = nn.Linear(self.flatten_size, hidden_size)
-        self.residual_blocks = nn.Sequential(
-            *[ResidualBlock(hidden_size, hidden_size) for _ in range(num_blocks)]
-        )
-        self.output_layer = nn.Linear(hidden_size, out_features)
-
-    def forward(self, x):
-        x = self.conv_layer(x)
-        x = x.view(x.size(0), -1)
-        x = self.linear_layer(x) 
-        x = self.residual_blocks(x)
-        x = self.output_layer(x)
-        return x
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -51,14 +70,17 @@ class BasicModule(pl.LightningModule):
         hidden_size,
         out_features,
         lr=0.001,
+        class_weights: torch.Tensor = None,
+        criterion: nn.CrossEntropyLoss | nn.MSELoss = nn.CrossEntropyLoss,
         model_constructor_kwargs={},
     ):
         super(BasicModule, self).__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["class_weights"])
+
         self.constructor = model_constructor(
             in_features, hidden_size, out_features, **model_constructor_kwargs
         )
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = criterion(weight=class_weights) if not isinstance(class_weights, torch.Tensor) else criterion()
         self.lr = lr
         self.validation_outputs = []
         self.test_outputs = []
@@ -123,6 +145,7 @@ class BasicModule(pl.LightningModule):
         # we import here to minimize the deps in the model service
         import matplotlib
         matplotlib.use("Agg")
+        # import wandb
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
@@ -138,8 +161,8 @@ class BasicModule(pl.LightningModule):
         disp.plot(ax=ax, cmap="Blues")
         plt.title(f"{stage.capitalize()} Confusion Matrix")
 
-        live = Live()
-        live.log_image(f"{stage}_confusion_matrix.png", fig)
+        Live().log_image(f"{stage}_confusion_matrix.png", fig)
+        # wandb.log({f"{stage}_confusion_matrix": wandb.Image(f"dvclive/plots/images/{stage}_confusion_matrix.png")})
         plt.close(fig)
 
     def configure_optimizers(self):

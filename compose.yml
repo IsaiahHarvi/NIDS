@@ -1,2 +1,6 @@
 include:
   - deploy/compose.yml
+
+networks:
+  services:
+    external: true

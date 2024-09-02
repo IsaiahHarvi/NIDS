@@ -9,3 +9,7 @@ services:
     ports:
       - "50053:50053"
     image: feeder
+
+networks:
+  services:
+    external: true

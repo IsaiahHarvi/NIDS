@@ -49,7 +49,7 @@ def main(epochs, batch_size, target_batch, constructor, all_data, lr, early_stop
 def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience):
     dm = DataModule(
         paths=paths,
-        val_split=0.2,
+        val_split=0.1,
         batch_size=batch_size, 
         num_workers=os.cpu_count(),
         transform=MinMaxTransform(),

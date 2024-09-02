@@ -37,9 +37,9 @@ class OfflineFeeder(ComponentServicer):
 
         sample = df.sample(n=1).iloc[0].to_numpy()
         data = sample.flatten()
-        ic(data.shape)
-
-        x = MinMaxScaler().fit_transform(data).tolist()
+        data = data.reshape(1, -1)  #  (1, 80)
+        x = MinMaxScaler().fit_transform(data)
+        x = x.squeeze(0).tolist() # (80,)
 
         send(
             msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
@@ -49,7 +49,7 @@ class OfflineFeeder(ComponentServicer):
 
         send(msg=ComponentMessage(input=x), host=self.host, port=self.port)
 
-        return ComponentResponse(output=[0.0])
+        return ComponentResponse(output=x)
 
 
 if __name__ == "__main__":

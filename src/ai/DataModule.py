@@ -79,8 +79,6 @@ class DataModule(pl.LightningDataModule):
         self.example_shape = x.shape[1]
 
         dataset = CIC_IDS(x.to_numpy(), y.values, transform=self.transform)
-        train_size = int((1 - self.val_split) * len(dataset))
-
         shuffle_split = StratifiedShuffleSplit(n_splits=1, test_size=self.val_split)
         train_idx, val_idx = next(shuffle_split.split(x, y))
 

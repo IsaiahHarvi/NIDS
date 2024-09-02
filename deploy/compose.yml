@@ -1,7 +1,7 @@
 include:
   - model/compose.yml
-  - feeder/compose.yml
+  # - feeder/compose.yml
   - offline_feeder/compose.yml
-  - logger/compose.yml
+  # - logger/compose.yml
   - store/compose.yml
   - mongo/compose.yml

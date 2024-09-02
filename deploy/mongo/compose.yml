@@ -35,10 +35,6 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: pass
       ME_CONFIG_MONGODB_SERVER: mongo
 
-networks:
-  services:
-    external: true
-
 volumes:
   mongo-data:
     name: mongo-data

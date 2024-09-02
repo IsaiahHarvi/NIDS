@@ -32,7 +32,7 @@ async function startServer() {
     //this is where you will use the routes from different files
     .use(ClientRoutes)
     .use(websocketRoute)
-    .listen(3000);
+    .listen(8000);
 
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`

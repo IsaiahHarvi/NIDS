@@ -8,7 +8,3 @@ services:
     ports:
       - "50052:50052"
     image: neural-network
-
-networks:
-  services:
-    external: true

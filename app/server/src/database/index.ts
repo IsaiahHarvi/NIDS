@@ -3,7 +3,7 @@ import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
 // const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
-const MONGO_URL = "mongodb://root:example@mongo:27017/";
+const MONGO_URL = "mongodb://root:example@localhost:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;
@@ -12,7 +12,9 @@ export let storeServiceDb: Db;
 
 const connectToDatabase = async () => {
   try {
-    client = new MongoClient(MONGO_URL);
+    const client = new MongoClient(MONGO_URL, {
+      connectTimeoutMS: 30000,
+    });    
     await client.connect();
     storeServiceDb = client.db("store_service");
 

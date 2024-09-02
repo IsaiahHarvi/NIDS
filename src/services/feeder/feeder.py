@@ -5,10 +5,12 @@ import numpy as np
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
-from sklearn.preprocessing import MinMaxScaler
+from nfstream import NFStreamer
+from sklearn.preprocessing import StandardScaler
 from icecream import ic
 
 ic.configureOutput(includeContext=False)
+
 
 class Feeder(ComponentServicer):
     def __init__(self, interface, file_name, duration, host, port):
@@ -27,12 +29,14 @@ class Feeder(ComponentServicer):
         pcap = self.capture_pcap(self.interface, self.file_name, self.duration)
         flow_csv = self.pcap_to_flows(pcap)
         flow_data = pd.read_csv(flow_csv)
-        flow_data.to_csv("/app/flow_data_output.csv", index=False)
-        flow_row = flow_data.iloc[0].values
-        flow_row = self.preprocess_flow_row(flow_row)
-        flow_row = flow_row.reshape(1, -1)  # Reshape to (1, 80)
-        x = MinMaxScaler().fit_transform(flow_row)
-        x = x.squeeze(0).tolist()
+        flow_row = self.preprocess_flow_row(flow_data.iloc[0])
+
+        x = (
+            StandardScaler()
+            .fit_transform(flow_row.reshape(1, -1))
+            .squeeze(0)
+            .tolist()
+        )
 
         send(
             msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
@@ -53,44 +57,52 @@ class Feeder(ComponentServicer):
 
     def pcap_to_flows(self, pcap_file: str) -> str:
         output_csv = pcap_file.replace(".pcap", "_flows.csv")
-        cicflowmeter_path = "/app/CICFlowMeter/CICFlowMeter-4.0/bin/CICFlowMeter"
-        cmd = [cicflowmeter_path, "-f", pcap_file, "-c", output_csv]
+        stream = NFStreamer(source=pcap_file)
+        flow_data = stream.to_pandas()
 
-        try:
-            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-            ic(f"CICFlowMeter Output: {result.stdout}")
-            ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
-        except subprocess.CalledProcessError as e:
-            ic(f"Error in CICFlowMeter: {e.stderr}")
-            return None
-        
+        features = pd.DataFrame()
+        features["Source_Port"] = flow_data["src_port"]
+        features["Destination_Port"] = flow_data["dst_port"]
+        features["Protocol"] = flow_data["protocol"]
+        features["Flow_Duration"] = flow_data["bidirectional_duration_ms"]
+        features["Total_Fwd_Packets"] = flow_data["src2dst_packets"]
+        features["Total_Backward_Packets"] = flow_data["dst2src_packets"]
+        features["Total_Length_of_Fwd_Packets"] = flow_data["src2dst_bytes"]
+        features["Total_Length_of_Bwd_Packets"] = flow_data["dst2src_bytes"]
+        features["Flow_Bytes/s"] = (
+            features["Total_Length_of_Fwd_Packets"]
+            + features["Total_Length_of_Bwd_Packets"]
+        ) / (features["Flow_Duration"] / 1000)
+        features["Flow_Packets/s"] = (
+            features["Total_Fwd_Packets"] + features["Total_Backward_Packets"]
+        ) / (features["Flow_Duration"] / 1000)
+
+        features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
+        features.to_csv(output_csv, index=False)
+
+        ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
         return output_csv
 
-    def preprocess_flow_row(self, flow_row):
-        numeric_row = []
-        for value in flow_row:
-            if isinstance(value, str) and value.strip() == "":
-                numeric_row.append(0)  # Replace empty strings with zeros
-            elif isinstance(value, str):
-                try:
-                    numeric_value = float(value)
-                    numeric_row.append(numeric_value)
-                except ValueError:
-                    numeric_row.append(0)
-            else:
-                numeric_row.append(value)
+    def preprocess_flow_row(self, flow_row: pd.Series):
+        flow_row_df = flow_row.to_frame().T
+        numeric_row = flow_row_df.select_dtypes(include=[float, int]).fillna(0)
+        numeric_row.replace([np.inf, -np.inf], np.nan, inplace=True)
+        numeric_row.fillna(numeric_row.mean(), inplace=True)
+        numeric_row = np.array(numeric_row).flatten()
 
-        numeric_row = np.array(numeric_row)
         if numeric_row.shape[0] < 80:
             numeric_row = np.pad(
                 numeric_row, (0, 80 - numeric_row.shape[0]), "constant"
             )
+            ic("WARNING: padding row")
         elif numeric_row.shape[0] > 80:
-            ic("WARNING: truncating row")
             numeric_row = numeric_row[:80]
+            ic("WARNING: truncating row")
+
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row
+
 
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")

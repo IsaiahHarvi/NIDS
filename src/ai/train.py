@@ -52,7 +52,7 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_p
         val_split=0.1,
         batch_size=batch_size, 
         num_workers=os.cpu_count(),
-        transform=MinMaxTransform(),
+        # transform=MinMaxTransform(),
     )
     dm.setup()
     ic(dm.n_classes)

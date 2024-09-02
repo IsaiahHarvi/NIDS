@@ -6,6 +6,7 @@ import pandas as pd
 from torch.utils.data import DataLoader, Dataset, Subset
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.preprocessing import StandardScaler
 from icecream import ic
 
 
@@ -78,7 +79,9 @@ class DataModule(pl.LightningDataModule):
         self.n_classes = len(y.unique())
         self.example_shape = x.shape[1]
 
-        dataset = CIC_IDS(x.to_numpy(), y.values, transform=self.transform)
+        x = StandardScaler().fit_transform(x)
+
+        dataset = CIC_IDS(x.to_numpy(), y.values, transform=None) # NOTE: transform is being ignored for now
         shuffle_split = StratifiedShuffleSplit(n_splits=1, test_size=self.val_split)
         train_idx, val_idx = next(shuffle_split.split(x, y))
 

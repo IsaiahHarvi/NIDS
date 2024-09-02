@@ -1,22 +1,13 @@
 import { Topbar } from "@/components/topbar";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 // import {Link} from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+// import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Navbar } from "@/components/navbar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 export const Route = createRootRoute({
   component: () => (
     <>
       <div className="p-2 flex gap-2">
-        {/* <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{" "}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>
-        <Link to="/help" className="[&.active]:font-bold">
-          Help
-        </Link> */}
         <TooltipProvider>
           {/* <WebSocketContextProvider> */}
           <div className="grid h-screen max-h-screen w-full pl-[3.25rem] custom-scrollable-element bg-['/grid.svg']">

@@ -81,7 +81,7 @@ class DataModule(pl.LightningDataModule):
 
         x = StandardScaler().fit_transform(x)
 
-        dataset = CIC_IDS(x.to_numpy(), y.values, transform=None) # NOTE: transform is being ignored for now
+        dataset = CIC_IDS(x, y.values, transform=None) # NOTE: transform is being ignored for now
         shuffle_split = StratifiedShuffleSplit(n_splits=1, test_size=self.val_split)
         train_idx, val_idx = next(shuffle_split.split(x, y))
 

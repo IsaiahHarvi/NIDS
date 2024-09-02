@@ -21,6 +21,7 @@ class ResidualUnit(nn.Module):
     def forward(self, x):
         return F.leaky_relu(self.net(x))
 
+
 class ResidualNetwork(nn.Module):
     def __init__(self, in_features, hidden_size, out_features, num_layers=4):
         super(ResidualNetwork, self).__init__()
@@ -32,7 +33,7 @@ class ResidualNetwork(nn.Module):
             nn.Sequential(
                 *[ResidualUnit(hidden_size, hidden_size) for _ in range(num_layers)]
             ),
-            nn.Linear(hidden_size, out_features)
+            nn.Linear(hidden_size, out_features),
         )
 
     def forward(self, x):
@@ -47,7 +48,7 @@ class Autoencoder(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_size, 64),
             nn.ReLU(),
-            nn.Linear(32, out_features)
+            nn.Linear(32, out_features),
         )
         self.decoder = nn.Sequential(
             nn.Linear(out_features, 32),
@@ -55,7 +56,7 @@ class Autoencoder(nn.Module):
             nn.Linear(64, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, in_features),
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
@@ -76,11 +77,13 @@ class BasicModule(pl.LightningModule):
     ):
         super(BasicModule, self).__init__()
         self.save_hyperparameters(ignore=["class_weights"])
-
+        self.constructor_kwargs = model_constructor_kwargs
         self.constructor = model_constructor(
-            in_features, hidden_size, out_features, **model_constructor_kwargs
+            in_features, hidden_size, out_features, **self.constructor_kwargs
         )
-        self.criterion = criterion(weight=class_weights) if not isinstance(class_weights, torch.Tensor) else criterion()
+        self.criterion = (
+            criterion(weight=class_weights) if class_weights is not None else criterion()
+        )
         self.lr = lr
         self.validation_outputs = []
         self.test_outputs = []
@@ -144,6 +147,7 @@ class BasicModule(pl.LightningModule):
     def log_confusion_matrix(self, preds, labels, stage):
         # we import here to minimize the deps in the model service
         import matplotlib
+
         matplotlib.use("Agg")
         # import wandb
         from matplotlib import pyplot as plt

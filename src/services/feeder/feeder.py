@@ -38,9 +38,7 @@ class Feeder(ComponentServicer):
         x = MinMaxScaler().fit_transform(flow_row).tolist()
 
         send(
-            msg=ComponentMessage(
-                input=x, collection_name=self.__class__.__name__
-            ),
+            msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
             host="store-db",
             port=50057,
         )

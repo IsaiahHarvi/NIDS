@@ -42,9 +42,7 @@ class OfflineFeeder(ComponentServicer):
         x = MinMaxScaler().fit_transform(data).tolist()
 
         send(
-            msg=ComponentMessage(
-                input=x, collection_name=self.__class__.__name__
-            ),
+            msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
             host="store-db",
             port=50057,
         )

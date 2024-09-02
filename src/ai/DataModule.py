@@ -3,9 +3,11 @@ import torch
 import numpy as np
 import lightning.pytorch as pl
 import pandas as pd
-from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data import DataLoader, Dataset, Subset
 from sklearn.utils.class_weight import compute_class_weight
+from sklearn.model_selection import StratifiedShuffleSplit
 from icecream import ic
+
 
 class CIC_IDS(Dataset):
     def __init__(self, data, labels, transform=None):
@@ -19,7 +21,7 @@ class CIC_IDS(Dataset):
     def __getitem__(self, idx):
         x = self.data[idx]
         y = self.labels[idx]
-        
+
         if self.transform:
             x = self.transform(x)
 
@@ -68,7 +70,9 @@ class DataModule(pl.LightningDataModule):
         label_mapping = {label: idx for idx, label in enumerate(unique_labels)}
         class_indices = [label_mapping[label] for label in class_labels]
 
-        class_weights = compute_class_weight("balanced", classes=np.unique(class_indices), y=class_indices)
+        class_weights = compute_class_weight(
+            "balanced", classes=np.unique(class_indices), y=class_indices
+        )
         self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
 
         self.n_classes = len(y.unique())
@@ -77,9 +81,11 @@ class DataModule(pl.LightningDataModule):
         dataset = CIC_IDS(x.to_numpy(), y.values, transform=self.transform)
         train_size = int((1 - self.val_split) * len(dataset))
 
-        self.train_dataset, self.val_dataset = random_split(
-            dataset, [train_size, (len(dataset) - train_size)]
-        )
+        shuffle_split = StratifiedShuffleSplit(n_splits=1, test_size=self.val_split)
+        train_idx, val_idx = next(shuffle_split.split(x, y))
+
+        self.train_dataset = Subset(dataset, train_idx)
+        self.val_dataset = Subset(dataset, val_idx)
 
     def train_dataloader(self):
         return DataLoader(

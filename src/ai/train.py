@@ -1,5 +1,4 @@
 import os
-import random
 import click
 import wandb
 import torch
@@ -16,36 +15,38 @@ from ai.transforms import MinMaxTransform
 
 @click.command()
 @click.option("--epochs", default=1000)
-@click.option("--batch_size", default=64)  # >=256 when all_data
-@click.option("--target_batch", default=64)  # used for gradient accumulation
+@click.option("--batch_size", default=256)  # >=256 when all_data
+@click.option("--target_batch", default=256)  # used for gradient accumulation
 @click.option("--lr", default=0.001)
+@click.option("--early_stop_patience", default=10)
 @click.option(
     "--constructor",
     type=click.Choice(["ResidualNetwork"], case_sensitive=False),
     prompt=True,
 )
 @click.option("--all_data", is_flag=True, default=False)
-def main(epochs, batch_size, target_batch, constructor, all_data, lr):
+def main(epochs, batch_size, target_batch, constructor, all_data, lr, early_stop_patience):
     torch.set_float32_matmul_precision("medium")
     if target_batch < batch_size:
         target_batch = batch_size
 
     if all_data:
         paths = [
-            f"data/CIC/{csv}" for csv in os.listdir("data/CIC") if csv.endswith(".csv")
+            f"data/CIC/{csv}" for csv in os.listdir("data/CIC") if csv.endswith(".csv") and "test_data" not in csv
         ]
     else:
         paths = [
             "data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
+            "data/CIC/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
         ]
 
-    constructor = {"residualnetwork": ResidualNetwork}[constructor.lower()]
+    constructor = {"ResidualNetwork": ResidualNetwork}[constructor]
 
-    train(epochs, batch_size, target_batch, paths, constructor, lr)
+    train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience)
 
-def train(epochs, batch_size, target_batch, paths, constructor, lr):
+def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience):
     dm = DataModule(
         paths=paths,
         val_split=0.2,
@@ -58,12 +59,15 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr):
     ic(dm.example_shape)
     model = BasicModule(
         model_constructor=constructor,
-        in_features=dm.example_shape, # this param is not strictly necessary, but its nice metadata
+        in_features=dm.example_shape,
         hidden_size=128, 
         out_features=dm.n_classes,
-        lr=0.001,
+        lr=lr,
         class_weights=dm.class_weights,
         criterion=MSELoss if isinstance(constructor, Autoencoder) else CrossEntropyLoss,
+        model_constructor_kwargs={
+            "num_layers": 2,
+        }
     )
 
     ckpt = ModelCheckpoint(
@@ -75,16 +79,21 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr):
 
     early_stop = EarlyStopping(
         monitor="val_loss",
-        patience=10,
-        verbose=True,
+        patience=early_stop_patience,
+        verbose=False,
         mode="min"
     )
 
     wandb.init(
         project="NIDS",
         config={
-            "epochs": epochs,
+            # "epochs": epochs, # early stopping makes this useless
             "batch_size": batch_size,
+            # "target_batch": target_batch, # we arent acumulating batches anymore
+            "learning_rate": lr,
+            "early_stop_patience": early_stop_patience,
+            "model_constructor": constructor.__name__,
+            "model_constructor_kwargs": model.constructor_kwargs,
         },
         group="DDP"
     )
@@ -93,7 +102,7 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr):
     trainer = pl.Trainer(
         max_epochs=epochs,
         logger=[DVCLiveLogger(), WandbLogger()],
-        accumulate_grad_batches=(max(1, target_batch // batch_size)),
+        # accumulate_grad_batches=(max(1, target_batch // batch_size)),
         callbacks=[ckpt, early_stop],
         accelerator="gpu",
         devices="auto",

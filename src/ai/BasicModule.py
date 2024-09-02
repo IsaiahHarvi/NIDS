@@ -83,7 +83,9 @@ class BasicModule(pl.LightningModule):
         )
         self.criterion_type = criterion
         self.criterion = (
-            criterion(weight=class_weights) if class_weights is not None else criterion()
+            criterion(weight=class_weights)
+            if class_weights is not None
+            else criterion()
         )
         self.lr = lr
         self.validation_outputs = []
@@ -156,7 +158,9 @@ class BasicModule(pl.LightningModule):
         from torchmetrics import ConfusionMatrix
         from sklearn.metrics import ConfusionMatrixDisplay
 
-        cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(preds.device)
+        cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
+            preds.device
+        )
         cm = cm_metric(preds, labels).cpu().numpy()
 
         disp = ConfusionMatrixDisplay(
@@ -172,9 +176,11 @@ class BasicModule(pl.LightningModule):
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
-    
+
     def state_dict(self, destination=None, prefix="", keep_vars=False):
-        state_dict = super().state_dict(destination=destination, prefix=prefix, keep_vars=keep_vars)
+        state_dict = super().state_dict(
+            destination=destination, prefix=prefix, keep_vars=keep_vars
+        )
         if "criterion.weight" in state_dict:
             del state_dict["criterion.weight"]
         return state_dict

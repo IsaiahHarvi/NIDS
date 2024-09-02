@@ -67,8 +67,8 @@ class DataModule(pl.LightningDataModule):
 
         class_labels = df["Label"].values
         unique_labels = df["Label"].unique()
-        ic(unique_labels)
         label_mapping = {label: idx for idx, label in enumerate(unique_labels)}
+        ic(label_mapping)
         class_indices = [label_mapping[label] for label in class_labels]
 
         class_weights = compute_class_weight(

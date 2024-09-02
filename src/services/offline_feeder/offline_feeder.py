@@ -25,20 +25,26 @@ class OfflineFeeder(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         df = pd.read_csv("data/CIC/test_data.csv")
-        df = df.select_dtypes(include=[np.number])
+        df.columns = df.columns.str.strip().str.replace(" ", "_")
         df = df.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],
             axis=1,
             errors="ignore",
         )
-        df = df.select_dtypes(include=[float, int]).fillna(0)
-        df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        df.fillna(df.mean(), inplace=True)
+        sample = df.sample(n=1)
+        y = sample["Label"].values[0]
+        sample = sample.select_dtypes(include=[float, int])
+        sample.replace([np.inf, -np.inf], np.nan, inplace=True)
+        sample.fillna(sample.mean(), inplace=True)
 
-        sample = df.sample(n=1).iloc[0].to_numpy()
-        data = sample.flatten()
-        x = StandardScaler().fit_transform(data.reshape(-1, 1)).squeeze(0).tolist()
+        sample = sample.drop("Label", axis=1, errors='ignore').iloc[0].to_numpy()
+        x = sample.flatten()
+        
+        # scaler = StandardScaler()
+        # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
+        # ic(scaler.mean_, scaler.scale_)
 
+        ic(y)
         send(
             msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
             host="store-db",

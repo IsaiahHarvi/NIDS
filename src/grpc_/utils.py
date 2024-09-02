@@ -15,7 +15,13 @@ from icecream import ic
 def start_server(
     service, port, wait_for_termination: bool = True
 ) -> None | grpc.Server:
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(
+        futures.ThreadPoolExecutor(max_workers=10),
+        options=[
+            ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
+            ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
+        ]
+    )
     add_ComponentServicer_to_server(service, server)
     server.add_insecure_port(f"[::]:{port}")
     server.start()
@@ -43,7 +49,13 @@ def wait_for_services(services: list, timeout=60, init_time=5):
 def send(msg: ComponentMessage, host: str, port: int) -> None:
     ic("Sending data to", host, port)
     try:
-        with grpc.insecure_channel(f"{host}:{port}") as channel:
+        with grpc.insecure_channel(
+            f"{host}:{port}",
+            options=[
+                ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
+                ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
+            ]
+        ) as channel:
             response = ComponentStub(channel).forward(msg)
             # # ic(response.output)
             # ic(response.prediction)

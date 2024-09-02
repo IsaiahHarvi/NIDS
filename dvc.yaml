@@ -2,8 +2,9 @@ stages:
   train_residual:
     cmd: >
       python src/ai/train.py
-      --lr 0.0001
-      --batch_size 256
+      --lr 0.001
+      --batch_size 128
+      --early_stop_patience 10
       --constructor ResidualNetwork
       --all_data
     deps:

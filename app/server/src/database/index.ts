@@ -3,7 +3,19 @@ import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
 // const MONGO_URL = "mongodb://root:pass@host.docker.internal:27017/";
-const MONGO_URL = "mongodb://host.docker.internal:27017/";
+// const MONGO_URL = "mongodb://host.docker.internal:27017/";
+// const MONGO_URL = "mongodb://root:example@mongo:27017/";
+// const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
+// const MONGO_URL = "mongodb://root:example@host.docker.internal:27017/";
+const MONGO_URL =
+  "mongodb://root:example@mongo:27017/?replicaSet=rs0&authSource=admin";
+// const MONGO_URL =
+//   "mongodb://root:example@host.docker.internal:27017/?authSource=admin";
+// const MONGO_URL = "mongodb://root:example@host.docker.internal:27017/";
+// const MONGO_URL = "mongodb://root:pass@localhost:27017/?authSource=admin";
+// const MONGO_URL =
+//   "mongodb://root:example@localhost:27017/?replicaSet=rs0&authSource=admin";
+// // const MONGO_URL = "mongodb://root:pass@host.docker.internal:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;

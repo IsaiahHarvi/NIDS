@@ -1,11 +1,5 @@
-// import {
-//   handleTcaiStatusData,
-//   handleLoggerComponentsData,
-// } from "@/lib/websocket-utils";
 import { createContext, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
-// import { ReadyState } from "react-use-websocket";
-// import { useClientStore } from "@/stores/client-store";
 import { useServicesStore } from "@/stores/services-store";
 import { WebSocketSchema } from "@/lib/zod-schemas/websocket-schemas";
 import type {

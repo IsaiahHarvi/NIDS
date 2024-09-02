@@ -69,12 +69,6 @@ export function Index() {
           description="View the status of NIDS"
           link="/status"
         />
-        {/* <LinkCard
-          icon={Package}
-          title="vSUT Dashboard"
-          description="View the status of the vSUT"
-          link="/vsut"
-        /> */}
       </div>
     </div>
   );

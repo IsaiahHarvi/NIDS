@@ -1,8 +1,8 @@
 FROM python:3.11-slim
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y tshark \
+    libusb-1.0-0-dev libdbus-glib-1-dev libbluetooth-dev libnl-genl-3-dev
 
-# Set up gRPC and start the feeder
 ENV PORT=50053
 ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"

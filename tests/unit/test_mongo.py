@@ -5,12 +5,14 @@ from pymongo.errors import ConnectionFailure
 from icecream import ic
 from src.grpc_.utils import wait_for_services
 
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_mongo():
     os.system("docker compose -f deploy/mongo/compose.yml up --build -d")
     wait_for_services(["mongo", "mongo-express"], timeout=10, init_time=5)
     yield
     os.system("docker compose -f deploy/mongo/compose.yml down")
+
 
 @pytest.mark.slow
 def test_mongo():
@@ -22,7 +24,9 @@ def test_mongo():
     ic(f"Attempting to connect to MongoDB at {host}:{port}")
 
     try:
-        client = MongoClient(f"mongodb://{user}:{password}@{host}:{port}/", serverSelectionTimeoutMS=5000)
+        client = MongoClient(
+            f"mongodb://{user}:{password}@{host}:{port}/", serverSelectionTimeoutMS=5000
+        )
         client.server_info()  # Will raise an exception if unable to connect
         ic("Successfully connected to MongoDB")
     except ConnectionFailure as e:
@@ -31,10 +35,7 @@ def test_mongo():
     db = client["test_db"]
     collection = db["test_collection"]
 
-    result = collection.insert_one({
-        "name": "test",
-        "value": "Hello World!"
-    })
+    result = collection.insert_one({"name": "test", "value": "Hello World!"})
     ic(f"Inserted document with _id: {result.inserted_id}")
 
     document = collection.find_one({"name": "test"})

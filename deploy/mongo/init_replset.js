@@ -1,5 +1,5 @@
 try {
-  sleep(8000);
+  sleep(8000); // Wait for MongoDB to be ready
   print("INITIALIZING REPLICA SET...");
 
   const result = rs.initiate({
@@ -11,22 +11,27 @@ try {
       },
     ],
   });
-  print("REPLICA SET INITIALIZED SUCCESSFULLY!");
-  printjson(result);
 
-  sleep(4000);
-  sleep(4000);
+  if (result.ok) {
+    print("REPLICA SET INITIALIZED SUCCESSFULLY!");
+    printjson(result);
 
-  adminDb.createUser({
-    user: "root",
-    pwd: "example",
-    roles: [{ role: "root", db: "admin" }]
-  });
+    sleep(4000); // pls
+    sleep(4000); // pretty pls
 
-  print("init script compleeted");
-
-  print("USER CREATED SUCCESSFULLY!");
+    print("Creating user...");
+    const adminDb = db.getSiblingDB("admin");
+    adminDb.createUser({
+      user: "root",
+      pwd: "example",
+      roles: [{ role: "root", db: "admin" }]
+    });
+    print("USER CREATED SUCCESSFULLY!");
+  } else {
+    print("Failed to initialize replica set:");
+    printjson(result);
+  }
 } catch (e) {
-  print("ERROR INITIALIZING REPLICA SET:");
+  print("ERROR INITIALIZING REPLICA SET OR CREATING USER:");
   printjson(e);
 }

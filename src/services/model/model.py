@@ -13,7 +13,7 @@ ic.configureOutput(includeContext=False)
 
 class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
-        self.model = BasicModule.load_from_checkpoint(ckpt_path)
+        self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path)
         self.model.eval()
         ic(f"Started on {os.environ.get('PORT')}")
 
@@ -21,20 +21,19 @@ class NeuralNetwork(ComponentServicer):
         if msg.health_check:
             ic("Health check")
             return ComponentResponse(output=msg.input)
-
+        
         x = torch.tensor(msg.input)
-        match x.dim():
-            case 1:
-                x = x.view(1, 1, -1)
-            case 2:
-                x = x.unsqueeze(0)  # add batch dimension
+        # ic(x.shape)
+
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
 
         assert (
-            x.dim() == 3
-        ), f"Expected [batch_size, seq_len, input_size] but got {x.shape}"
+            x.dim() == 2
+        ), f"Expected [batch_size, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
-        # ic(pred)
+        ic(pred)
         send(
             msg=ComponentMessage(
                 prediction=pred, collection_name=self.__class__.__name__

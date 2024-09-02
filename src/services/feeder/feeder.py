@@ -2,16 +2,13 @@ import pandas as pd
 import subprocess
 import os
 import numpy as np
-
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
 from sklearn.preprocessing import MinMaxScaler
-
 from icecream import ic
 
 ic.configureOutput(includeContext=False)
-
 
 class Feeder(ComponentServicer):
     def __init__(self, interface, file_name, duration, host, port):
@@ -28,14 +25,14 @@ class Feeder(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         pcap = self.capture_pcap(self.interface, self.file_name, self.duration)
-        argus = self.pcap_to_argus(pcap)
-        flow_csv = self.argus_to_flow_csv(
-            argus, self.file_name.replace(".pcap", "_flows.csv")
-        )
+        flow_csv = self.pcap_to_flows(pcap)
         flow_data = pd.read_csv(flow_csv)
+        flow_data.to_csv("/app/flow_data_output.csv", index=False)
         flow_row = flow_data.iloc[0].values
-        flow_row = self.preprocess_flow_row(flow_row).tolist()
-        x = MinMaxScaler().fit_transform(flow_row).tolist()
+        flow_row = self.preprocess_flow_row(flow_row)
+        flow_row = flow_row.reshape(1, -1)  # Reshape to (1, 80)
+        x = MinMaxScaler().fit_transform(flow_row)
+        x = x.squeeze(0).tolist()
 
         send(
             msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
@@ -45,7 +42,7 @@ class Feeder(ComponentServicer):
 
         send(msg=ComponentMessage(input=x), host=self.host, port=self.port)
 
-        return ComponentResponse(output=[0.0])
+        return ComponentResponse(output=x)
 
     def capture_pcap(self, interface: str, file_name: str, duration: int) -> str:
         pcap_file = file_name + (".pcap" if not file_name.endswith(".pcap") else "")
@@ -54,29 +51,19 @@ class Feeder(ComponentServicer):
         ic(f"Captured packets to {pcap_file}")
         return pcap_file
 
-    def pcap_to_argus(self, pcap_file: str) -> str:
-        argus_file = pcap_file.replace(".pcap", ".argus")
-        cmd = ["argus", "-r", pcap_file, "-w", argus_file]
-        assert (
-            subprocess.run(cmd, check=True).returncode == 0
-        ), f"\n!!!Argus failed to process {pcap_file}!!!\n"
-        ic(f"Converted {pcap_file} to Argus file {argus_file}")
-        return argus_file
+    def pcap_to_flows(self, pcap_file: str) -> str:
+        output_csv = pcap_file.replace(".pcap", "_flows.csv")
+        cicflowmeter_path = "/app/CICFlowMeter/CICFlowMeter-4.0/bin/CICFlowMeter"
+        cmd = [cicflowmeter_path, "-f", pcap_file, "-c", output_csv]
 
-    def argus_to_flow_csv(self, argus_file: str, output_csv: str) -> str:
-        cmd = [
-            "ra",
-            "-r",
-            argus_file,
-            "-c",
-            ",",
-            "-s",
-            "stime,flgs,proto,saddr,daddr,sport,dport,bytes,pkts,state",
-        ]
-        assert subprocess.run(
-            cmd, stdout=open(output_csv, "w"), check=True
-        ), f"\n!!!Failed to convert {argus_file} to CSV!!!\n"
-        ic(f"Converted Argus file {argus_file} to CSV: {output_csv}")
+        try:
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            ic(f"CICFlowMeter Output: {result.stdout}")
+            ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
+        except subprocess.CalledProcessError as e:
+            ic(f"Error in CICFlowMeter: {e.stderr}")
+            return None
+        
         return output_csv
 
     def preprocess_flow_row(self, flow_row):
@@ -104,7 +91,6 @@ class Feeder(ComponentServicer):
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row
-
 
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")

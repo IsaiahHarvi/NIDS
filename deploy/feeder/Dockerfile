@@ -21,4 +21,4 @@ COPY src/services/feeder/feeder.py /app/main.py
 ENV PYTHONPATH=/app/src
 WORKDIR /app
 
-CMD ["python3", "main.py"]
+CMD ["python", "main.py"]

@@ -19,13 +19,14 @@ from ai.transforms import MinMaxTransform
 @click.option("--target_batch", default=256)  # used for gradient accumulation
 @click.option("--lr", default=0.001)
 @click.option("--early_stop_patience", default=10)
+@click.option("--ckpt_name", default="best")
 @click.option(
     "--constructor",
     type=click.Choice(["ResidualNetwork"], case_sensitive=False),
     prompt=True,
 )
 @click.option("--all_data", is_flag=True, default=False)
-def main(epochs, batch_size, target_batch, constructor, all_data, lr, early_stop_patience):
+def main(epochs, batch_size, target_batch, constructor, all_data, lr, early_stop_patience, ckpt_name):
     torch.set_float32_matmul_precision("medium")
     if target_batch < batch_size:
         target_batch = batch_size
@@ -36,17 +37,15 @@ def main(epochs, batch_size, target_batch, constructor, all_data, lr, early_stop
         ]
     else:
         paths = [
-            "data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
             "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
-            "data/CIC/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
         ]
 
     constructor = {"ResidualNetwork": ResidualNetwork}[constructor]
 
-    train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience)
+    train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience, ckpt_name)
 
-def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience):
+def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_patience, ckpt_name):
     dm = DataModule(
         paths=paths,
         val_split=0.1,
@@ -72,7 +71,7 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_p
 
     ckpt = ModelCheckpoint(
         dirpath="data/checkpoints",
-        filename=f"{model.constructor.__class__.__name__}",
+        filename=ckpt_name,
         save_top_k=1,
         every_n_epochs=1,
     )
@@ -94,6 +93,7 @@ def train(epochs, batch_size, target_batch, paths, constructor, lr, early_stop_p
             "early_stop_patience": early_stop_patience,
             "model_constructor": constructor.__name__,
             "model_constructor_kwargs": model.constructor_kwargs,
+            "ckpt_name": ckpt_name,
         },
         group="DDP"
     )

@@ -22,7 +22,7 @@ for FILE in "${CSV_FILES[@]}"; do
         echo "${FILE} exists, skipping..."
     else
         URL="http://${IP}:${PORT}/csv/${FILE}"
-        wget -O "${DEST}" "${URL}"
+        wget --progress=bar:force:noscroll -O "${DEST}" "${URL}"
 
         if [ $? -eq 0 ]; then
             echo "Downloaded ${FILE}"

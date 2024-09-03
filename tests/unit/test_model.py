@@ -21,7 +21,8 @@ def grpc_server():
     os.system("docker image prune -f > /dev/null 2>&1")
 
     server_process = multiprocessing.Process(
-        target=start_server, args=(NeuralNetwork("data/checkpoints/ResidualNetwork.ckpt"), 50052)
+        target=start_server,
+        args=(NeuralNetwork("data/checkpoints/ResidualNetwork.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)

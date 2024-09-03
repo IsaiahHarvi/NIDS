@@ -7,14 +7,10 @@ import type {
   WebSocketContextProps,
 } from "../../../types/websocket-types";
 import {
-  handleFeederInsert,
-  handleFeederDelete,
-  handleNeuralNetworkInsert,
-  handleNeuralNetworkDelete,
-  handleOfflineFeederInsert,
-  handleOfflineFeederDelete,
-  handleDefaultInsert,
-  handleDefaultDelete,
+  handleFeeder,
+  handleNeuralNetwork,
+  handleOfflineFeeder,
+  handleDefault,
 } from "@/lib/websocket-utils";
 
 export const WebSocketContext = createContext<WebSocketContextProps>(
@@ -23,7 +19,7 @@ export const WebSocketContext = createContext<WebSocketContextProps>(
 
 export default function WebSocketContextProvider({ children }: Wrapper) {
   const services_store = useServicesStore();
-  const url = "ws://localhost:3000/api/ws";
+  const url = "ws://localhost:8000/api/ws";
 
   const { sendMessage, lastJsonMessage } = useWebSocket(url, {
     onOpen: () => {
@@ -39,7 +35,6 @@ export default function WebSocketContextProvider({ children }: Wrapper) {
       if (message.type === undefined) return;
       switch (message.type) {
         case "pong":
-          break;
         case "test":
           break;
         case "current_attack_insert":
@@ -49,48 +44,40 @@ export default function WebSocketContextProvider({ children }: Wrapper) {
         case "current_attack_delete":
           break;
         case "feeder_insert":
-          console.log("feeder_insert message: ", message.payload);
-          handleFeederInsert(JSON.stringify(message.payload), services_store);
-          break;
         case "feeder_delete":
-          console.log("feeder_delete message: ", message.payload);
-          handleFeederDelete(JSON.stringify(message.payload), services_store);
-          break;
-        case "neural_network_insert":
-          console.log("neural_network_insert message: ", message.payload);
-          handleNeuralNetworkInsert(
+          console.log(`${message.type} message: `, message.payload);
+          handleFeeder(
             JSON.stringify(message.payload),
-            services_store
+            services_store,
+            message.type
           );
           break;
+        case "neural_network_insert":
         case "neural_network_delete":
-          console.log("neural_network_delete message: ", message.payload);
-          handleNeuralNetworkDelete(
+          console.log(`${message.type} message: `, message.payload);
+          handleNeuralNetwork(
             JSON.stringify(message.payload),
-            services_store
+            services_store,
+            message.type
           );
           break;
         case "offline_feeder_insert":
-          console.log("offline_feeder_insert message: ", message.payload);
-          handleOfflineFeederInsert(
-            JSON.stringify(message.payload),
-            services_store
-          );
-          break;
         case "offline_feeder_delete":
-          console.log("offline_feeder_delete message: ", message.payload);
-          handleOfflineFeederDelete(
+          console.log(`${message.type} message: `, message.payload);
+          handleOfflineFeeder(
             JSON.stringify(message.payload),
-            services_store
+            services_store,
+            message.type
           );
           break;
         case "default_insert":
-          console.log("default_insert message: ", message.payload);
-          handleDefaultInsert(JSON.stringify(message.payload), services_store);
-          break;
         case "default_delete":
-          console.log("default_delete message: ", message.payload);
-          handleDefaultDelete(JSON.stringify(message.payload), services_store);
+          console.log(`${message.type} message: `, message.payload);
+          handleDefault(
+            JSON.stringify(message.payload),
+            services_store,
+            message.type
+          );
           break;
       }
     } catch (error) {

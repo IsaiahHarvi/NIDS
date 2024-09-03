@@ -3,19 +3,20 @@ import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
 // const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
-const MONGO_URL = "mongodb://root:example@localhost:27017/";
+const MONGO_URL = "mongodb://root:example@mongo:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;
 export let componentsDb: Db;
 export let storeServiceDb: Db;
-
-const connectToDatabase = async () => {
+//may need to play with making this async again,
+//removed async because of bug where it sends multiple CS messages
+const connectToDatabase = () => {
   try {
     const client = new MongoClient(MONGO_URL, {
       connectTimeoutMS: 30000,
-    });    
-    await client.connect();
+    });
+    client.connect();
     storeServiceDb = client.db("store_service");
 
     // setupClientDb(clientDb);

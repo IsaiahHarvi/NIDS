@@ -1,97 +1,81 @@
 import { ServicesState as services_store_state } from "@/stores/services-store";
 
-// Function to handle inserting feeder data
-export async function handleFeederInsert(
+export async function handleFeeder(
   data: string,
-  store: services_store_state
+  store: services_store_state,
+  type: string
 ) {
-  const { addFeeder } = store;
-  console.log("Feeder Inserted: ", data);
+  const { addFeeder, removeFeeder } = store;
+  console.log(
+    `Feeder ${type === "feeder_insert" ? "Inserted" : "Deleted"}: `,
+    data
+  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
-  addFeeder(parsedData.document);
+
+  if (type === "feeder_insert") {
+    addFeeder(parsedData.document);
+  } else if (type === "feeder_delete") {
+    removeFeeder(parsedData.document);
+  }
 }
 
-// Function to handle deleting feeder data
-export async function handleFeederDelete(
+export async function handleNeuralNetwork(
   data: string,
-  store: services_store_state
+  store: services_store_state,
+  type: string
 ) {
-  const { removeFeeder } = store;
-  console.log("Feeder Deleted: ", data);
+  const { addNeuralNetwork, removeNeuralNetwork } = store;
+  console.log(
+    `Neural Network ${type === "neural_network_insert" ? "Inserted" : "Deleted"}: `,
+    data
+  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
-  removeFeeder(parsedData.document);
+
+  if (type === "neural_network_insert") {
+    addNeuralNetwork(parsedData.document);
+  } else if (type === "neural_network_delete") {
+    removeNeuralNetwork(parsedData.document);
+  }
 }
 
-// Function to handle inserting neural network data
-export async function handleNeuralNetworkInsert(
+export async function handleOfflineFeeder(
   data: string,
-  store: services_store_state
+  store: services_store_state,
+  type: string
 ) {
-  const { addNeuralNetwork } = store;
-  console.log("Neural Network Inserted: ", data);
+  const { addOfflineFeeder, removeOfflineFeeder } = store;
+  console.log(
+    `Offline Feeder ${type === "offline_feeder_insert" ? "Inserted" : "Deleted"}: `,
+    data
+  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
-  addNeuralNetwork(parsedData.document);
+
+  if (type === "offline_feeder_insert") {
+    addOfflineFeeder(parsedData.document);
+  } else if (type === "offline_feeder_delete") {
+    removeOfflineFeeder(parsedData.document);
+  }
 }
 
-// Function to handle deleting neural network data
-export async function handleNeuralNetworkDelete(
+export async function handleDefault(
   data: string,
-  store: services_store_state
+  store: services_store_state,
+  type: string
 ) {
-  const { removeNeuralNetwork } = store;
-  console.log("Neural Network Deleted: ", data);
+  const { addDefault, removeDefault } = store;
+  console.log(
+    `Default ${type === "default_insert" ? "Inserted" : "Deleted"}: `,
+    data
+  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
-  removeNeuralNetwork(parsedData.document);
-}
 
-// Function to handle inserting offline feeder data
-export async function handleOfflineFeederInsert(
-  data: string,
-  store: services_store_state
-) {
-  const { addOfflineFeeder } = store;
-  console.log("Offline Feeder Inserted: ", data);
-  if (data === undefined) return;
-  const parsedData = JSON.parse(data);
-  addOfflineFeeder(parsedData.document);
-}
-
-// Function to handle deleting offline feeder data
-export async function handleOfflineFeederDelete(
-  data: string,
-  store: services_store_state
-) {
-  const { removeOfflineFeeder } = store;
-  console.log("Offline Feeder Deleted: ", data);
-  if (data === undefined) return;
-  const parsedData = JSON.parse(data);
-  removeOfflineFeeder(parsedData.document);
-}
-
-// Function to handle inserting default data
-export async function handleDefaultInsert(
-  data: string,
-  store: services_store_state
-) {
-  const { addDefault } = store;
-  console.log("Default Inserted: ", data);
-  if (data === undefined) return;
-  const parsedData = JSON.parse(data);
-  addDefault(parsedData.document);
-}
-
-// Function to handle deleting default data
-export async function handleDefaultDelete(
-  data: string,
-  store: services_store_state
-) {
-  const { removeDefault } = store;
-  console.log("Default Deleted: ", data);
-  if (data === undefined) return;
-  const parsedData = JSON.parse(data);
-  removeDefault(parsedData.document);
+  if (type === "default_insert") {
+    addDefault(parsedData.document);
+  } else if (type === "default_delete") {
+    removeDefault(parsedData.document);
+  }
 }

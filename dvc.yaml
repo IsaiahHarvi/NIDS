@@ -5,13 +5,13 @@ stages:
       --lr 0.001
       --batch_size 128
       --early_stop_patience 10
+      --ckpt_name ResidualSmall
       --constructor ResidualNetwork
-      --all_data
     deps:
     - src/ai/train.py
     - data/CIC
     outs:
-    - data/checkpoints/ResidualNetwork.ckpt
+    - data/checkpoints/ResidualSmall.ckpt
     metrics:
     - dvclive/metrics.json
 
@@ -19,6 +19,3 @@ params:
 - dvclive/params.yaml
 metrics:
 - dvclive/metrics.json
-plots:
-- dvclive/plots/metrics:
-    x: step

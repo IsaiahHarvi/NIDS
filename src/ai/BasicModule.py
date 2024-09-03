@@ -21,7 +21,6 @@ class ResidualUnit(nn.Module):
     def forward(self, x):
         return F.leaky_relu(self.net(x))
 
-
 class ResidualNetwork(nn.Module):
     def __init__(self, in_features, hidden_size, out_features, num_layers=4):
         super(ResidualNetwork, self).__init__()

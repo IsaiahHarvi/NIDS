@@ -4,7 +4,7 @@ from ai.BasicModule import BasicModule
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
-from src.grpc_.utils import start_server
+from src.grpc_.utils import start_server, send
 
 from icecream import ic
 
@@ -35,6 +35,13 @@ class NeuralNetwork(ComponentServicer):
 
         pred = torch.argmax(self.model(x), dim=1).item()
         # ic(pred)
+        send(
+            msg=ComponentMessage(
+                prediction=pred, collection_name=self.__class__.__name__
+            ),
+            host="store-db",
+            port=50057,
+        )
         return ComponentResponse(prediction=pred)
 
 

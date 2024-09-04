@@ -58,6 +58,9 @@ jobs:
         echo $PWD
         echo "PYTHONPATH is: $PYTHONPATH"
 
+    - name: Test Build
+      run: pytest
+
     - name: Run Docker Services
       run: docker compose up --build -d
 

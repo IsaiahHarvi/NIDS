@@ -1,32 +1,25 @@
-// @/database/: Contains database initialization and Prisma clients
 import { MongoClient, Db } from "mongodb";
 import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
-// Updated MongoDB URL
-// const MONGO_URL =
-//   "mongodb://root:pass@host.docker.internal:27017/?authSource=admin";
-
 // const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
-
-//original
-// const MONGO_URL = "mongodb://root:pass@mongo:27017/";
-//new
-const MONGO_URL = "mongodb://root:pass@host.docker.internal:27017/";
+const MONGO_URL = "mongodb://root:example@mongo:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;
 export let componentsDb: Db;
-
-const connectToDatabase = async () => {
+export let storeServiceDb: Db;
+//may need to play with making this async again,
+//removed async because of bug where it sends multiple CS messages
+const connectToDatabase = () => {
   try {
-    client = new MongoClient(MONGO_URL);
-    await client.connect();
+    const client = new MongoClient(MONGO_URL, {
+      connectTimeoutMS: 30000,
+    });
+    client.connect();
+    storeServiceDb = client.db("store_service");
 
-    clientDb = client.db("client");
-    componentsDb = client.db("components");
-
-    setupClientDb(clientDb);
+    // setupClientDb(clientDb);
     console.log(pc.green("Success: MongoDB Connected"));
   } catch (error) {
     console.log(pc.red("Error: MongoDB Connection Failed"), error);

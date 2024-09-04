@@ -1,42 +1,65 @@
 import torch
 import lightning.pytorch as pl
 
-import numpy as np
 from torch import nn
+from torch.nn import functional as F
 from torch import optim
 from icecream import ic
 
 
-class ResidualBlock(nn.Module):
-    def __init__(self, in_features, hidden_size):
-        super(ResidualBlock, self).__init__()
+class ResidualUnit(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(ResidualUnit, self).__init__()
         self.net = nn.Sequential(
-            nn.Linear(in_features, hidden_size),
+            nn.Linear(in_features, out_features),
+            nn.BatchNorm1d(out_features),
             nn.ReLU(),
-            nn.Linear(hidden_size, in_features),
+            nn.Linear(out_features, out_features),
+            nn.BatchNorm1d(out_features),
         )
 
     def forward(self, x):
-        out = self.net(x)
-        return nn.LeakyReLU()(out + x)
+        return F.leaky_relu(self.net(x))
 
-
-class ResidualNetwork(pl.LightningModule):
-    def __init__(self, in_features, hidden_size, out_features, num_blocks=3):
+class ResidualNetwork(nn.Module):
+    def __init__(self, in_features, hidden_size, out_features, num_layers=4):
         super(ResidualNetwork, self).__init__()
-        self.save_hyperparameters()
-
         self.net = nn.Sequential(
-            nn.Linear(in_features, hidden_size),
-            *[ResidualBlock(hidden_size, hidden_size) for _ in range(num_blocks)],
+            nn.Sequential(
+                nn.Linear(in_features, hidden_size),
+                nn.ReLU(),
+            ),
+            nn.Sequential(
+                *[ResidualUnit(hidden_size, hidden_size) for _ in range(num_layers)]
+            ),
             nn.Linear(hidden_size, out_features),
         )
 
     def forward(self, x):
-        out = self.net(x)
-        if out.ndim == 3:
-            out = out.squeeze(1)
-        return out
+        return self.net(x)
+
+
+class Autoencoder(nn.Module):
+    def __init__(self, in_features, hidden_size, out_features):
+        super(Autoencoder, self).__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(in_features, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, 64),
+            nn.ReLU(),
+            nn.Linear(32, out_features),
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(out_features, 32),
+            nn.ReLU(),
+            nn.Linear(64, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, in_features),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        return self.decoder(self.encoder(x))
 
 
 class BasicModule(pl.LightningModule):
@@ -47,14 +70,22 @@ class BasicModule(pl.LightningModule):
         hidden_size,
         out_features,
         lr=0.001,
+        class_weights: torch.Tensor = None,
+        criterion: nn.CrossEntropyLoss | nn.MSELoss = nn.CrossEntropyLoss,
         model_constructor_kwargs={},
     ):
         super(BasicModule, self).__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["class_weights"])
+        self.constructor_kwargs = model_constructor_kwargs
         self.constructor = model_constructor(
-            in_features, hidden_size, out_features, **model_constructor_kwargs
+            in_features, hidden_size, out_features, **self.constructor_kwargs
         )
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion_type = criterion
+        self.criterion = (
+            criterion(weight=class_weights)
+            if class_weights is not None
+            else criterion()
+        )
         self.lr = lr
         self.validation_outputs = []
         self.test_outputs = []
@@ -84,8 +115,8 @@ class BasicModule(pl.LightningModule):
         loss = self.criterion(outputs, y)
         preds = outputs.argmax(dim=1)
         acc = (preds == y).float().mean()
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", acc, prog_bar=True)
+        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
+        self.log("val_acc", acc, prog_bar=True, sync_dist=True)
         self.validation_outputs.append((preds, y))
         return loss
 
@@ -120,18 +151,16 @@ class BasicModule(pl.LightningModule):
         import matplotlib
 
         matplotlib.use("Agg")
+        # import wandb
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
         from sklearn.metrics import ConfusionMatrixDisplay
 
-        cm = (
-            ConfusionMatrix(num_classes=self.num_classes, task="multiclass")(
-                preds, labels
-            )
-            .cpu()
-            .numpy()
+        cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
+            preds.device
         )
+        cm = cm_metric(preds, labels).cpu().numpy()
 
         disp = ConfusionMatrixDisplay(
             confusion_matrix=cm, display_labels=range(self.num_classes)
@@ -140,9 +169,17 @@ class BasicModule(pl.LightningModule):
         disp.plot(ax=ax, cmap="Blues")
         plt.title(f"{stage.capitalize()} Confusion Matrix")
 
-        live = Live()
-        live.log_image(f"{stage}_confusion_matrix.png", fig)
+        Live().log_image(f"{stage}_confusion_matrix.png", fig)
+        # wandb.log({f"{stage}_confusion_matrix": wandb.Image(f"dvclive/plots/images/{stage}_confusion_matrix.png")})
         plt.close(fig)
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
+
+    def state_dict(self, destination=None, prefix="", keep_vars=False):
+        state_dict = super().state_dict(
+            destination=destination, prefix=prefix, keep_vars=keep_vars
+        )
+        if "criterion.weight" in state_dict:
+            del state_dict["criterion.weight"]
+        return state_dict

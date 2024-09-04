@@ -18,14 +18,12 @@ def setup_mongo():
 def test_mongo():
     host = os.environ.get("host", "localhost")
     port = int(os.environ.get("port", 27017))
-    user = os.environ.get("user", "root")
-    password = os.environ.get("password", "pass")
 
     ic(f"Attempting to connect to MongoDB at {host}:{port}")
 
     try:
         client = MongoClient(
-            f"mongodb://{user}:{password}@{host}:{port}/", serverSelectionTimeoutMS=5000
+            f"mongodb://root:example@{host}:{port}/", serverSelectionTimeoutMS=5000
         )
         client.server_info()  # Will raise an exception if unable to connect
         ic("Successfully connected to MongoDB")

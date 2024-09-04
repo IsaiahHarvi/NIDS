@@ -6,9 +6,13 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.1.0",
-    "@elysiajs/static": "^1.1.0",
-    "@elysiajs/swagger": "^1.1.1",
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/eden": "^1.0.14",
+    "@elysiajs/static": "^1.0.3",
+    "@elysiajs/stream": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.5",
+    "@prisma/client": "^5.15.0",
+    "date-fns": "^3.6.0",
     "elysia": "latest",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.4",
@@ -17,7 +21,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@eslint/js": "^9.7.0",
+    "bun-types": "latest",
+    "eslint": "9.x",
+    "globals": "^15.8.0",
+    "typescript-eslint": "^7.16.0"
   },
   "module": "src/index.js"
 }

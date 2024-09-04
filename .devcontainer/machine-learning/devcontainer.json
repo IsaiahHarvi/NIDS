@@ -9,9 +9,7 @@
 			"autoPull": false
 		}
 	},
-	"capAdd": [
-		"NET_ADMIN"
-	],
+	"capAdd": ["NET_ADMIN"],
 	"postCreateCommand": "sudo chmod +x scripts/*.sh && bash scripts/setup_devcontainer.sh 2> setup.err | tee setup.log",
 	"customizations": {
 		"vscode": {
@@ -26,6 +24,5 @@
 		"--gpus=all",
 		"--shm-size=16g",
 		"--env-file", ".devcontainer/python.env",
-		// "--network", "host"
 	]
 }

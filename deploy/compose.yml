@@ -5,3 +5,7 @@ include:
   # - logger/compose.yml
   - store/compose.yml
   - mongo/compose.yml
+
+networks:
+  default:
+    name: components

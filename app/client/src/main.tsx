@@ -25,15 +25,10 @@ if (!rootElement.innerHTML) {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <RouterProvider router={router} />
       {/* <WebSocketContextProvider> */}
-      <div className="grid h-screen max-h-screen w-full pl-[3.25rem] custom-scrollable-element bg-['/grid.svg']">
-        {/* <Navbar /> */}
-        <div className="flex flex-col flex-grow w-full bg-background">
-          {/* <Topbar /> */}
-          <div className="h-full dark:bg-[url('/grid.svg')] dark:bg-zinc-900/40 bg-zinc-100"></div>
-          {/* <Toaster /> */}
-          {/* <TailwindIndicator /> */}
-        </div>
-      </div>
+      {/* <Navbar /> */}
+      {/* <Topbar /> */}
+      {/* <Toaster /> */}
+      {/* <TailwindIndicator /> */}
       {/* </WebSocketContextProvider> */}
     </ThemeProvider>
   );

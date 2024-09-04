@@ -111,7 +111,6 @@ export function Navbar(): JSX.Element {
           label="Status"
           pathCheck="/status"
         />
-        {/* <LinkItem to="/test" icon={Package} label="vSUT" pathCheck="/test" /> */}
       </nav>
       <nav className="mt-auto grid gap-1 p-2">
         <BottomLinkItem

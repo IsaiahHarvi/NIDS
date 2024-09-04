@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 @click.command()
 @click.option(
     "--path",
-    default="data/CIC/flows_labeled/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+    default="data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
 )
 @click.option(
     "--model_type", type=click.Choice(["random_forest", "knn"]), default="knn"

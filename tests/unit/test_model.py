@@ -36,7 +36,7 @@ def test_model(grpc_server):
         with grpc.insecure_channel(f"localhost:{50052}") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
-                paths=[f"data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"],
+                paths=[f"data/CIC/test_data.csv"],
                 batch_size=1,
             )
             dm.setup()

@@ -6,6 +6,7 @@ import pandas as pd
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
+from sklearn.preprocessing import StandardScaler
 
 from icecream import ic
 
@@ -23,32 +24,36 @@ class OfflineFeeder(ComponentServicer):
             ic("Health check")
             return ComponentResponse(output=msg.input)
 
-        df = pd.read_csv("data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv")
-        df = df.select_dtypes(include=[np.number])
+        df = pd.read_csv("data/CIC/test_data.csv")
+        df.columns = df.columns.str.strip().str.replace(" ", "_")
         df = df.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],
             axis=1,
             errors="ignore",
         )
-        df = df.select_dtypes(include=[float, int]).fillna(0)
-        df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        df.fillna(df.mean(), inplace=True)
+        sample = df.sample(n=1)
+        y = sample["Label"].values[0]
+        sample = sample.select_dtypes(include=[float, int])
+        sample.replace([np.inf, -np.inf], np.nan, inplace=True)
+        sample.fillna(sample.mean(), inplace=True)
 
-        sample = df.sample(n=1).iloc[0].to_numpy()
-        data = sample.flatten()
-        ic(data.shape)
+        sample = sample.drop("Label", axis=1, errors='ignore').iloc[0].to_numpy()
+        x = sample.flatten()
+        
+        # scaler = StandardScaler()
+        # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
+        # ic(scaler.mean_, scaler.scale_)
 
+        ic(y)
         send(
-            msg=ComponentMessage(
-                input=data.tolist(), collection_name=self.__class__.__name__
-            ),
+            msg=ComponentMessage(input=x, collection_name=self.__class__.__name__),
             host="store-db",
             port=50057,
         )
 
-        send(msg=ComponentMessage(input=data.tolist()), host=self.host, port=self.port)
+        send(msg=ComponentMessage(input=x), host=self.host, port=self.port)
 
-        return ComponentResponse(output=[0.0])
+        return ComponentResponse(output=x)
 
 
 if __name__ == "__main__":

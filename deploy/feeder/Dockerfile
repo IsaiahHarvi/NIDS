@@ -1,11 +1,12 @@
 FROM python:3.11-slim
 
-ENV PORT=50053
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y tshark \
+    libusb-1.0-0-dev libdbus-glib-1-dev libbluetooth-dev libnl-genl-3-dev
 
+ENV PORT=50053
 ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"
 ENV DURATION=10
-# HOST is the name of the service that will be used to connect to the target service
 ENV HOST="neural-network"
 ENV TARGET_PORT=50052
 
@@ -16,7 +17,7 @@ RUN apt-get update && \
     apt-get clean
 
 COPY deploy/feeder/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt --retries 1 && rm /app/requirements.txt
+RUN pip3 install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
 
 COPY src/grpc_ /app/src/grpc_
 COPY src/services/feeder/feeder.py /app/main.py

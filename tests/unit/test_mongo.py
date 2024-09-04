@@ -18,8 +18,6 @@ def setup_mongo():
 def test_mongo():
     host = os.environ.get("host", "localhost")
     port = int(os.environ.get("port", 27017))
-    # user = os.environ.get("user", "root")
-    # password = os.environ.get("password", "example")
 
     ic(f"Attempting to connect to MongoDB at {host}:{port}")
 

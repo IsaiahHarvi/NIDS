@@ -5,7 +5,7 @@ from ai.BasicModule import BasicModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server, send
-from uuid import UUID
+from uuid import uuid4 as UUID
 
 from icecream import ic
 

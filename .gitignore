@@ -169,7 +169,8 @@ DvcLiveLogger/
 *epoch.tsv
 *.png
 scripts/setup_git_personal.sh
-data/CIC/*
-!data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+data/CIC/*.csv
+!data/CIC/test_data.csv
 .devcontainer/wandb.env
 wandb/
+dvclive/plots

@@ -6,7 +6,7 @@
 IP="harvirp.ddns.net"
 PORT="5000"
 CSV_FILES=(
-    # "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv" # still tracked in git
+    "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
     "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
     "Friday-WorkingHours-Morning.pcap_ISCX.csv"
     "Monday-WorkingHours.pcap_ISCX.csv"

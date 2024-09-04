@@ -52,6 +52,9 @@ services:
       mongo:
         condition: service_healthy
 
+volumes:
+  mongo-data:
+    name: mongo-data
 
 networks:
   default:

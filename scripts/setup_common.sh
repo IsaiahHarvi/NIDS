@@ -23,3 +23,5 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
 docker system prune --volumes -af | true
 
 git status
+
+echo "127.0.0.1 mongo" | sudo tee -a /etc/hosts

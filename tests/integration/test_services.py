@@ -68,4 +68,4 @@ def test_services(docker_compose):
 
     assert len(expected_service_images) == len(
         running_service_names
-    ), f"Expected {len(expected_service_images)} services, but found {len(running_service_names)} running."
+    ), f"Expected {len(expected_service_images)} services, but found {len(running_service_names)} running. The missing services: {set(expected_service_images) - set(running_service_names)}"

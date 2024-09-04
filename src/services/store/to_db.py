@@ -27,6 +27,7 @@ class StoreDB(ComponentServicer):
         try:
             client = MongoClient(
                 f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/"
+                # f"mongodb://{self.host}:{self.port}/"
             )
             ic(f"Created client at {self.host}:{self.port}")
             db = client["store_service"]
@@ -50,5 +51,5 @@ if __name__ == "__main__":
     host = os.environ.get("HOST", "mongo")
     port = int(os.environ.get("TARGET_PORT", 27017))
 
-    service = StoreDB(host, port, "root", "pass")
+    service = StoreDB(host, port, "root", "example")
     start_server(service, port=int(os.environ.get("PORT", 50057)))

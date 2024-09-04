@@ -59,7 +59,6 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
         case 50053 | 50054 | 50055:
             # Connect to Feeder, Offline-Feeder, or Logger
             with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-
                 stub = ComponentStub(channel)
                 request = ComponentMessage(input=[], prediction=-1)
                 response = stub.forward(request)

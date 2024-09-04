@@ -6,6 +6,7 @@ import pandas as pd
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
+from uuid import UUID
 
 from icecream import ic
 
@@ -40,7 +41,9 @@ class OfflineFeeder(ComponentServicer):
 
         send(
             msg=ComponentMessage(
-                input=data.tolist(), collection_name=self.__class__.__name__
+                input=data.tolist(),
+                collection_name=self.__class__.__name__,
+                mongo_id=str(UUID() if not msg.mongo_id else msg.mongo_id),
             ),
             host="store-db",
             port=50057,

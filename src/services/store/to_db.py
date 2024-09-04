@@ -36,7 +36,11 @@ class StoreDB(ComponentServicer):
             )
             collection = db[collection_name]
             result = collection.insert_one(
-                {"input": list(msg.input), "prediction": int(msg.prediction)}
+                {
+                    "id_": msg.mongo_id,
+                    "input": list(msg.input),
+                    "prediction": int(msg.prediction),
+                }
             )
             ic(result.inserted_id, collection_name)
 

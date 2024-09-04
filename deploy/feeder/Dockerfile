@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y tshark \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing -y tshark \
     libusb-1.0-0-dev libdbus-glib-1-dev libbluetooth-dev libnl-genl-3-dev
 
 ENV PORT=50053

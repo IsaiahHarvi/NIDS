@@ -15,7 +15,7 @@ fi
 
 sudo apt update > /dev/null 2>&1 && sudo apt upgrade -y
 sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
-    dnsutils iputils-ping curl tshark argus-client argus-server wget
+    dnsutils iputils-ping curl tshark wget
 
 # docker container prune -f | true
 # docker image prune -f | true

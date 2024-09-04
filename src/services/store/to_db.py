@@ -26,7 +26,7 @@ class StoreDB(ComponentServicer):
 
         try:
             client = MongoClient(
-                f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/"
+                f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/?replicaSet=rs0"
                 # f"mongodb://{self.host}:{self.port}/"
             )
             ic(f"Created client at {self.host}:{self.port}")

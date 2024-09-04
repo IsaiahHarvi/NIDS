@@ -38,6 +38,7 @@ def test_model(grpc_server):
             dm = DataModule(
                 paths=[f"data/CIC/test_data.csv"],
                 batch_size=1,
+                num_workers=1
             )
             dm.setup()
 

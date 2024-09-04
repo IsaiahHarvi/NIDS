@@ -3,4 +3,6 @@ grpcio-tools
 pandas
 icecream
 click
-numpy
+numpy<2
+scikit-learn
+nfstream

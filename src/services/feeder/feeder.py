@@ -6,6 +6,7 @@ import numpy as np
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
+from uuid import UUID
 
 from icecream import ic
 
@@ -13,12 +14,10 @@ ic.configureOutput(includeContext=False)
 
 
 class Feeder(ComponentServicer):
-    def __init__(self, interface, file_name, duration, host, port):
+    def __init__(self, interface, file_name, duration):
         self.interface = interface
         self.file_name = file_name
         self.duration = duration
-        self.host = host
-        self.port = port
         ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context):
@@ -35,15 +34,21 @@ class Feeder(ComponentServicer):
         flow_row = flow_data.iloc[0].values
         flow_row = self.preprocess_flow_row(flow_row).tolist()
 
+        uuid = str(UUID())
         send(
             msg=ComponentMessage(
-                input=flow_row, collection_name=self.__class__.__name__
+                input=flow_row,
+                collection_name=self.__class__.__name__,
+                mongo_id=uuid,  # feeder is never recipient
             ),
             host="store-db",
             port=50057,
         )
-
-        send(msg=ComponentMessage(input=flow_row), host=self.host, port=self.port)
+        send(
+            msg=ComponentMessage(input=flow_row, mongo_id=uuid),
+            host="neural-network",
+            port=50052,
+        )
 
         return ComponentResponse(output=[0.0])
 
@@ -110,8 +115,6 @@ if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")
     file_name = os.environ.get("FILE_NAME", "capture.pcap")
     duration = int(os.environ.get("DURATION", 10))
-    host = os.environ.get("HOST", "neural-network")
-    target_port = int(os.environ.get("TARGET_PORT", 50052))
 
-    service = Feeder(interface, file_name, duration, host, target_port)
+    service = Feeder(interface, file_name, duration)
     start_server(service, port=int(os.environ.get("PORT")))

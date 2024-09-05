@@ -1,3 +1,4 @@
+# Client build stage
 FROM mcr.microsoft.com/devcontainers/typescript-node AS client-layers
 
 WORKDIR /app/client
@@ -5,24 +6,23 @@ WORKDIR /app/client
 COPY src/app/types/ /app/types/
 COPY src/app/client/ /app/client/
 
-RUN pnpm i && pnpm build
+RUN pnpm install && pnpm build
 
-# Build the server
+# Server build stage
 FROM oven/bun:latest
 
 WORKDIR /app/server
 
 COPY src/app/types/ /app/types/
 COPY src/app/server/ /app/server/
-
 ENV NODE_ENV production
-
-RUN dir -s  
 
 RUN bun install --production
 
-COPY --from=client-layers /app/client/dist /app/server/dist
+# Copy client build output from the previous stage
+COPY --from=client-layers /app/client/dist /app/server/client
+# RUN ls -al /app/server/client
 
-CMD ["bun", "run"]
+CMD ["bun", "run", "src/index.ts"]
 
 EXPOSE 8000

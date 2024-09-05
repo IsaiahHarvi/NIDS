@@ -12,6 +12,7 @@
     "@elysiajs/stream": "^1.0.2",
     "@elysiajs/swagger": "^1.0.5",
     "@prisma/client": "^5.15.0",
+    "@types/node": "^22.5.4",
     "date-fns": "^3.6.0",
     "elysia": "latest",
     "mongodb": "^6.8.0",

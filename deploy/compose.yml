@@ -51,6 +51,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+    environment:
+      WEBSERVER_MONGO_URL: mongodb://root:example@mongo:27017/
 
 volumes:
   mongo-data:

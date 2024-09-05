@@ -20,7 +20,11 @@ const AttackControl: React.FC = () => {
   const { savedAttacks, setSavedAttacks } = useClientStore();
 
   useEffect(() => {
-    getSavedAttacks().then((m) => setSavedAttacks(m));
+    getSavedAttacks().then((m) => {
+      if (m !== null) {
+        setSavedAttacks(m);
+      }
+    });
   }, [setSavedAttacks]);
 
   return (

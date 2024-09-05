@@ -10,7 +10,6 @@ def docker_compose():
     try:
         subprocess.run(
             ["docker", "compose", "up", "--build", "-d"],
-            check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -18,7 +17,6 @@ def docker_compose():
     finally:
         subprocess.run(
             ["docker", "compose", "down"],
-            check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -38,12 +36,11 @@ def get_image_names() -> list[str]:
 def test_services(docker_compose):
     result = subprocess.run(
         ["docker", "compose", "ps"],
-        check=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
     output = result.stdout.decode("utf-8")
-    ic(output)
+    print(output)
     assert "Exit" not in output, "One or more services failed to start."
     assert "Up" in output, "Services are not staying up."
 

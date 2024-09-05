@@ -1,12 +1,10 @@
 name: Pytest
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
     paths-ignore:
-      - 'app/**'
+      - 'src/app/**'
   workflow_dispatch:
 
 permissions:

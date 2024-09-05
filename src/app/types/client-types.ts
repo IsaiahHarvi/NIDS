@@ -11,3 +11,15 @@ export type Attack = {
   detected: boolean; // Whether the attack has been detected
   mitigationActions: string[]; // List of mitigation actions taken
 };
+
+export type FeederMessage = {
+  id_: string;
+  input: number[];
+  prediction: number;
+};
+
+export type NeuralNetwork = {
+  id_: string;
+  input: number[];
+  prediction: number;
+};

@@ -3,7 +3,7 @@ import { swagger } from "@elysiajs/swagger";
 import { cors } from "@elysiajs/cors";
 import { staticPlugin } from "@elysiajs/static";
 import { initializeDatabase } from "./database";
-import { websocketRoute, ClientRoutes } from "./routes";
+import { websocketRoute, ClientRoutes, ServicesRoutes } from "./routes";
 
 async function startServer() {
   await initializeDatabase();
@@ -31,6 +31,7 @@ async function startServer() {
     })
     //this is where you will use the routes from different files
     .use(ClientRoutes)
+    .use(ServicesRoutes)
     .use(websocketRoute)
     .listen(8000);
 

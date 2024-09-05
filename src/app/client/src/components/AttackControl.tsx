@@ -1,5 +1,3 @@
-import React, { useEffect } from "react";
-import { getSavedAttacks } from "../middleware/api/functions/getSavedAttacks";
 import { useClientStore } from "../stores/client-store";
 // import {
 //   Card,
@@ -16,16 +14,17 @@ import {
   CardDescription,
 } from "./ui/card";
 
-const AttackControl: React.FC = () => {
+const AttackControl = () => {
   const { savedAttacks, setSavedAttacks } = useClientStore();
-
-  useEffect(() => {
-    getSavedAttacks().then((m) => {
-      if (m !== null) {
-        setSavedAttacks(m);
-      }
-    });
-  }, [setSavedAttacks]);
+  setSavedAttacks(savedAttacks);
+  console.log(savedAttacks);
+  // useEffect(() => {
+  //   getSavedAttacks().then((m) => {
+  //     if (m !== null) {
+  //       setSavedAttacks(m);
+  //     }
+  //   });
+  // }, [setSavedAttacks]);
 
   return (
     <div className="container mx-auto p-4">

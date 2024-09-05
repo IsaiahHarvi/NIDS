@@ -4,25 +4,25 @@ import { devtools } from "zustand/middleware";
 
 // Define the types for your collections
 interface Feeder {
-  id: string;
+  id_: string;
   input: number[];
   prediction: number;
 }
 
 interface NeuralNetwork {
-  id: string;
+  id_: string;
   input: number[];
   prediction: number;
 }
 
 interface OfflineFeeder {
-  id: string;
+  id_: string;
   input: number[];
   prediction: number;
 }
 
 interface Default {
-  id: string;
+  id_: string;
   input: number[];
   prediction: number;
 }
@@ -78,12 +78,14 @@ export const useServicesStore = create<ServicesState>()(
 
       updateFeeder: (feeder: Feeder) =>
         set((state) => ({
-          feeders: state.feeders.map((f) => (f.id === feeder.id ? feeder : f)),
+          feeders: state.feeders.map((f) =>
+            f.id_ === feeder.id_ ? feeder : f
+          ),
         })),
 
       removeFeeder: (feederId: string) =>
         set((state) => ({
-          feeders: state.feeders.filter((f) => f.id !== feederId),
+          feeders: state.feeders.filter((f) => f.id_ !== feederId),
         })),
 
       // NeuralNetwork collection state and actions
@@ -100,14 +102,14 @@ export const useServicesStore = create<ServicesState>()(
       updateNeuralNetwork: (neuralNetwork: NeuralNetwork) =>
         set((state) => ({
           neuralNetworks: state.neuralNetworks.map((n) =>
-            n.id === neuralNetwork.id ? neuralNetwork : n
+            n.id_ === neuralNetwork.id_ ? neuralNetwork : n
           ),
         })),
 
       removeNeuralNetwork: (neuralNetworkId: string) =>
         set((state) => ({
           neuralNetworks: state.neuralNetworks.filter(
-            (n) => n.id !== neuralNetworkId
+            (n) => n.id_ !== neuralNetworkId
           ),
         })),
 
@@ -125,14 +127,14 @@ export const useServicesStore = create<ServicesState>()(
       updateOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
         set((state) => ({
           offlineFeeders: state.offlineFeeders.map((o) =>
-            o.id === offlineFeeder.id ? offlineFeeder : o
+            o.id_ === offlineFeeder.id_ ? offlineFeeder : o
           ),
         })),
 
       removeOfflineFeeder: (offlineFeederId: string) =>
         set((state) => ({
           offlineFeeders: state.offlineFeeders.filter(
-            (o) => o.id !== offlineFeederId
+            (o) => o.id_ !== offlineFeederId
           ),
         })),
 
@@ -147,13 +149,13 @@ export const useServicesStore = create<ServicesState>()(
       updateDefault: (defaultDoc: Default) =>
         set((state) => ({
           defaults: state.defaults.map((d) =>
-            d.id === defaultDoc.id ? defaultDoc : d
+            d.id_ === defaultDoc.id_ ? defaultDoc : d
           ),
         })),
 
       removeDefault: (defaultId: string) =>
         set((state) => ({
-          defaults: state.defaults.filter((d) => d.id !== defaultId),
+          defaults: state.defaults.filter((d) => d.id_ !== defaultId),
         })),
     }),
     { name: "services-store" }

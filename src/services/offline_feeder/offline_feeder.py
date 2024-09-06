@@ -6,6 +6,7 @@ import pandas as pd
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, sendto_service, sendto_mongo
+
 # from sklearn.preprocessing import StandardScaler
 from uuid import uuid4 as UUID
 
@@ -22,7 +23,7 @@ class OfflineFeeder(ComponentServicer):
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(output=msg.input)
+            return ComponentResponse(flow=msg.flow)
 
         df = pd.read_csv("data/CIC/test_data.csv")
         df.columns = (
@@ -50,9 +51,10 @@ class OfflineFeeder(ComponentServicer):
         # ic(scaler.mean_, scaler.scale_)
 
         ic(y)
-        pred = sendto_service(
-            msg=ComponentMessage(input=x), host="neural-network", port=50052
-        ).prediction
+        model_response = sendto_service(
+            msg=ComponentMessage(flow=x), host="neural-network", port=50052
+        )
+        pred: int = model_response.prediction
 
         sendto_mongo(
             {
@@ -63,8 +65,7 @@ class OfflineFeeder(ComponentServicer):
             },
             collection_name=self.__class__.__name__,
         )
-
-        return ComponentResponse(output=x)
+        return ComponentResponse(flow=x, return_code=0)
 
 
 if __name__ == "__main__":

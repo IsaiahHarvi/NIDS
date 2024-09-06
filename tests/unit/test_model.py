@@ -22,7 +22,7 @@ def grpc_server():
 
     server_process = multiprocessing.Process(
         target=start_server,
-        args=(NeuralNetwork("data/checkpoints/ResidualNetwork.ckpt"), 50052),
+        args=(NeuralNetwork("data/checkpoints/ResidualSmall.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)
@@ -33,7 +33,7 @@ def grpc_server():
 
 def test_model(grpc_server):
     try:
-        with grpc.insecure_channel(f"localhost:{50052}") as channel:
+        with grpc.insecure_channel("localhost:50052") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
                 paths=[f"data/CIC/test_data.csv"],
@@ -44,11 +44,10 @@ def test_model(grpc_server):
 
             data, label = next(iter(dm.train_dataloader()))
             data = data.numpy().flatten().tolist()  # [80] bc it has to live over gRPC
-            msg = ComponentMessage(input=data)
 
+            msg = ComponentMessage(flow=data)
             response = stub.forward(msg)
             assert isinstance(response, ComponentResponse)
             ic(f"Got {response.prediction}, expected {label.item()}")
-
     except Exception as e:
         ic(e)

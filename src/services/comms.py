@@ -34,55 +34,62 @@ from src.grpc_.services_pb2_grpc import ComponentStub
     default=7,
     help="Time to sleep between requests when running in live mode.",
 )
-@click.option("--health_check", is_flag=True, default=False)
-def main(
-    port: int, interactive: bool, live: bool, sleep: int, health_check: bool
-) -> None:
+@click.option("--test", is_flag=True, default=False)
+def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
+    elif test:
+        for port in range(50052, 50057):
+            ic(f"Testing Service on port {port}")
+            connect(port, live=False)
+            time.sleep(5 + ((port==50052) * 5))
     else:
-        connect(port, live, sleep, health_check)
+        connect(port, live, sleep)
 
 
-def connect(port: int, live: bool, sleep: int, health_check: bool) -> None:
+def connect(port: int, live: bool, sleep: int = 7) -> None:
     options = [
         ("grpc.max_send_message_length", 50 * 1024 * 1024),  # 50 MB
         ("grpc.max_receive_message_length", 50 * 1024 * 1024),  # 50 MB
     ]
-
-    match port:
-        case 50053 | 50054:
-            # Connect to Feeder, Offline-Feeder
-            with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-                while True:
+    try:
+        match port:
+            case 50053 | 50054:
+                # Connect to Feeder, Offline-Feeder
+                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
+                    while True:
+                        stub = ComponentStub(channel)
+                        response = stub.forward(ComponentMessage())
+                        # ic(response)
+                        if not live:
+                            break
+            case 50055:
+                # This is the logger service.
+                pass
+            case 50056 | 50057:
+                # Connect to Store-DB or Store-File
+                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
+                    while True:
+                        stub = ComponentStub(channel)
+                        request = ComponentMessage(
+                            flow=[np.random.uniform(1, 9000) for _ in range(80)],
+                        )
+                        response = stub.forward(request)
+                        # ic(response.flow)
+                        if not live:
+                            break
+                        time.sleep(sleep)
+            case _:
+                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
                     stub = ComponentStub(channel)
-                    response = stub.forward(ComponentMessage(input=[], prediction=-1))
-                    ic(response.output)
-                    if not live:
-                        break
-
-        case 50056 | 50057:
-            # Connect to Store-DB or Store-File
-            with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-                while True:
-                    stub = ComponentStub(channel)
-                    request = ComponentMessage(
-                        input=[np.random.uniform(1, 9000) for _ in range(80)],
-                        prediction=-1,
-                    )
+                    request = ComponentMessage(flow=[1.0, 2.0, 3.0], health_check=True)
                     response = stub.forward(request)
-                    # ic(response.output)
-                    if not live:
-                        break
-                    time.sleep(sleep)
-        case _:
-            with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-                stub = ComponentStub(channel)
-                request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
-                response = stub.forward(request)
-                ic(response.output)
-
+                    assert response.return_code == 0
+    except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.UNAVAILABLE:
+            ic(f"Server at {port} is unavailable. Is it running?")
+        else: ic(e)
 
 if __name__ == "__main__":
     main()

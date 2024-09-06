@@ -56,9 +56,10 @@ def sendto_service(msg: ComponentMessage, host: str, port: int) -> ComponentResp
                 ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
             ]
         ) as channel:
-            return ComponentStub(channel).forward(msg) # response
+            response = ComponentStub(channel).forward(msg)
+            return response
     except Exception as e:
-        ic("Send Failed.", e)
+        ic("Send Failed", e)
 
 def sendto_mongo(data: dict, collection_name: str) -> None:
     from pymongo import MongoClient # not all services use this, so import here

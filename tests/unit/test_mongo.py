@@ -7,7 +7,7 @@ from src.grpc_.utils import wait_for_services
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup_mongo():
+def mongo_compose():
     os.system("docker compose up --build -d")
     wait_for_services(["mongo", "mongo-express"], timeout=10, init_time=5)
     yield
@@ -15,7 +15,7 @@ def setup_mongo():
 
 
 @pytest.mark.skip("The Replica Set deprecated this test")
-def test_mongo():
+def test_mongo(mongo_compose):
     host = os.environ.get("host", "localhost")
     port = int(os.environ.get("port", 27017))
 

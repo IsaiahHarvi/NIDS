@@ -1,16 +1,11 @@
 import subprocess
 import pytest
-import os
-import re
-from icecream import ic
+from tests.conftest import compose
 
-
-@pytest.fixture(scope="session")
-def docker_compose():
-    os.system("docker compose up --build -d")
-    yield
-    os.system("docker compose down")
 
 @pytest.mark.slow()
-def test_servers(docker_compose): # this is a temporary catchall
-    os.system("python3 src/services/comms.py --test")
+def test_servers(compose):
+   result = subprocess.run(
+        ["python3", "src/services/comms.py", "--test"], capture_output=True, text=True
+    )
+   assert "Error" not in result.stdout # dumb

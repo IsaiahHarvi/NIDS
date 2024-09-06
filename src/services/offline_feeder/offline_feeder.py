@@ -25,7 +25,7 @@ class OfflineFeeder(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         df = pd.read_csv("data/CIC/test_data.csv")
-        df.columns = df.columns.str.strip().str.replace(" ", "_")
+        df.columns = df.columns.str.strip().str.replace(" ", "_").str.replace("/", "_")
         df = df.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],
             axis=1,

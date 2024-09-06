@@ -4,8 +4,7 @@ from ai.BasicModule import BasicModule
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
-from src.grpc_.utils import start_server, send
-from uuid import uuid4 as UUID
+from src.grpc_.utils import start_server
 
 from icecream import ic
 
@@ -16,7 +15,9 @@ class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
         try:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
-            self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path).to("cpu")
+            self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path).to(
+                "cpu"
+            )
         except Exception as e:
             raise RuntimeError(f"Failed to load the model from {ckpt_path}: {e}")
         self.model.eval()
@@ -37,15 +38,6 @@ class NeuralNetwork(ComponentServicer):
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)
-        send(
-            msg=ComponentMessage(
-                prediction=pred,
-                collection_name=self.__class__.__name__,
-                mongo_id=(str(UUID()) if not msg.mongo_id else msg.mongo_id),
-            ),
-            host="store-db",
-            port=50057,
-        )
         return ComponentResponse(prediction=pred)
 
 

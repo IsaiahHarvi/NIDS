@@ -5,7 +5,7 @@ import subprocess
 import grpc
 from concurrent import futures
 
-from src.grpc_.services_pb2 import ComponentMessage
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
 
@@ -46,7 +46,7 @@ def wait_for_services(services: list, timeout=60, init_time=5):
 
     raise RuntimeError(f"Services did not start within {timeout} seconds: {services}")
 
-def send(msg: ComponentMessage, host: str, port: int) -> None:
+def sendto_service(msg: ComponentMessage, host: str, port: int) -> ComponentResponse:
     ic("Sending data to", host, port)
     try:
         with grpc.insecure_channel(
@@ -57,7 +57,15 @@ def send(msg: ComponentMessage, host: str, port: int) -> None:
             ]
         ) as channel:
             response = ComponentStub(channel).forward(msg)
-            # # ic(response.output)
-            # ic(response.prediction)
+            return response
     except Exception as e:
-        ic("Send Failed.", e)
+        ic("Send Failed", e)
+
+def sendto_mongo(data: dict, collection_name: str) -> None:
+    from pymongo import MongoClient # not all services use this, so import here
+
+    client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
+    db = client["store_service"]
+    collection = db[collection_name]
+    result = collection.insert_one(data)
+    ic(result.inserted_id)

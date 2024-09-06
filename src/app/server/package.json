@@ -11,6 +11,8 @@
     "@elysiajs/static": "^1.0.3",
     "@elysiajs/stream": "^1.0.2",
     "@elysiajs/swagger": "^1.0.5",
+    "@grpc/grpc-js": "^1.11.2",
+    "@grpc/proto-loader": "^0.7.13",
     "@prisma/client": "^5.15.0",
     "@types/node": "^22.5.4",
     "date-fns": "^3.6.0",

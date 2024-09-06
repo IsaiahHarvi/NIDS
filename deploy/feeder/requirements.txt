@@ -12,6 +12,8 @@ click==8.1.7
     # via -r deploy/feeder/requirements.in
 colorama==0.4.6
     # via icecream
+dnspython==2.6.1
+    # via pymongo
 dpkt==1.9.8
     # via nfstream
 executing==2.0.1
@@ -47,6 +49,8 @@ pycparser==2.22
     # via cffi
 pygments==2.18.0
     # via icecream
+pymongo==4.8.0
+    # via -r deploy/feeder/requirements.in
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.1

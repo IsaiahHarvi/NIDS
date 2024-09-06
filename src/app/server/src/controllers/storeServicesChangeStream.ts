@@ -5,15 +5,15 @@ import { ElysiaWS } from "elysia/dist/ws";
 export function storeServicesChangeStream(ws: ElysiaWS<any, any, any>) {
   return new Stream((stream) => {
     const feederChangeStream = storeServiceDb
-      .collection("Feeder")
+      ?.collection("Feeder")
       .watch([], { fullDocument: "updateLookup", showExpandedEvents: true });
 
     const neuralNetworkChangeStream = storeServiceDb
-      .collection("NeuralNetwork")
+      ?.collection("NeuralNetwork")
       .watch([], { fullDocument: "updateLookup", showExpandedEvents: true });
 
     const offlineFeederChangeStream = storeServiceDb
-      .collection("OfflineFeeder")
+      ?.collection("OfflineFeeder")
       .watch([], { fullDocument: "updateLookup", showExpandedEvents: true });
 
     const defaultChangeStream = storeServiceDb.watch([], {

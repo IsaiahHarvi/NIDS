@@ -5,7 +5,7 @@ import subprocess
 import grpc
 from concurrent import futures
 
-from src.grpc_.services_pb2 import ComponentMessage
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
 
@@ -46,7 +46,7 @@ def wait_for_services(services: list, timeout=60, init_time=5):
 
     raise RuntimeError(f"Services did not start within {timeout} seconds: {services}")
 
-def send(msg: ComponentMessage, host: str, port: int) -> None:
+def send(msg: ComponentMessage, host: str, port: int) -> ComponentResponse:
     ic("Sending data to", host, port)
     try:
         with grpc.insecure_channel(
@@ -56,8 +56,6 @@ def send(msg: ComponentMessage, host: str, port: int) -> None:
                 ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
             ]
         ) as channel:
-            response = ComponentStub(channel).forward(msg)
-            # # ic(response.output)
-            # ic(response.prediction)
+            return ComponentStub(channel).forward(msg) # response
     except Exception as e:
         ic("Send Failed.", e)

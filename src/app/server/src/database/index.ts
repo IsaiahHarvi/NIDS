@@ -18,7 +18,7 @@ const connectToDatabase = () => {
       connectTimeoutMS: 30000,
     });
     client.connect();
-    storeServiceDb = client.db("store_service");
+    storeServiceDb = client.db("services");
 
     // setupClientDb(clientDb);
     console.log(pc.green("Success: MongoDB Connected"));

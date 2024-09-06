@@ -2,14 +2,10 @@ import subprocess
 import pytest
 import os
 import re
+from time import sleep
 from icecream import ic
+from tests.conftest import compose
 
-
-@pytest.fixture(scope="session")
-def docker_compose():
-    os.system("docker compose up --build -d")
-    yield
-    os.system("docker compose down")
 
 def get_image_names() -> list[str]:
     image_names = []
@@ -23,7 +19,7 @@ def get_image_names() -> list[str]:
                     )
     return image_names
 
-def test_services(docker_compose):
+def test_services(compose):
     result = subprocess.run(
         ["docker", "compose", "ps"],
         stdout=subprocess.PIPE,
@@ -31,6 +27,7 @@ def test_services(docker_compose):
     )
     output = result.stdout.decode("utf-8")
     print(output)
+    sleep(2)
     assert "Exit" not in output, "One or more services failed to start."
     assert "Up" in output, "Services are not staying up."
 

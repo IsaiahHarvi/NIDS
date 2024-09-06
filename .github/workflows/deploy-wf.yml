@@ -63,7 +63,10 @@ jobs:
 
     # GUI is a compose service now, doesn't need a dedicated test
     - name: Run Docker Services
-      run: docker compose up --build -d
+      run: |
+        docker compose up --build -d
+        docker compose down
+
 
     # - name: Run Client
     #   run: |

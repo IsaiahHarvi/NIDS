@@ -34,15 +34,6 @@ export default function WebSocketContextProvider({ children }: Wrapper) {
       const message = WebSocketSchema.parse(lastJsonMessage); // Parse will throw for invalid events
       if (message.type === undefined) return;
       switch (message.type) {
-        case "pong":
-        case "test":
-          break;
-        case "current_attack_insert":
-          if (message.payload === undefined) return;
-          // handleCurrentAttackInsert(JSON.stringify(message.payload), client_store);
-          break;
-        case "current_attack_delete":
-          break;
         case "feeder_insert":
         case "feeder_delete":
           console.log(`${message.type} message: `, message.payload);

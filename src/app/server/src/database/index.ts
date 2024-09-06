@@ -1,6 +1,6 @@
 import { MongoClient, Db } from "mongodb";
 import * as pc from "picocolors";
-import { setupClientDb } from "./setup-databases";
+// import { setupClientDb } from "./setup-databases";
 
 // const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
 const MONGO_URL =

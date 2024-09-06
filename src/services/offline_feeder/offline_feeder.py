@@ -25,7 +25,12 @@ class OfflineFeeder(ComponentServicer):
             return ComponentResponse(output=msg.input)
 
         df = pd.read_csv("data/CIC/test_data.csv")
-        df.columns = df.columns.str.strip().str.replace(" ", "_").str.replace("/", "_")
+        df.columns = (
+            df.columns.str.strip()
+            .str.replace(" ", "_")
+            .str.replace("/", "_")
+            .str.replace(".", "_")
+        )
         df = df.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],
             axis=1,
@@ -45,7 +50,9 @@ class OfflineFeeder(ComponentServicer):
         # ic(scaler.mean_, scaler.scale_)
 
         ic(y)
-        pred = send(msg=ComponentMessage(input=x), host="neural-network", port=50052).prediction
+        pred = send(
+            msg=ComponentMessage(input=x), host="neural-network", port=50052
+        ).prediction
         self.to_db(
             flow_data=x.tolist(),
             prediction=pred,

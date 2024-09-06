@@ -40,11 +40,11 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> No
         while True:
             connect(port=int(input("PORT: ")), live=False)
     elif test:
-        for port in range(
+        for i in range(
             50053, 50057
         ):  # skip 50052 because we have a dedicated test for it
-            ic(f"Testing Service on port {port}")
-            connect(port, live=False)
+            ic(f"Testing Service on port {i}")
+            connect(port=i, live=False)
             time.sleep(5)
     else:
         connect(port, live, sleep)
@@ -95,7 +95,7 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                     response = stub.forward(request)
                     assert response.return_code == 0
     except grpc.RpcError as e:
-        if e.code() == grpc.StatusCode.UNAVAILABLE:
+        if e.code() == grpc.StatusCode.UNAVAILABLE:  # pylint: disable=E1101
             ic(f"Server at {port} is unavailable. Is it running?")
         else:
             ic("Error", e)

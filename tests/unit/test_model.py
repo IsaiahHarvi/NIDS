@@ -30,7 +30,7 @@ def grpc_server():
     server_process.join()
 
 
-@pytest.mark.run(order=-1)  # run this last becuase its aggressive w/ containers
+@pytest.mark.order(-1)  # run this last becuase its aggressive w/ containers
 def test_model(grpc_server):
     try:
         with grpc.insecure_channel("localhost:50052") as channel:

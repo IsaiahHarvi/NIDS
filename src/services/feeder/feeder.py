@@ -82,10 +82,12 @@ class Feeder(ComponentServicer):
             features["Total_Fwd_Packets"] + features["Total_Backward_Packets"]
         ) / (features["Flow_Duration"] / 1000)
 
+        ic(features)
+        metadata = {col: str(features[col].iloc[0]) for col in features.columns}
+        
         features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
         features.to_csv(output_csv, index=False)
 
-        metadata = {col: str(features[col].iloc[0]) for col in features.columns}
         ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
         return output_csv, metadata
 

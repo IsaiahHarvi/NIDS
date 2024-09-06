@@ -40,7 +40,9 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> No
         while True:
             connect(port=int(input("PORT: ")), live=False)
     elif test:
-        for port in range(50053, 50057): # skip 50052 because we have a dedicated test for it
+        for port in range(
+            50053, 50057
+        ):  # skip 50052 because we have a dedicated test for it
             ic(f"Testing Service on port {port}")
             connect(port, live=False)
             time.sleep(5)
@@ -57,7 +59,9 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
         match port:
             case 50053 | 50054:
                 # Connect to Feeder, Offline-Feeder
-                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
+                with grpc.insecure_channel(
+                    f"localhost:{port}", options=options
+                ) as channel:
                     while True:
                         stub = ComponentStub(channel)
                         response = stub.forward(ComponentMessage())
@@ -69,7 +73,9 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                 pass
             case 50056 | 50057:
                 # Connect to Store-DB or Store-File
-                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
+                with grpc.insecure_channel(
+                    f"localhost:{port}", options=options
+                ) as channel:
                     while True:
                         stub = ComponentStub(channel)
                         request = ComponentMessage(
@@ -81,7 +87,9 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                             break
                         time.sleep(sleep)
             case _:
-                with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
+                with grpc.insecure_channel(
+                    f"localhost:{port}", options=options
+                ) as channel:
                     stub = ComponentStub(channel)
                     request = ComponentMessage(flow=[1.0, 2.0, 3.0], health_check=True)
                     response = stub.forward(request)
@@ -89,8 +97,9 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
     except grpc.RpcError as e:
         if e.code() == grpc.StatusCode.UNAVAILABLE:
             ic(f"Server at {port} is unavailable. Is it running?")
-        else: 
+        else:
             ic("Error", e)
+
 
 if __name__ == "__main__":
     main()

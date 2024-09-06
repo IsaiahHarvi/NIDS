@@ -19,7 +19,7 @@ class StoreDB(ComponentServicer):
         self.password = password
         ic(f"Started on {os.environ.get('PORT')}")
 
-    def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
+    def forward(self, msg: ComponentMessage | dict, context) -> ComponentResponse:
         if msg.health_check:
             ic("Health check")
             return ComponentResponse(output=msg.input)
@@ -31,18 +31,25 @@ class StoreDB(ComponentServicer):
             )
             ic(f"Created client at {self.host}:{self.port}")
             db = client["store_service"]
-            collection_name = (
-                "default" if not msg.collection_name else msg.collection_name
-            )
-            collection = db[collection_name]
-            result = collection.insert_one(
-                {
-                    "id_": msg.mongo_id,
-                    "input": list(msg.input),
-                    "prediction": int(msg.prediction),
-                }
-            )
-            ic(result.inserted_id, collection_name)
+
+            if isinstance(msg, ComponentMessage):
+                collection_name = (
+                    "default" if not msg.collection_name else msg.collection_name
+                )
+                collection = db[collection_name]
+                result = collection.insert_one(
+                    {
+                        "id_": msg.mongo_id,
+                        "input": list(msg.input),
+                        "prediction": int(msg.prediction),
+                    }
+                )
+                ic(result.inserted_id, collection_name)
+
+            elif isinstance(msg, dict):
+                collection = db[msg["collection_name"]]
+                result = collection.insert_one(msg.remove("collection_name"))
+                ic(result.inserted_id, collection_name)
 
         except Exception as e:
             ic(e)

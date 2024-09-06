@@ -32,12 +32,7 @@ class Feeder(ComponentServicer):
         flow_data = pd.read_csv(flow_csv)
         flow_row = self.preprocess_flow_row(flow_data.iloc[0])
 
-        x = (
-            StandardScaler()
-            .fit_transform(flow_row.reshape(1, -1))
-            .squeeze(0)
-            .tolist()
-        )
+        x = StandardScaler().fit_transform(flow_row.reshape(1, -1)).squeeze(0).tolist()
 
         uuid = str(UUID())
         send(
@@ -45,7 +40,7 @@ class Feeder(ComponentServicer):
                 input=x,
                 collection_name=self.__class__.__name__,
                 mongo_id=uuid,  # feeder is never recipient
-                prediction=-1
+                prediction=-1,
             ),
             host="store-db",
             port=50057,

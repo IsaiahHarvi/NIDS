@@ -43,9 +43,9 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> No
         for i in range(
             50053, 50057
         ):  # skip 50052 because we have a dedicated test for it
+            time.sleep(3)
             ic(f"Testing Service on port {i}")
             connect(port=i, live=False)
-            time.sleep(5)
     else:
         connect(port, live, sleep)
 

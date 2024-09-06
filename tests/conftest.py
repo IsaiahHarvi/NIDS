@@ -1,4 +1,5 @@
 import os
+import subprocess
 import pytest
 from icecream import ic
 
@@ -17,6 +18,14 @@ def compose():
     """
     Fixture that runs docker compose up, yields, and then brings the services down.
     """
-    os.system("docker compose up --build -d")
+    subprocess.run(
+        ["docker", "compose", "up", "--build", "-d"], 
+        stdout=subprocess.DEVNULL, 
+        stderr=subprocess.PIPE
+    )
     yield
-    os.system("docker compose down")
+    subprocess.run(
+        ["docker", "compose", "down"], 
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE
+    )

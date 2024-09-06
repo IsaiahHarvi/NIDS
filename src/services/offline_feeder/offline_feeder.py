@@ -32,36 +32,33 @@ class OfflineFeeder(ComponentServicer):
             .str.replace("/", "_")
             .str.replace(".", "_")
         )
-        df = df.drop(
-            ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp"],
+        full_sample = df.sample(n=1)
+        metadata = {col: str(full_sample[col].values[0]) for col in list(full_sample.columns)}
+        y = full_sample["Label"].values[0]
+        sample = full_sample.drop(
+            ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp", "Label"],
             axis=1,
             errors="ignore",
         )
-        sample = df.sample(n=1)
-        y = sample["Label"].values[0]
         sample = sample.select_dtypes(include=[float, int])
         sample.replace([np.inf, -np.inf], np.nan, inplace=True)
         sample.fillna(sample.mean(), inplace=True)
-
-        sample_row = sample.drop("Label", axis=1, errors="ignore").iloc[0]
-        x = sample_row.to_numpy().flatten()
-
+        x = sample.iloc[0].to_numpy().flatten()
         # scaler = StandardScaler()
         # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
         # ic(scaler.mean_, scaler.scale_)
-
         ic(y)
         model_response = sendto_service(
             msg=ComponentMessage(flow=x), host="neural-network", port=50052
         )
         pred: int = model_response.prediction
-
+        
         sendto_mongo(
             {
                 "id_": uuid,
                 "flow_data": x.tolist(),
                 "prediction": pred,
-                "metadata": {col: str(sample_row[col]) for col in sample_row.index},
+                "metadata": metadata,
             },
             collection_name=self.__class__.__name__,
         )

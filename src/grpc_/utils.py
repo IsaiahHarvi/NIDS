@@ -65,7 +65,7 @@ def sendto_mongo(data: dict, collection_name: str) -> None:
     from pymongo import MongoClient # not all services use this, so import here
 
     client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
-    db = client["store_service"]
+    db = client["services"]
     collection = db[collection_name]
     result = collection.insert_one(data)
     ic(result.inserted_id)

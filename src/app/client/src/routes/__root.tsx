@@ -9,11 +9,11 @@ export const Route = createRootRoute({
       <div className="p-2 flex gap-2">
         <TooltipProvider>
           <WebSocketContextProvider>
-            <div className="grid h-screen max-h-screen w-full pl-[3.25rem] custom-scrollable-element bg-['/grid.svg']">
+            <div className="grid h-screen max-h-screen w-full pl-[3.25rem] custom-scrollable-element">
               <Navbar />
               <div className="flex flex-col flex-grow w-full bg-background">
                 <Topbar />
-                <div className="h-full dark:bg-[url('/grid.svg')] dark:bg-zinc-900/40 bg-zinc-100">
+                <div className="h-full dark:bg-zinc-900/40 bg-zinc-100">
                   <Outlet />
                 </div>
                 {/* <Toaster /> */}

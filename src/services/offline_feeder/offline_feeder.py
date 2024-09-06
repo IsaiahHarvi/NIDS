@@ -8,6 +8,7 @@ from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, send
 from sklearn.preprocessing import StandardScaler
 from uuid import uuid4 as UUID
+from pymongo import MongoClient
 
 from icecream import ic
 
@@ -44,21 +45,27 @@ class OfflineFeeder(ComponentServicer):
         # ic(scaler.mean_, scaler.scale_)
 
         ic(y)
-        uuid = str(UUID() if not msg.mongo_id else msg.mongo_id)
-        send(  # send the metadata
-            msg={
-                "id_": uuid,
-                "collection_name": self.__class__.__name__,
-                "input": x,
-                "metadata": {col: str(sample_row[col]) for col in sample_row.index},
-            },
-            host="store-db",
-            port=50057,
+        pred = send(msg=ComponentMessage(input=x), host="neural-network", port=50052).prediction
+        self.to_db(
+            flow_data=x,
+            prediction=pred,
+            metadata={col: str(sample_row[col]) for col in sample_row.index},
         )
-
-        send(msg=ComponentMessage(input=x), host="neural-network", port=50052)
-
         return ComponentResponse(output=x)
+
+    def to_db(self, flow_data: list[float], prediction: int, metadata: dict):
+        client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
+        db = client["store_service"]
+        collection = db["OfflineFeeder"]
+        result = collection.insert_one(
+            {
+                "id_": str(UUID()),
+                "flow_data": flow_data,
+                "prediction": prediction,
+                "metadata": metadata,
+            }
+        )
+        ic(result.inserted_id)
 
 
 if __name__ == "__main__":

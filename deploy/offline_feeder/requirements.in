@@ -6,3 +6,4 @@ pandas
 grpcio
 grpcio-tools
 scikit-learn
+pymongo

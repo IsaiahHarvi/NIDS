@@ -34,35 +34,34 @@ from src.grpc_.services_pb2_grpc import ComponentStub
     default=7,
     help="Time to sleep between requests when running in live mode.",
 )
-def main(port: int, interactive: bool, live: bool, sleep: int) -> None:
+@click.option("--health_check", is_flag=True, default=False)
+def main(
+    port: int, interactive: bool, live: bool, sleep: int, health_check: bool
+) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
     else:
-        connect(port, live, sleep)
+        connect(port, live, sleep, health_check)
 
 
-def connect(port: int, live: bool, sleep: int = 7) -> None:
-    options=[
-        ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
-        ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
+def connect(port: int, live: bool, sleep: int, health_check: bool) -> None:
+    options = [
+        ("grpc.max_send_message_length", 50 * 1024 * 1024),  # 50 MB
+        ("grpc.max_receive_message_length", 50 * 1024 * 1024),  # 50 MB
     ]
 
     match port:
-        case 50052:
-            # Connect to Neural Network Service
+        case 50053 | 50054:
+            # Connect to Feeder, Offline-Feeder
             with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-                stub = ComponentStub(channel)
-                request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
-                response = stub.forward(request)
-                ic(response.output)
-        case 50053 | 50054 | 50055:
-            # Connect to Feeder, Offline-Feeder, or Logger
-            with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
-                stub = ComponentStub(channel)
-                request = ComponentMessage(input=[], prediction=-1)
-                response = stub.forward(request)
-                ic(response.output)
+                while True:
+                    stub = ComponentStub(channel)
+                    response = stub.forward(ComponentMessage(input=[], prediction=-1))
+                    ic(response.output)
+                    if not live:
+                        break
+
         case 50056 | 50057:
             # Connect to Store-DB or Store-File
             with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
@@ -70,18 +69,17 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                     stub = ComponentStub(channel)
                     request = ComponentMessage(
                         input=[np.random.uniform(1, 9000) for _ in range(80)],
-                        prediction=-1
+                        prediction=-1,
                     )
                     response = stub.forward(request)
                     # ic(response.output)
                     if not live:
                         break
                     time.sleep(sleep)
-
         case _:
             with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:
                 stub = ComponentStub(channel)
-                request = ComponentMessage(input=[0.0], health_check=True)
+                request = ComponentMessage(input=[1.0, 2.0, 3.0], health_check=True)
                 response = stub.forward(request)
                 ic(response.output)
 

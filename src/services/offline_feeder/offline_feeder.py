@@ -5,10 +5,9 @@ import pandas as pd
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
-from src.grpc_.utils import start_server, send
-from sklearn.preprocessing import StandardScaler
+from src.grpc_.utils import start_server, sendto_service, sendto_mongo
+# from sklearn.preprocessing import StandardScaler
 from uuid import uuid4 as UUID
-from pymongo import MongoClient
 
 from icecream import ic
 
@@ -20,6 +19,7 @@ class OfflineFeeder(ComponentServicer):
         ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
+        uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
             return ComponentResponse(output=msg.input)
@@ -50,29 +50,21 @@ class OfflineFeeder(ComponentServicer):
         # ic(scaler.mean_, scaler.scale_)
 
         ic(y)
-        pred = send(
+        pred = sendto_service(
             msg=ComponentMessage(input=x), host="neural-network", port=50052
         ).prediction
-        self.to_db(
-            flow_data=x.tolist(),
-            prediction=pred,
-            metadata={col: str(sample_row[col]) for col in sample_row.index},
-        )
-        return ComponentResponse(output=x)
 
-    def to_db(self, flow_data: list[float], prediction: int, metadata: dict):
-        client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
-        db = client["store_service"]
-        collection = db["OfflineFeeder"]
-        result = collection.insert_one(
+        sendto_mongo(
             {
-                "id_": str(UUID()),
-                "flow_data": flow_data,
-                "prediction": prediction,
-                "metadata": metadata,
-            }
+                "id_": uuid,
+                "flow_data": x.tolist(),
+                "prediction": pred,
+                "metadata": {col: str(sample_row[col]) for col in sample_row.index},
+            },
+            collection_name=self.__class__.__name__,
         )
-        ic(result.inserted_id)
+
+        return ComponentResponse(output=x)
 
 
 if __name__ == "__main__":

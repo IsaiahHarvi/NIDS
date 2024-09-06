@@ -42,15 +42,14 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
               {message.flow_data?.join(", ") || "N/A"}
             </TableCell>
             <TableCell>{message.prediction}</TableCell>
-            <TableCell>{message.metadata.host}</TableCell>
-            <TableCell>{message.metadata.target}</TableCell>
-            <TableCell>{message.metadata.port}</TableCell>
-            <TableCell>
-              {/* Render metadata as a string */}
+            <TableCell>{message.metadata.Source_IP}</TableCell>
+            <TableCell>{message.metadata.Destination_IP}</TableCell>
+            <TableCell>{message.metadata.Destination_Port}</TableCell>
+            {/* <TableCell>
               {Object.entries(message.metadata)
                 .map(([key, value]) => `${key}: ${value}`)
                 .join(", ")}
-            </TableCell>
+            </TableCell> */}
           </TableRow>
         ))}
       </TableBody>

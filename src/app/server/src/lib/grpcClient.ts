@@ -53,7 +53,7 @@ export function runGrpcClient(
       if (error) {
         console.error("Error:", error);
       } else {
-        console.log("Response:", response.output);
+        console.log("Response:", response.flow);
         if (!live) {
           client.close();
           activeGrpcClient = null;

@@ -47,7 +47,7 @@ class OfflineFeeder(ComponentServicer):
         ic(y)
         pred = send(msg=ComponentMessage(input=x), host="neural-network", port=50052).prediction
         self.to_db(
-            flow_data=x,
+            flow_data=x.tolist(),
             prediction=pred,
             metadata={col: str(sample_row[col]) for col in sample_row.index},
         )

@@ -16,7 +16,9 @@ class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
         try:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
-            self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path).to("cpu")
+            self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path).to(
+                "cpu"
+            )
         except Exception as e:
             raise RuntimeError(f"Failed to load the model from {ckpt_path}: {e}")
         self.model.eval()

@@ -34,12 +34,10 @@ from src.grpc_.services_pb2_grpc import ComponentStub
     default=7,
     help="Time to sleep between requests when running in live mode.",
 )
-@click.option(
-    "--health_check",
-    is_flag=True,
-    default=False
-)
-def main(port: int, interactive: bool, live: bool, sleep: int, health_check: bool) -> None:
+@click.option("--health_check", is_flag=True, default=False)
+def main(
+    port: int, interactive: bool, live: bool, sleep: int, health_check: bool
+) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
@@ -48,9 +46,9 @@ def main(port: int, interactive: bool, live: bool, sleep: int, health_check: boo
 
 
 def connect(port: int, live: bool, sleep: int, health_check: bool) -> None:
-    options=[
-        ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
-        ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
+    options = [
+        ("grpc.max_send_message_length", 50 * 1024 * 1024),  # 50 MB
+        ("grpc.max_receive_message_length", 50 * 1024 * 1024),  # 50 MB
     ]
 
     match port:
@@ -61,7 +59,8 @@ def connect(port: int, live: bool, sleep: int, health_check: bool) -> None:
                     stub = ComponentStub(channel)
                     response = stub.forward(ComponentMessage(input=[], prediction=-1))
                     ic(response.output)
-                    if not live: break
+                    if not live:
+                        break
 
         case 50056 | 50057:
             # Connect to Store-DB or Store-File
@@ -70,11 +69,12 @@ def connect(port: int, live: bool, sleep: int, health_check: bool) -> None:
                     stub = ComponentStub(channel)
                     request = ComponentMessage(
                         input=[np.random.uniform(1, 9000) for _ in range(80)],
-                        prediction=-1
+                        prediction=-1,
                     )
                     response = stub.forward(request)
                     # ic(response.output)
-                    if not live: break
+                    if not live:
+                        break
                     time.sleep(sleep)
         case _:
             with grpc.insecure_channel(f"localhost:{port}", options=options) as channel:

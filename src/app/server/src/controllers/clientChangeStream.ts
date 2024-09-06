@@ -5,11 +5,11 @@ import { ElysiaWS } from "elysia/dist/ws";
 export function clientChangeStream(ws: ElysiaWS<any, any, any>) {
   return new Stream((stream) => {
     const currentAttackChangeStream = storeServiceDb
-      .collection("current_attack")
+      ?.collection("current_attack")
       .watch([], { fullDocument: "updateLookup", showExpandedEvents: true });
 
     const savedAttacksChangeStream = storeServiceDb
-      .collection("saved_attacks")
+      ?.collection("saved_attacks")
       .watch([], { fullDocument: "updateLookup", showExpandedEvents: true });
 
     // current_attack collection on change

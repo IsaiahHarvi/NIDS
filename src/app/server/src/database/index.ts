@@ -3,7 +3,8 @@ import * as pc from "picocolors";
 import { setupClientDb } from "./setup-databases";
 
 // const MONGO_URL = "mongodb://root:example@localhost:27017/?authSource=admin";
-const MONGO_URL = process.env.WEBSERVER_MONGO_URL || "mongodb://root:example@mongo:27017/";
+const MONGO_URL =
+  process.env.WEBSERVER_MONGO_URL || "mongodb://root:example@mongo:27017/";
 
 let client: MongoClient;
 export let clientDb: Db;
@@ -13,7 +14,7 @@ export let storeServiceDb: Db;
 //removed async because of bug where it sends multiple CS messages
 const connectToDatabase = () => {
   try {
-    const client = new MongoClient(MONGO_URL, {
+    client = new MongoClient(MONGO_URL, {
       connectTimeoutMS: 30000,
     });
     client.connect();

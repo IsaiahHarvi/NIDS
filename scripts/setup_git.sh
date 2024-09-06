@@ -7,4 +7,4 @@
 git config --global user.email ""
 git config --global user.name ""
 
-# Duplicate this file and name it setup_git.personal.sh
+# Duplicate this file and name it setup_git_personal.sh

@@ -7,6 +7,7 @@ import {
   Gamepad2,
   HelpCircle,
   Settings,
+  Clipboard,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -110,6 +111,12 @@ export function Navbar(): JSX.Element {
           icon={Sparkles}
           label="Status"
           pathCheck="/status"
+        />
+        <LinkItem
+          to="/dashboard"
+          icon={Clipboard}
+          label="Dashboard"
+          pathCheck="/dashboard"
         />
       </nav>
       <nav className="mt-auto grid gap-1 p-2">

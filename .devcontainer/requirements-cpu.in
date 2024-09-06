@@ -8,6 +8,7 @@ torchvision
 matplotlib
 icecream
 pytest
+pytest-ordering
 click
 dvc
 dvclive>=3

@@ -59,6 +59,7 @@ certifi==2024.7.4
 cffi==1.17.0
     # via
     #   cryptography
+    #   nfstream
     #   pygit2
 charset-normalizer==3.3.2
     # via requests
@@ -109,6 +110,8 @@ docker-pycreds==0.4.0
     # via wandb
 dpath==2.2.0
     # via dvc
+dpkt==1.9.8
+    # via nfstream
 dulwich==0.22.1
     # via
     #   dvc
@@ -247,11 +250,14 @@ networkx==3.3
     # via
     #   dvc
     #   torch
+nfstream==6.5.3
+    # via -r .devcontainer/requirements-cpu.in
 numpy==1.26.4
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   contourpy
     #   matplotlib
+    #   nfstream
     #   pandas
     #   scikit-learn
     #   scipy
@@ -278,7 +284,9 @@ packaging==24.1
     #   pytorch-lightning
     #   torchmetrics
 pandas==2.2.2
-    # via -r .devcontainer/requirements-cpu.in
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   nfstream
 pathspec==0.12.1
     # via
     #   black
@@ -309,6 +317,7 @@ psutil==6.0.0
     #   dvc
     #   dvclive
     #   flufl-lock
+    #   nfstream
     #   wandb
 pycparser==2.22
     # via cffi
@@ -347,6 +356,10 @@ pyproject-hooks==1.1.0
     #   build
     #   pip-tools
 pytest==8.3.2
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   pytest-ordering
+pytest-ordering==0.6
     # via -r .devcontainer/requirements-cpu.in
 python-dateutil==2.9.0.post0
     # via

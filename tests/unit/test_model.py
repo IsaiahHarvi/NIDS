@@ -3,7 +3,6 @@ import os
 import pytest
 import multiprocessing
 import time
-import numpy as np
 from icecream import ic
 from src.grpc_.utils import start_server
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
@@ -31,6 +30,7 @@ def grpc_server():
     server_process.join()
 
 
+@pytest.mark.run(order=-1)  # run this last becuase its aggressive w/ containers
 def test_model(grpc_server):
     try:
         with grpc.insecure_channel("localhost:50052") as channel:

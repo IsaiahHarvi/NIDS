@@ -66,12 +66,12 @@ jobs:
 
     - name: Run Client
       run: |
-        cd app/client
+        cd src/app/client
         bun install
         bun dev &
 
     - name: Run Server
       run: |
-        cd app/server
+        cd src/app/server
         bun install
         bun dev &

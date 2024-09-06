@@ -20,7 +20,7 @@ ENV NODE_ENV production
 RUN bun install --production
 
 # Copy client build output from the previous stage
-COPY --from=client-layers /app/client/dist /app/server/client
+COPY --from=client-layers /app/client/ /app/server/client
 # RUN ls -al /app/server/client
 
 CMD ["bun", "run", "src/index.ts"]

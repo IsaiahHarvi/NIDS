@@ -7,14 +7,14 @@ service Component {
 }
 
 message ComponentMessage {
-  repeated float input = 1;
-  bool health_check = 2; // Will make the component pass through the input data without any processing
-  string collection_name = 3;
-  int32 prediction = 4; // We are p2p, so all response fields should be in an input... i dont really like this p2p structure anymore. 
-  string mongo_id = 5;
+  repeated float flow = 1;
+  string collection_name = 2;
+  string mongo_id = 3;
+  bool health_check = 4;
 }
 
 message ComponentResponse {
-  repeated float output = 1; // for pass throughs
+  repeated float flow = 1;
   int32 prediction = 2; // for model service
+  int32 return_code = 3; // 0 for success, 1 for failure
 }

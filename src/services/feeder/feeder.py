@@ -28,7 +28,7 @@ class Feeder(ComponentServicer):
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(output=msg.input)
+            return ComponentResponse(flow=msg.flow)
 
         pcap = self.capture_pcap(self.interface, self.file_name, self.duration)
         flow_csv, metadata = self.pcap_to_flows(pcap)
@@ -40,18 +40,19 @@ class Feeder(ComponentServicer):
         # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
         # ic(scaler.mean_, scaler.scale_)
 
-        pred = sendto_service(
-            msg=ComponentMessage(input=x),
+        model_response = sendto_service(
+            msg=ComponentMessage(flow=x),
             host="neural-network",
             port=50052,
-        ).prediction
+        )
+        pred: int = model_response.prediction
 
         sendto_mongo(
             {"id_": uuid, "flow_data": x, "prediction": pred, "metadata": metadata},
             collection_name=self.__class__.__name__,
         )
 
-        return ComponentResponse(output=x)
+        return ComponentResponse(flow=x)
 
     def capture_pcap(self, interface: str, file_name: str, duration: int) -> str:
         pcap_file = file_name + (".pcap" if not file_name.endswith(".pcap") else "")
@@ -82,12 +83,10 @@ class Feeder(ComponentServicer):
             features["Total_Fwd_Packets"] + features["Total_Backward_Packets"]
         ) / (features["Flow_Duration"] / 1000)
 
-        ic(features)
-        metadata = {col: str(features[col].iloc[0]) for col in features.columns}
-        
         features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
         features.to_csv(output_csv, index=False)
 
+        metadata = {col: str(features[col].iloc[0]) for col in features.columns}
         ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
         return output_csv, metadata
 

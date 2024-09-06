@@ -7,23 +7,13 @@ from icecream import ic
 
 @pytest.fixture(scope="session")
 def docker_compose():
-    try:
-        subprocess.run(
-            ["docker", "compose", "up", "--build", "-d"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        yield
-    finally:
-        subprocess.run(
-            ["docker", "compose", "down"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+    os.system("docker compose up --build -d")
+    yield
+    os.system("docker compose down")
 
 def get_image_names() -> list[str]:
     image_names = []
-    for root, dirs, files in os.walk("deploy"):
+    for root, _, files in os.walk("deploy"):
         for file in files:
             if file == "compose.yml":
                 file_path = os.path.join(root, file)

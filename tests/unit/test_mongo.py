@@ -14,7 +14,7 @@ def setup_mongo():
     os.system("docker compose down")
 
 
-@pytest.mark.skip("this is painful im not debugging this lol")
+@pytest.mark.skip("The Replica Set deprecated this test")
 def test_mongo():
     host = os.environ.get("host", "localhost")
     port = int(os.environ.get("port", 27017))

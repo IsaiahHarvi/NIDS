@@ -39,15 +39,6 @@ class NeuralNetwork(ComponentServicer):
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)
-        send(
-            msg=ComponentMessage(
-                prediction=pred,
-                collection_name=self.__class__.__name__,
-                mongo_id=(str(UUID()) if not msg.mongo_id else msg.mongo_id),
-            ),
-            host="store-db",
-            port=50057,
-        )
         return ComponentResponse(prediction=pred)
 
 

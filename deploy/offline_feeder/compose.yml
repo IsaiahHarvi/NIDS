@@ -9,4 +9,4 @@ services:
     shm_size: '1gb'
     ports:
       - "50054:50054"
-    image: offline-feeder
+    container_name: offline-feeder

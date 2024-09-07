@@ -5,7 +5,9 @@ services:
       dockerfile: deploy/feeder/Dockerfile
     cap_add:
       - NET_ADMIN
-    # network_mode: host
+    network_mode: host
     ports:
       - "50053:50053"
-    image: feeder
+    container_name: feeder
+    profiles:
+      - feeder

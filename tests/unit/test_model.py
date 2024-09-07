@@ -36,7 +36,7 @@ def test_model(grpc_server):
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
-                paths=[f"data/CIC/test_data.csv"],
+                paths=["data/CIC/test_data.csv"],
                 batch_size=1,
                 num_workers=1
             )

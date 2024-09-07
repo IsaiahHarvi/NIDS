@@ -33,7 +33,11 @@ class OfflineFeeder(ComponentServicer):
             .str.replace(".", "_")
         )
         full_sample = df.sample(n=1)
-        metadata = {col: str(full_sample[col].values[0]) for col in list(full_sample.columns)}
+        metadata = {
+            col: str(full_sample[col].values[0]) 
+            for col in list(full_sample.columns)
+        }
+
         y = full_sample["Label"].values[0]
         sample = full_sample.drop(
             ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp", "Label"],

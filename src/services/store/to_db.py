@@ -22,7 +22,7 @@ class StoreDB(ComponentServicer):
             return ComponentResponse(flow=msg.flow)
 
         try:
-            client = MongoClient(f"mongodb://root:example@mongo:27017/?replicaSet=rs0")
+            client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
             db = client["store_service"]
             collection = db["default"]
             result = collection.insert_one(

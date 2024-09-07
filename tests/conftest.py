@@ -13,6 +13,7 @@ def pytest_sessionstart(session):
     """
     os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
 
+
 @pytest.fixture(scope="session")
 def compose():
     """

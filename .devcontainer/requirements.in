@@ -13,12 +13,11 @@ click
 dvc
 dvclive>=3
 scikit-learn
-black
 pandas
 grpcio
 grpcio-tools
 docker
 pymongo
-pylint
 wandb
 nfstream
+ruff

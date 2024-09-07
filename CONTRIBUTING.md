@@ -6,6 +6,8 @@
 - `docker system prune --volumes -a`: remove all stopped containers and volmes
 - `docker volume rm mongo-data`: clear the persistent data stored in mongoDb
 - `bun i && bun dev`: when ran under src/app/server + src/app/client you can run the GUI in development mode
+- `docker compose --profile gui up --build`: run the services and the webserver container
+- `docker compose --profile feeder up --build`: run the services and the online feeder which has host devices
 
 
 ## Opening Issues

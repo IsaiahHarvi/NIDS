@@ -43,7 +43,7 @@ class Feeder(ComponentServicer):
 
         model_response = sendto_service(
             msg=ComponentMessage(flow=x),
-            host="neural-network",
+            host="127.0.0.1",  #  "neural-network",
             port=50052,
         )
         pred: int = model_response.prediction
@@ -66,8 +66,11 @@ class Feeder(ComponentServicer):
         output_csv = pcap_file.replace(".pcap", "_flows.csv")
         stream = NFStreamer(source=pcap_file)
         flow_data = stream.to_pandas()
-
+        # ic(flow_data.columns)
+        
         features = pd.DataFrame()
+        features["Source_IP"] = flow_data["src_ip"]
+        features["Destination_IP"] = flow_data["dst_ip"]
         features["Source_Port"] = flow_data["src_port"]
         features["Destination_Port"] = flow_data["dst_port"]
         features["Protocol"] = flow_data["protocol"]
@@ -76,18 +79,35 @@ class Feeder(ComponentServicer):
         features["Total_Backward_Packets"] = flow_data["dst2src_packets"]
         features["Total_Length_of_Fwd_Packets"] = flow_data["src2dst_bytes"]
         features["Total_Length_of_Bwd_Packets"] = flow_data["dst2src_bytes"]
+
+        # Calculate flows per second and bytes per second
         features["Flow_Bytes_s"] = (
-            features["Total_Length_of_Fwd_Packets"]
-            + features["Total_Length_of_Bwd_Packets"]
+            features["Total_Length_of_Fwd_Packets"] + features["Total_Length_of_Bwd_Packets"]
         ) / (features["Flow_Duration"] / 1000)
         features["Flow_Packets_s"] = (
             features["Total_Fwd_Packets"] + features["Total_Backward_Packets"]
         ) / (features["Flow_Duration"] / 1000)
 
-        features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
-        features.to_csv(output_csv, index=False)
+        # Forward Packet Length Mean and Standard Deviation (calculated from total bytes and packet count)
+        features["Fwd_Packet_Length_Mean"] = features["Total_Length_of_Fwd_Packets"] / features["Total_Fwd_Packets"]
+        features["Bwd_Packet_Length_Mean"] = features["Total_Length_of_Bwd_Packets"] / features["Total_Backward_Packets"]
 
+        features["Timestamp"] = pd.to_datetime(flow_data["bidirectional_first_seen_ms"], unit='ms')
+
+        # features["Fwd_Packet_Length_Max"] = 
+        # features["Fwd_Packet_Length_Min"] = 
+        # features["Fwd_Packet_Length_Mean"] = 
+    
+        # features["Bwd_Packet_Length_Max"] = 
+        # features["Bwd_Packet_Length_Min"] = 
+        # features["Bwd_Packet_Length_Mean"] = 
+
+        # features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
         metadata = {col: str(features[col].iloc[0]) for col in features.columns}
+
+        rel_features = features.drop(["Source_IP", "Destination_IP", "Timestamp"], axis=1, errors="ignore")
+        rel_features.to_csv(output_csv, index=False)
+
         ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
         return output_csv, metadata
 
@@ -103,9 +123,6 @@ class Feeder(ComponentServicer):
                 numeric_row, (0, 80 - numeric_row.shape[0]), "constant"
             )
             ic("WARNING: padding row")
-        elif numeric_row.shape[0] > 80:
-            numeric_row = numeric_row[:80]
-            ic("WARNING: truncating row")
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row

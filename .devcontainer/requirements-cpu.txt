@@ -441,7 +441,7 @@ tomlkit==0.13.2
     # via
     #   dvc
     #   pylint
-torch==2.4.0
+torch==2.4.0+cpu
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   lightning
@@ -452,7 +452,7 @@ torchmetrics==1.4.1
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.19.0
+torchvision==0.19.0+cpu
     # via -r .devcontainer/requirements-cpu.in
 tqdm==4.66.5
     # via

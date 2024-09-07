@@ -2,6 +2,8 @@
 
 # Download the CIC-IDS-2017 dataset from @IsaiahHarvi's server
 # Necessary evil to avoid git-lfs costs
+# Should only be necessary for model training.
+# The sample file for the OfflineFeeder is tracked in git-lfs.
 
 IP="harvirp.ddns.net"
 PORT="5000"

@@ -2,7 +2,6 @@ import pandas as pd
 import subprocess
 import os
 import numpy as np
-import pandas as pd
 
 from typing import Tuple
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse

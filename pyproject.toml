@@ -1,5 +1,21 @@
-[tool.black]
-exclude = '''
-^/src/grpc_|
-^/src/ai/train\.py$
-'''
+[tool.ruff]
+line-length = 88
+# fix = true
+
+exclude = [
+    "src/grpc_",
+    "src/ai",
+    "tests"
+]
+
+[tool.ruff.lint]
+extend-ignore = [
+    "F401",  # Unused import
+    "F841",  # Assigned but never used
+    "F701",  # Missing type for self in class method
+]
+
+extend-select = ["E", "F"]
+
+# line too long warnings
+per-file-ignores = { "src/services/feeder/feeder.py" = ["E501"] }

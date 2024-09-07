@@ -3,8 +3,12 @@ name: Pytest
 on:
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
     paths-ignore:
       - 'src/app/**'
+    
   workflow_dispatch:
 
 permissions:

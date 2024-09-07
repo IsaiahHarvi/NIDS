@@ -8,9 +8,7 @@ service Component {
 
 message ComponentMessage {
   repeated float flow = 1;
-  string collection_name = 2;
-  string mongo_id = 3;
-  bool health_check = 4;
+  bool health_check = 2;
 }
 
 message ComponentResponse {

@@ -7,6 +7,7 @@ WORKDIR /app/client
 
 RUN pnpm install
 RUN pnpm build
+RUN ls -la /app/client/dist
 
 # Server build stage
 FROM oven/bun:latest

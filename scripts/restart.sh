@@ -31,7 +31,7 @@ echo "Restarting Services..."
 docker-compose -f compose.yml up -d webserver # bring up just the webserver
 echo -e "\nView GUI at http://localhost:8000"
 if command_exists xdg-open; then
-    xdg-open http://localhost:8000 &
+    xdg-open http://localhost:8000 & > /dev/null 2>&1
 fi
 
 docker-compose --profile feeder --profile gui up

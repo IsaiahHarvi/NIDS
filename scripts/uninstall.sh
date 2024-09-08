@@ -8,7 +8,7 @@ if grep -q "# NIDS" /etc/hosts; then
 fi
 
 docker-compose --profile feeder --profile gui down
-docker kill $(docker ps -q) | true
+docker kill $(docker ps -q) > /dev/null 2>&1 | true
 docker system prune --volumes -af | true
 docker volume rm mongo-data -f | true
 

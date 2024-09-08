@@ -1,39 +1,39 @@
-name: Deploy
+# name: Deploy
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [ "main" ]
+#   workflow_dispatch:
     
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: ${{ github.workspace }}/src
-      WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-    steps:
-    - uses: actions/checkout@v4
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     env:
+#       PYTHONPATH: ${{ github.workspace }}/src
+#       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+#     steps:
+#     - uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
+#     - name: Set up Python 3.11
+#       uses: actions/setup-python@v3
+#       with:
+#         python-version: "3.11"
 
-    - name: Run NIDS
-      run: | # This is a modified version of scripts/deploy.sh for CI/CD
-        if ! grep -q "# NIDS" /etc/hosts; then
-            echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
-            echo "NIDS entry added to /etc/hosts"
-        else
-            echo "NIDS entry already exists in /etc/hosts"
-        fi
+#     - name: Run NIDS
+#       run: | # This is a modified version of scripts/deploy.sh for CI/CD
+#         if ! grep -q "# NIDS" /etc/hosts; then
+#             echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
+#             echo "NIDS entry added to /etc/hosts"
+#         else
+#             echo "NIDS entry already exists in /etc/hosts"
+#         fi
 
-        echo "Checking Existing Docker Environment..."
-        docker-compose --profile feeder --profile gui down
+#         echo "Checking Existing Docker Environment..."
+#         docker-compose --profile feeder --profile gui down
 
-        echo "Starting Services..."
-        docker-compose --profile feeder --profile gui up -d
+#         echo "Starting Services..."
+#         docker-compose --profile feeder --profile gui up -d
     

@@ -51,8 +51,10 @@ services:
     build:
       context: .
       dockerfile: deploy/webserver/Dockerfile
+    network_mode: host
     ports:
-      - "8000:8000"
+      - "8000:8000"  # server
+      - "5073:5073"  # client
     depends_on:
       mongo:
         condition: service_healthy

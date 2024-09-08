@@ -8,8 +8,8 @@ if grep -q "# NIDS" /etc/hosts; then
 fi
 
 docker-compose --profile feeder --profile gui down
-docker kill $(docker ps -q) > /dev/null 2>&1 | true
-docker system prune --volumes -af | true
-docker volume rm mongo-data -f | true
+docker kill $(docker ps -q) > /dev/null 2>&1
+docker system prune --volumes -af
+docker volume rm mongo-data -f > /dev/null 2>&1
 
 echo "Cleared Docker Environment and Removed NIDS Hosts Entry."

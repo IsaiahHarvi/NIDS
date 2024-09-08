@@ -2,16 +2,17 @@
 
 # NOTE: This is for use in a production environment on a Linux machine.
 
+command_exists() {
+    command -v "$1" &> /dev/null
+}
+
+
 if ! grep -q "# NIDS" /etc/hosts; then
     echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
     echo "NIDS entry added to /etc/hosts"
 else
     echo "NIDS entry already exists in /etc/hosts"
 fi
-
-command_exists() {
-    command -v "$1" &> /dev/null
-}
 
 # Install Docker if not installed
 if ! command_exists docker; then
@@ -22,7 +23,8 @@ if ! command_exists docker; then
         ca-certificates \
         curl \
         gnupg \
-        lsb-release
+        lsb-release \
+        xdg-utils
     
     # Add Docker’s official GPG key
     sudo mkdir -p /etc/apt/keyrings
@@ -66,6 +68,11 @@ docker-compose --profile feeder --profile gui down # stop any running services, 
 
 echo "-------------------------------------------------------------------"
 echo "Starting Services..."
-docker-compose --profile feeder --profile gui up
 
-echo "Deployment complete."
+docker-compose -f compose.yml up -d webserver # bring up just the webserver
+echo -e "\nView GUI at http://localhost:8000"
+if command_exists xdg-open; then
+    xdg-open http://localhost:8000 &
+fi
+
+docker-compose --profile feeder --profile gui up

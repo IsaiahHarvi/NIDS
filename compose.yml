@@ -34,10 +34,9 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081"]
       interval: 30s
-
       timeout: 5s
       retries: 1
-      start_period: 5s
+      start_period: 15s
     depends_on:
       mongo:
         condition: service_healthy
@@ -48,6 +47,7 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
 
   webserver:
+    container_name: webserver
     build:
       context: .
       dockerfile: deploy/webserver/Dockerfile

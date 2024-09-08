@@ -62,10 +62,9 @@ fi
 echo "Docker is Ready."
 
 # Start NIDS
-echo "Checking Existing Docker Environment..."
-docker-compose --profile feeder --profile gui down
+docker-compose --profile feeder --profile gui down # stop any running services, just in case
 
-cho "-------------------------------------------------------------------"
+echo "-------------------------------------------------------------------"
 echo "Starting Services..."
 docker-compose --profile feeder --profile gui up
 

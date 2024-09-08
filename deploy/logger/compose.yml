@@ -13,4 +13,7 @@ services:
       - store-file
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    image: logger
+    container_name: logger
+    profiles:
+      - log
+    attach: false # silence terminal output

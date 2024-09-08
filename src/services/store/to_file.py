@@ -18,10 +18,10 @@ class StoreFile(ComponentServicer):
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(output=msg.input)
+            return ComponentResponse(flow=msg.flow)
 
-        # ic(msg.input)
-        df = pd.DataFrame([msg.input])
+        # ic(msg.flow)
+        df = pd.DataFrame([msg.flow])
 
         if not os.path.isfile(self.output_file):
             df.to_csv(self.output_file, index=False, header=True)
@@ -30,7 +30,7 @@ class StoreFile(ComponentServicer):
             df.to_csv(self.output_file, mode="a", index=False, header=False)
             ic(f"Appended to: {self.output_file}")
 
-        return ComponentResponse(output=[0.0])
+        return ComponentResponse(return_code=0)
 
 
 if __name__ == "__main__":

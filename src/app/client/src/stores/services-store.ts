@@ -5,8 +5,9 @@ import { devtools } from "zustand/middleware";
 // Define the types for your collections
 interface Feeder {
   id_: string;
-  input: number[];
+  flow_data: number[];
   prediction: number;
+  metadata: Record<string, string>;
 }
 
 interface NeuralNetwork {
@@ -17,8 +18,9 @@ interface NeuralNetwork {
 
 interface OfflineFeeder {
   id_: string;
-  input: number[];
+  flow_data: number[];
   prediction: number;
+  metadata: Record<string, string>;
 }
 
 interface Default {

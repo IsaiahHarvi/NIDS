@@ -171,7 +171,7 @@ class BasicModule(pl.LightningModule):
         plt.title(f"{stage.capitalize()} Confusion Matrix")
 
         Live().log_image(f"{stage}_confusion_matrix.png", fig)
-        # wandb.log({f"{stage}_confusion_matrix": wandb.Image(f"dvclive/plots/images/{stage}_confusion_matrix.png")})
+        # wandb.log({f"{stage}_confusion_matrix": wandb.Image(f"dvclive/plots/images/{stage}_confusion_matrix.png")})  # noqa: E501
         plt.close(fig)
 
     def configure_optimizers(self):

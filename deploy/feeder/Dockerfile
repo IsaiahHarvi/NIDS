@@ -7,10 +7,8 @@ ENV PORT=50053
 ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"
 ENV DURATION=10
-ENV HOST="neural-network"
-ENV TARGET_PORT=50052
 
-LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION,HOST,TARGET_PORT"
+LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION"
 
 COPY deploy/feeder/requirements.txt /app/requirements.txt
 RUN pip3 install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt

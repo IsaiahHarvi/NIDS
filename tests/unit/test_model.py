@@ -3,7 +3,6 @@ import os
 import pytest
 import multiprocessing
 import time
-import numpy as np
 from icecream import ic
 from src.grpc_.utils import start_server
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
@@ -22,7 +21,7 @@ def grpc_server():
 
     server_process = multiprocessing.Process(
         target=start_server,
-        args=(NeuralNetwork("data/checkpoints/ResidualNetwork.ckpt"), 50052),
+        args=(NeuralNetwork("data/checkpoints/ResidualSmall.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)
@@ -31,12 +30,13 @@ def grpc_server():
     server_process.join()
 
 
+@pytest.mark.order(-1)  # run this last becuase its aggressive w/ containers
 def test_model(grpc_server):
     try:
-        with grpc.insecure_channel(f"localhost:{50052}") as channel:
+        with grpc.insecure_channel("localhost:50052") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
-                paths=[f"data/CIC/test_data.csv"],
+                paths=["data/CIC/test_data.csv"],
                 batch_size=1,
                 num_workers=1
             )
@@ -44,11 +44,10 @@ def test_model(grpc_server):
 
             data, label = next(iter(dm.train_dataloader()))
             data = data.numpy().flatten().tolist()  # [80] bc it has to live over gRPC
-            msg = ComponentMessage(input=data)
 
+            msg = ComponentMessage(flow=data)
             response = stub.forward(msg)
             assert isinstance(response, ComponentResponse)
             ic(f"Got {response.prediction}, expected {label.item()}")
-
     except Exception as e:
         ic(e)

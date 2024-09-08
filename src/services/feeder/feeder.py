@@ -2,13 +2,13 @@ import pandas as pd
 import subprocess
 import os
 import numpy as np
-import pandas as pd
 
 from typing import Tuple
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
 from src.grpc_.utils import start_server, sendto_service, sendto_mongo
 from nfstream import NFStreamer
+
 # from sklearn.preprocessing import StandardScaler
 from uuid import uuid4 as UUID
 
@@ -28,7 +28,7 @@ class Feeder(ComponentServicer):
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(output=msg.input)
+            return ComponentResponse(flow=msg.flow)
 
         pcap = self.capture_pcap(self.interface, self.file_name, self.duration)
         flow_csv, metadata = self.pcap_to_flows(pcap)
@@ -40,18 +40,19 @@ class Feeder(ComponentServicer):
         # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
         # ic(scaler.mean_, scaler.scale_)
 
-        pred = sendto_service(
-            msg=ComponentMessage(input=x),
-            host="neural-network",
+        model_response = sendto_service(
+            msg=ComponentMessage(flow=x),
+            host="127.0.0.1",  #  "neural-network",
             port=50052,
-        ).prediction
+        )
+        pred: int = model_response.prediction
 
         sendto_mongo(
             {"id_": uuid, "flow_data": x, "prediction": pred, "metadata": metadata},
             collection_name=self.__class__.__name__,
         )
 
-        return ComponentResponse(output=x)
+        return ComponentResponse(flow=x)
 
     def capture_pcap(self, interface: str, file_name: str, duration: int) -> str:
         pcap_file = file_name + (".pcap" if not file_name.endswith(".pcap") else "")
@@ -64,8 +65,11 @@ class Feeder(ComponentServicer):
         output_csv = pcap_file.replace(".pcap", "_flows.csv")
         stream = NFStreamer(source=pcap_file)
         flow_data = stream.to_pandas()
-
+        # ic(flow_data.columns)
+        
         features = pd.DataFrame()
+        features["Source_IP"] = flow_data["src_ip"]
+        features["Destination_IP"] = flow_data["dst_ip"]
         features["Source_Port"] = flow_data["src_port"]
         features["Destination_Port"] = flow_data["dst_port"]
         features["Protocol"] = flow_data["protocol"]
@@ -74,19 +78,34 @@ class Feeder(ComponentServicer):
         features["Total_Backward_Packets"] = flow_data["dst2src_packets"]
         features["Total_Length_of_Fwd_Packets"] = flow_data["src2dst_bytes"]
         features["Total_Length_of_Bwd_Packets"] = flow_data["dst2src_bytes"]
+
+        # Calculate flows per second and bytes per second
         features["Flow_Bytes_s"] = (
-            features["Total_Length_of_Fwd_Packets"]
-            + features["Total_Length_of_Bwd_Packets"]
+            features["Total_Length_of_Fwd_Packets"] + features["Total_Length_of_Bwd_Packets"]
         ) / (features["Flow_Duration"] / 1000)
         features["Flow_Packets_s"] = (
             features["Total_Fwd_Packets"] + features["Total_Backward_Packets"]
         ) / (features["Flow_Duration"] / 1000)
 
-        ic(features)
+        # Forward Packet Length Mean and Standard Deviation (calculated from total bytes and packet count)
+        features["Fwd_Packet_Length_Mean"] = features["Total_Length_of_Fwd_Packets"] / features["Total_Fwd_Packets"]
+        features["Bwd_Packet_Length_Mean"] = features["Total_Length_of_Bwd_Packets"] / features["Total_Backward_Packets"]
+
+        features["Timestamp"] = pd.to_datetime(flow_data["bidirectional_first_seen_ms"], unit='ms')
+
+        # features["Fwd_Packet_Length_Max"] = 
+        # features["Fwd_Packet_Length_Min"] = 
+        # features["Fwd_Packet_Length_Mean"] = 
+    
+        # features["Bwd_Packet_Length_Max"] = 
+        # features["Bwd_Packet_Length_Min"] = 
+        # features["Bwd_Packet_Length_Mean"] = 
+
+        # features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
         metadata = {col: str(features[col].iloc[0]) for col in features.columns}
-        
-        features.to_csv("/app/flow_data_output.csv", index=False)  # for surgery
-        features.to_csv(output_csv, index=False)
+
+        rel_features = features.drop(["Source_IP", "Destination_IP", "Timestamp"], axis=1, errors="ignore")
+        rel_features.to_csv(output_csv, index=False)
 
         ic(f"Converted PCAP file {pcap_file} to flow features in {output_csv}")
         return output_csv, metadata
@@ -103,9 +122,6 @@ class Feeder(ComponentServicer):
                 numeric_row, (0, 80 - numeric_row.shape[0]), "constant"
             )
             ic("WARNING: padding row")
-        elif numeric_row.shape[0] > 80:
-            numeric_row = numeric_row[:80]
-            ic("WARNING: truncating row")
         ic(f"reshaped to: {numeric_row.shape}")  # (80,)
 
         return numeric_row

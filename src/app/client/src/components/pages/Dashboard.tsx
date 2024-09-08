@@ -9,6 +9,7 @@ import { getOfflineFeeders } from "@/middleware/api/functions/getOfflineFeeders"
 import { getNeuralNetworks } from "@/middleware/api/functions/getNeuralNetworks";
 import { useEffect } from "react";
 import NetworkFlowCard from "../NetworkFlowCard";
+import NetworkTableCard from "../NetworkTableCard";
 const defaultChartData = [
   "Bot",
   "Bot",
@@ -143,6 +144,7 @@ const Dashboard = () => {
         </div>
         <div className="pt-4 pl-4 w-4/5">
           <NetworkFlowCard data={sampleData} />
+          <NetworkTableCard data={offlineFeeders}></NetworkTableCard>
         </div>
       </div>
     </div>

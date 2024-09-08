@@ -2,7 +2,7 @@ include:
   - model/compose.yml
   - feeder/compose.yml
   - offline_feeder/compose.yml
-  # - logger/compose.yml
+  - logger/compose.yml
   - store/compose.yml
 
 services:
@@ -26,6 +26,7 @@ services:
       - mongo-data:/data/db
       - /workspaces/NIDS/deploy/mongo/init_replset.js:/docker-entrypoint-initdb.d/01-init_replset.js:ro
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--quiet"]
+    attach: false # wont monitor mongo logs
 
   mongo-express:
     container_name: mongo-express
@@ -53,6 +54,8 @@ services:
         condition: service_healthy
     environment:
       WEBSERVER_MONGO_URL: mongodb://root:example@mongo:27017/
+    profiles:
+      - gui
 
 volumes:
   mongo-data:

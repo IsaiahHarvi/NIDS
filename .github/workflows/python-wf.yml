@@ -3,8 +3,12 @@ name: Pytest
 on:
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
     paths-ignore:
       - 'src/app/**'
+    
   workflow_dispatch:
 
 permissions:
@@ -44,4 +48,4 @@ jobs:
       run: pytest -sv
 
     - name: Lint
-      run: pylint src/ # || true # or true to give warnings instead of failing.
+      run: ruff check .

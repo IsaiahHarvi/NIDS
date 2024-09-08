@@ -22,7 +22,8 @@ services:
       - mongo-data:/data/db
       - ./deploy/mongo/init_replset.js:/docker-entrypoint-initdb.d/01-init_replset.js:ro
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--quiet"]
-    attach: true # wont monitor mongo logs
+    attach: false # wont monitor mongo logs
+
 
   mongo-express:
     container_name: mongo-express

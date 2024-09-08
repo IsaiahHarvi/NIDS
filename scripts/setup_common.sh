@@ -17,10 +17,11 @@ else
 fi
 
 # update and install deps/utils
+echo -e "\nInstalling system packages..."
 sudo apt update > /dev/null 2>&1
 sudo apt upgrade -y > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
-    dnsutils iputils-ping curl wget tshark 
+    dnsutils iputils-ping curl wget # tshark 
 
 # clear all residual docker stuff
 docker system prune --volumes -af | true

@@ -3,6 +3,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import WebSocketContextProvider from "@/middleware/WebSocketContext";
 import { Navbar } from "@/components/navbar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
 export const Route = createRootRoute({
   component: () => (
     <>
@@ -16,7 +17,7 @@ export const Route = createRootRoute({
                 <div className="h-full dark:bg-zinc-900/40 bg-zinc-100">
                   <Outlet />
                 </div>
-                {/* <Toaster /> */}
+                <Toaster />
                 {/* <TailwindIndicator /> */}
               </div>
             </div>

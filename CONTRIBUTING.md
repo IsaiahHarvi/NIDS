@@ -1,5 +1,16 @@
 # Contributing Guidelines
 
+## Testing
+- `docker compose up --build`: bring up and attach to the compose services
+- `docker compose down`: stop all of the running services
+- `docker system prune --volumes -a`: remove all stopped containers and volmes
+- `docker volume rm mongo-data`: clear the persistent data stored in mongoDb
+- `bun i && bun dev`: when ran under src/app/server + src/app/client you can run the GUI in development mode
+- `docker compose --profile gui up --build`: run the services and the webserver container
+- `docker compose --profile feeder up --build`: run the services and the online feeder which has host devices
+- `ruff check .`: lint all python files
+- `ruff check . --fix`: fix linting errors
+
 ## Opening Issues
 
 - **Clear Description:** When opening an issue, the issue title should address the added feature, fix, or enhancement. If further detail is necessary, elaborate in the description to justify its necessity. Details in implementation should be described under the PR
@@ -12,7 +23,7 @@
 - **Issue Linking:** Every PR must be linked to at least one issue. Please use the GitHub keywords (e.g., "Closes #issue_number") in your PR description to automatically link the PR to the relevant issue. 
 
 ## Code Review
-
+- **Formatting:** When editing .py files be sure to utilize `ruff check . --fix` to avoid linting errors.
 - **JavaScript-Related Code:** All JavaScript-related code must be reviewed by @CaseyBramlett.
 - **Other Code:** All other code must be reviewed by @IsaiahHarvi.
 

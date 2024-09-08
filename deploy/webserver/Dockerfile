@@ -1,27 +1,28 @@
 # Client build stage
 FROM mcr.microsoft.com/devcontainers/typescript-node AS client-layers
 
-WORKDIR /app/client
-
 COPY src/app/types/ /app/types/
 COPY src/app/client/ /app/client/
+WORKDIR /app/client
 
-RUN pnpm install && pnpm build
+RUN pnpm install
+RUN pnpm build
 
 # Server build stage
 FROM oven/bun:latest
+ENV NODE_ENV production
 
-WORKDIR /app/server
+# this is weird but we absolute path in one of the ts files
+COPY src/grpc_ /workspaces/NIDS/src/grpc_
 
 COPY src/app/types/ /app/types/
 COPY src/app/server/ /app/server/
-ENV NODE_ENV production
+WORKDIR /app/server
 
 RUN bun install --production
 
 # Copy client build output from the previous stage
-COPY --from=client-layers /app/client/dist /app/server/client
-# RUN ls -al /app/server/client
+COPY --from=client-layers /app/client/dist /app/server/dist
 
 CMD ["bun", "run", "src/index.ts"]
 

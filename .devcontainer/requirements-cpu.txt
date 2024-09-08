@@ -28,8 +28,6 @@ antlr4-python3-runtime==4.9.3
     #   omegaconf
 appdirs==1.4.4
     # via iterative-telemetry
-astroid==3.2.4
-    # via pylint
 asttokens==2.4.1
     # via icecream
 asyncssh==2.16.0
@@ -44,8 +42,6 @@ attrs==24.2.0
     #   sqltrie
 billiard==4.2.0
     # via celery
-black==24.8.0
-    # via -r .devcontainer/requirements-cpu.in
 build==1.2.1
     # via pip-tools
 celery==5.4.0
@@ -59,13 +55,13 @@ certifi==2024.7.4
 cffi==1.17.0
     # via
     #   cryptography
+    #   nfstream
     #   pygit2
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
     #   -r .devcontainer/requirements-cpu.in
-    #   black
     #   celery
     #   click-didyoumean
     #   click-plugins
@@ -93,8 +89,6 @@ cycler==0.12.1
     # via matplotlib
 dictdiffer==0.9.0
     # via dvc-data
-dill==0.3.8
-    # via pylint
 diskcache==5.6.3
     # via dvc-data
 distro==1.9.0
@@ -109,6 +103,8 @@ docker-pycreds==0.4.0
     # via wandb
 dpath==2.2.0
     # via dvc
+dpkt==1.9.8
+    # via nfstream
 dulwich==0.22.1
     # via
     #   dvc
@@ -203,8 +199,6 @@ idna==3.8
     #   yarl
 iniconfig==2.0.0
     # via pytest
-isort==5.13.2
-    # via pylint
 iterative-telemetry==0.0.8
     # via dvc
 jinja2==3.1.4
@@ -231,8 +225,6 @@ markupsafe==2.1.5
     # via jinja2
 matplotlib==3.9.2
     # via -r .devcontainer/requirements-cpu.in
-mccabe==0.7.0
-    # via pylint
 mdurl==0.1.2
     # via markdown-it-py
 mpmath==1.3.0
@@ -241,17 +233,18 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
-mypy-extensions==1.0.0
-    # via black
 networkx==3.3
     # via
     #   dvc
     #   torch
+nfstream==6.5.3
+    # via -r .devcontainer/requirements-cpu.in
 numpy==1.26.4
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   contourpy
     #   matplotlib
+    #   nfstream
     #   pandas
     #   scikit-learn
     #   scipy
@@ -267,7 +260,6 @@ orjson==3.10.7
     #   sqltrie
 packaging==24.1
     # via
-    #   black
     #   build
     #   dvc
     #   hydra-core
@@ -278,10 +270,11 @@ packaging==24.1
     #   pytorch-lightning
     #   torchmetrics
 pandas==2.2.2
-    # via -r .devcontainer/requirements-cpu.in
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   nfstream
 pathspec==0.12.1
     # via
-    #   black
     #   dvc
     #   scmrepo
 pillow==10.4.0
@@ -292,9 +285,7 @@ pip-tools==7.4.1
     # via -r .devcontainer/requirements-cpu.in
 platformdirs==3.11.0
     # via
-    #   black
     #   dvc
-    #   pylint
     #   wandb
 pluggy==1.5.0
     # via pytest
@@ -309,6 +300,7 @@ psutil==6.0.0
     #   dvc
     #   dvclive
     #   flufl-lock
+    #   nfstream
     #   wandb
 pycparser==2.22
     # via cffi
@@ -330,8 +322,6 @@ pygtrie==2.5.0
     #   dvc-data
     #   scmrepo
     #   sqltrie
-pylint==3.2.6
-    # via -r .devcontainer/requirements-cpu.in
 pymongo==4.8.0
     # via -r .devcontainer/requirements-cpu.in
 pynvml==11.5.3
@@ -347,6 +337,10 @@ pyproject-hooks==1.1.0
     #   build
     #   pip-tools
 pytest==8.3.2
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   pytest-ordering
+pytest-ordering==0.6
     # via -r .devcontainer/requirements-cpu.in
 python-dateutil==2.9.0.post0
     # via
@@ -382,6 +376,8 @@ ruamel-yaml==0.18.6
     #   gto
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
+ruff==0.6.4
+    # via -r .devcontainer/requirements-cpu.in
 scikit-learn==1.5.1
     # via -r .devcontainer/requirements-cpu.in
 scipy==1.14.1
@@ -425,10 +421,8 @@ tabulate==0.9.0
 threadpoolctl==3.5.0
     # via scikit-learn
 tomlkit==0.13.2
-    # via
-    #   dvc
-    #   pylint
-torch==2.4.0
+    # via dvc
+torch==2.4.0+cpu
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   lightning
@@ -439,7 +433,7 @@ torchmetrics==1.4.1
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.19.0
+torchvision==0.19.0+cpu
     # via -r .devcontainer/requirements-cpu.in
 tqdm==4.66.5
     # via

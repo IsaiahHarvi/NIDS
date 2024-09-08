@@ -61,8 +61,10 @@ jobs:
     - name: Test Build
       run: pytest
 
-    - name: Run Docker Services
-      run: docker compose up --build -d
+    - name: Run Docker Services 
+      run: | # NOTE: This excludes the webserver and feeder service
+        docker compose up --build -d
+        docker compose down
 
     - name: Run Client
       run: |

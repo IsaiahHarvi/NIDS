@@ -23,22 +23,21 @@ class NeuralNetwork(ComponentServicer):
         self.model.eval()
         ic(f"Started on {os.environ.get('PORT')}")
 
-    def forward(self, msg: ComponentMessage, context):
+    def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(output=msg.input)
+            return ComponentResponse(flow=msg.flow)
 
-        x = torch.tensor(msg.input)
+        x = torch.tensor(msg.flow)
         # ic(x.shape)
 
         if x.dim() == 1:
             x = x.unsqueeze(0)
-
         assert x.dim() == 2, f"Expected [batch_size, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)
-        return ComponentResponse(prediction=pred)
+        return ComponentResponse(prediction=pred, return_code=0)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Home,
@@ -12,6 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { cn } from "@/lib/utils";
+import SettingsModal from "./settingsModal"; // Import the SettingsModal component
 
 interface LinkItemProps {
   to: string;
@@ -84,6 +86,11 @@ function BottomLinkItem({
 }
 
 export function Navbar(): JSX.Element {
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false); // State to control modal
+
+  const openSettingsModal = () => setSettingsModalOpen(true);
+  const closeSettingsModal = () => setSettingsModalOpen(false);
+
   return (
     <aside className="inset-y fixed left-0 z-20 flex h-full flex-col  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="flex flex-col items-center gap-4 py-2">
@@ -126,14 +133,29 @@ export function Navbar(): JSX.Element {
           label="Help"
           pathCheck="/help"
         />
-        <BottomLinkItem
-          to="/settings"
-          icon={Settings}
-          label="Settings"
-          pathCheck="/settings"
-          disabled
-        />
+        {/* When clicking on this icon, open the SettingsModal */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={openSettingsModal}
+              className="flex h-9 w-full text-muted-foreground transition-colors hover:text-primary"
+            >
+              <div className="h-full w-[3px] left-0 top-0 bottom-0 bg-background" />
+              <Settings className="h-5 w-8 m-auto text-inherit" />
+              <span className="sr-only">Settings</span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right">Settings</TooltipContent>
+        </Tooltip>
       </nav>
+
+      {/* Render SettingsModal if the state is open */}
+      {isSettingsModalOpen && (
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={closeSettingsModal}
+        />
+      )}
     </aside>
   );
 }

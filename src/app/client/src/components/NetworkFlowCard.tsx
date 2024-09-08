@@ -45,18 +45,13 @@ export const NetworkFlow = ({ data }: { data: FeederMessage[] }) => {
   }));
 
   // Map to edges with 'default' type (no animation)
-  const edges = data.map(
-    (message) => (
-      console.log(message),
-      {
-        id: `edge-${message.id_}`,
-        source: `node-${message.id_}`, // Connects to the source node
-        target: `host-${message.host}`, // Connects to the target host node
-        label: `Port: ${message.port}`, // Shows the port in the edge
-        type: "default", // Default edge type
-      }
-    )
-  );
+  const edges = data.map((message) => ({
+    id: `edge-${message.id_}`,
+    source: `node-${message.id_}`, // Connects to the source node
+    target: `host-${message.host}`, // Connects to the target host node
+    label: `Port: ${message.port}`, // Shows the port in the edge
+    type: "default", // Default edge type
+  }));
 
   // Combine input nodes with host nodes
   const allNodes = [...nodes, ...hostNodes];
@@ -64,8 +59,6 @@ export const NetworkFlow = ({ data }: { data: FeederMessage[] }) => {
   // Hooks for managing nodes and edges
   const [reactFlowNodes, , onNodesChange] = useNodesState(allNodes);
   const [reactFlowEdges, , onEdgesChange] = useEdgesState(edges);
-  console.log(reactFlowNodes);
-  console.log(reactFlowEdges);
 
   return (
     <div style={{ height: "100%" }}>

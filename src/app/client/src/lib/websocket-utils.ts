@@ -6,10 +6,6 @@ export async function handleFeeder(
   type: string
 ) {
   const { addFeeder, removeFeeder } = store;
-  console.log(
-    `Feeder ${type === "feeder_insert" ? "Inserted" : "Deleted"}: `,
-    data
-  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
 
@@ -26,10 +22,6 @@ export async function handleNeuralNetwork(
   type: string
 ) {
   const { addNeuralNetwork, removeNeuralNetwork } = store;
-  console.log(
-    `Neural Network ${type === "neural_network_insert" ? "Inserted" : "Deleted"}: `,
-    data
-  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
 
@@ -46,13 +38,8 @@ export async function handleOfflineFeeder(
   type: string
 ) {
   const { addOfflineFeeder, removeOfflineFeeder } = store;
-  console.log(
-    `Offline Feeder ${type === "offline_feeder_insert" ? "Inserted" : "Deleted"}: `,
-    data
-  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
-
   if (type === "offline_feeder_insert") {
     addOfflineFeeder(parsedData.document);
   } else if (type === "offline_feeder_delete") {
@@ -66,10 +53,6 @@ export async function handleDefault(
   type: string
 ) {
   const { addDefault, removeDefault } = store;
-  console.log(
-    `Default ${type === "default_insert" ? "Inserted" : "Deleted"}: `,
-    data
-  );
   if (data === undefined) return;
   const parsedData = JSON.parse(data);
 

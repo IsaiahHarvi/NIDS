@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { startFeeders } from "@/middleware/api/functions/startFeeders";
 import { stopFeeders } from "@/middleware/api/functions/stopFeeders";
 import { useToast } from "@/hooks/use-toast";
+import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
 
 const Dashboard = () => {
   const { toast } = useToast();
@@ -87,7 +88,11 @@ const Dashboard = () => {
         <div className="pt-4 flex flex-row gap-4 w-1/5">
           <PieChartCard data={offlineFeeders} />
         </div>
-        <div className="pt-4 pl-4 w-4/5"></div>
+        <div className="pt-4 pl-4 w-4/5">
+          <NetworkTrafficLineChart
+            data={offlineFeeders}
+          ></NetworkTrafficLineChart>
+        </div>
       </div>
       <div className="pt-4">
         <NetworkTableCard data={offlineFeeders}></NetworkTableCard>

@@ -5,7 +5,7 @@ services:
       dockerfile: deploy/store/Dockerfile.to-file
     ports:
       - "50056:50056"
-    image: store-file
+    container_name: store-file
 
   store-db: 
     build:
@@ -13,4 +13,4 @@ services:
       dockerfile: deploy/store/Dockerfile.to-db
     ports:
       - "50057:50057"
-    image: store-db
+    container_name: store-db

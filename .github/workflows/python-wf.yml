@@ -8,8 +8,6 @@ on:
       - 'tests/**'
     paths-ignore:
       - 'src/app/**'
-    
-  workflow_dispatch:
 
 permissions:
   contents: read

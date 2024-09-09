@@ -1,4 +1,4 @@
-import { restPost } from "../../rest-calls/rest-post"; // Assuming you have a `restPost` utility for making POST requests
+import { restPost } from "../../rest-calls/rest-post";
 
 export async function startFeeders(clientType: "feeder" | "offline_feeder") {
   try {

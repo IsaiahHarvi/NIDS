@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/chart";
 import { FeederMessage } from "../../../types/client-types";
 
-// Declare the classMap with prediction values and colors
 const classMap = {
   BENIGN: { value: 0, color: "green" },
   PortScan: { value: 1, color: "yellow" },
@@ -31,7 +30,6 @@ const classMap = {
   DDoS: { value: 11, color: "red" },
 };
 
-// Invert the classMap for easy lookup of attack type by prediction value
 const invertedClassMap = Object.fromEntries(
   Object.entries(classMap).map(([key, obj]) => [
     obj.value,
@@ -39,7 +37,6 @@ const invertedClassMap = Object.fromEntries(
   ])
 );
 
-// PieChartComponent implementation (subcomponent)
 const PieChartComponent = ({
   data,
 }: {

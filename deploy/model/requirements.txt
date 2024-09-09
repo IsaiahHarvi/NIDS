@@ -93,7 +93,7 @@ six==1.16.0
     #   python-dateutil
 sympy==1.13.2
     # via torch
-torch==2.4.1+cpu
+torch==2.4.1
     # via
     #   -r deploy/model/requirements.in
     #   lightning

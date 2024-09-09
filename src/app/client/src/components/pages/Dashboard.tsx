@@ -1,131 +1,46 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 // import PieChartComponent from "../PieChart";
 import PieChartCard from "../PieChart";
-// import PcapAreaChart from "../PcapAreaChart";
-// import { ServicesState } from "@/stores/services-store";
 import { useServicesStore } from "@/stores/services-store";
-import { getFeeders } from "@/middleware/api/functions/getFeeders";
-import { getOfflineFeeders } from "@/middleware/api/functions/getOfflineFeeders";
-import { getNeuralNetworks } from "@/middleware/api/functions/getNeuralNetworks";
-import { useEffect } from "react";
-import NetworkFlowCard from "../NetworkFlowCard";
+// import { getFeeders } from "@/middleware/api/functions/getFeeders";
+// import { getOfflineFeeders } from "@/middleware/api/functions/getOfflineFeeders";
+// import { getNeuralNetworks } from "@/middleware/api/functions/getNeuralNetworks";
+// import { useEffect } from "react";
 import NetworkTableCard from "../NetworkTableCard";
-const defaultChartData = [
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "Bot",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS GoldenEye",
-  "DoS Hulk",
-  "DoS Hulk",
-  "DoS Hulk",
-  "DoS Hulk",
-  "DoS Hulk",
-  "DoS Hulk",
-  "DoS Slowhttptest",
-  "DoS Slowhttptest",
-  "DoS Slowhttptest",
-  "DoS Slowhttptest",
-  "DoS Slowhttptest",
-  "DoS slowloris",
-  "DoS slowloris",
-  "DoS slowloris",
-  "DoS slowloris",
-  "FTP-Patator",
-  "FTP-Patator",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Heartbleed",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "Infiltration",
-  "PortScan",
-  "SSH-Patator",
-  "SSH-Patator",
-  "SSH-Patator",
-];
+import { Button } from "../ui/button";
+import { startFeeders } from "@/middleware/api/functions/startFeeders";
+import { stopFeeders } from "@/middleware/api/functions/stopFeeders";
+import { useToast } from "@/hooks/use-toast";
+import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
 
 const Dashboard = () => {
+  const { toast } = useToast();
   const {
-    feeders,
-    setFeeders,
+    // feeders,
+    // setFeeders,
     offlineFeeders,
-    setOfflineFeeders,
-    neuralNetworks,
-    setNeuralNetworks,
+    // setOfflineFeeders,
+    // neuralNetworks,
+    // setNeuralNetworks,
   } = useServicesStore();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedFeeders = await getFeeders();
-        setFeeders(fetchedFeeders);
-        const fetchedOfflineFeeders = await getOfflineFeeders();
-        setOfflineFeeders(fetchedOfflineFeeders);
-        const fetchedNeuralNetworks = await getNeuralNetworks();
-        setNeuralNetworks(fetchedNeuralNetworks);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // console.log(feeders, offlineFeeders, neuralNetworks);
-  console.log("feeders", feeders);
-  console.log("offlineFeeders", offlineFeeders);
-  console.log("neuralNetworks", neuralNetworks);
-
-  const sampleData = [
-    {
-      id_: "1",
-      input: [192, 168, 1, 1],
-      prediction: 0,
-      host: "192.168.1.100", // Host IP
-      target: "10.0.0.1", // Target IP
-      port: 80,
-    },
-    {
-      id_: "2",
-      input: [192, 168, 1, 2],
-      prediction: 0,
-      host: "192.168.1.100", // Same host as above
-      target: "10.0.0.2", // Different Target IP
-      port: 443,
-    },
-    {
-      id_: "3",
-      input: [192, 168, 1, 3],
-      prediction: 0,
-      host: "192.168.1.101", // Different host IP
-      target: "10.0.0.3", // Different Target IP
-      port: 8080,
-    },
-  ];
+  // TODO: figure out how to handle this
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const fetchedFeeders = await getFeeders();
+  //       setFeeders(fetchedFeeders);
+  //       const fetchedOfflineFeeders = await getOfflineFeeders();
+  //       setOfflineFeeders(fetchedOfflineFeeders);
+  //       const fetchedNeuralNetworks = await getNeuralNetworks();
+  //       setNeuralNetworks(fetchedNeuralNetworks);
+  //     } catch (error) {
+  //       console.error("Error fetching data: ", error);
+  //     }
+  //   };
+  //   fetchData();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <div className="p-4">
@@ -133,19 +48,54 @@ const Dashboard = () => {
         <CardHeader>
           <CardTitle>Dashboard</CardTitle>
           <CardDescription>
-            Overview of your network and collected data
+            <div className="pt-3 flex flex-row justify-between items-center">
+              <span>Overview of your network and collected data</span>
+              <div className="flex gap-5">
+                <Button
+                  size={"sm"}
+                  onClick={() => {
+                    startFeeders("offline_feeder");
+                    toast({
+                      title: "Feeders Started",
+                      description: "Feeders have been started successfully",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  Start Feeders
+                </Button>
+
+                <Button
+                  size={"sm"}
+                  onClick={() => {
+                    stopFeeders();
+                    toast({
+                      title: "Feeders Stopped",
+                      description: "Feeders have been stopped successfully",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  Stop
+                </Button>
+              </div>
+            </div>
           </CardDescription>
         </CardHeader>
-        {/* <CardContent></CardContent> */}
       </Card>
+
       <div className="flex flex-row">
         <div className="pt-4 flex flex-row gap-4 w-1/5">
-          <PieChartCard data={defaultChartData} />
+          <PieChartCard data={offlineFeeders} />
         </div>
         <div className="pt-4 pl-4 w-4/5">
-          <NetworkFlowCard data={sampleData} />
-          <NetworkTableCard data={offlineFeeders}></NetworkTableCard>
+          <NetworkTrafficLineChart
+            data={offlineFeeders}
+          ></NetworkTrafficLineChart>
         </div>
+      </div>
+      <div className="pt-4">
+        <NetworkTableCard data={offlineFeeders}></NetworkTableCard>
       </div>
     </div>
   );

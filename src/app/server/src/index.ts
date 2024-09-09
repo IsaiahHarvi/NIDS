@@ -17,6 +17,9 @@ async function startServer() {
         credentials: true,
       })
     )
+    .get("/", () => "Hello Elysia")
+    .get("/ping", () => ({ message: "pong" }))
+    .post("/hello", () => "world")
     .use(
       staticPlugin({
         prefix: "/",  // Serve files from the root

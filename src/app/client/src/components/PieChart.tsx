@@ -13,32 +13,38 @@ import {
   ChartTooltipContent,
   ChartConfig,
 } from "@/components/ui/chart";
+import { FeederMessage } from "../../../types/client-types";
 
-// Define the type for the pie chart prop
-interface PieChartComponentProps {
-  data: string[];
-}
+const classMap = {
+  BENIGN: { value: 0, color: "green" },
+  PortScan: { value: 1, color: "yellow" },
+  "FTP-Patator": { value: 2, color: "yellow" },
+  "SSH-Patator": { value: 3, color: "yellow" },
+  "DoS slowloris": { value: 4, color: "orange" },
+  "DoS Slowhttptest": { value: 5, color: "orange" },
+  "DoS GoldenEye": { value: 6, color: "orange" },
+  "DoS Hulk": { value: 7, color: "orange" },
+  Heartbleed: { value: 8, color: "red" },
+  Bot: { value: 9, color: "red" },
+  Infiltration: { value: 10, color: "red" },
+  DDoS: { value: 11, color: "red" },
+};
 
-// PieChartComponent implementation (subcomponent)
-const PieChartComponent = ({ data }: PieChartComponentProps) => {
-  // Process the array of strings and count the occurrences
-  const processedData = useMemo(() => {
-    const counts: { [key: string]: number } = {};
+const invertedClassMap = Object.fromEntries(
+  Object.entries(classMap).map(([key, obj]) => [
+    obj.value,
+    { name: key, color: obj.color },
+  ])
+);
 
-    data.forEach((item) => {
-      counts[item] = (counts[item] || 0) + 1;
-    });
-
-    return Object.keys(counts).map((key) => ({
-      name: key,
-      value: counts[key],
-      fill: `hsl(var(--chart-${Math.floor(Math.random() * 5) + 1}))`, // Example random color
-    }));
-  }, [data]);
-
+const PieChartComponent = ({
+  data,
+}: {
+  data: { name: string; value: number; fill: string }[];
+}) => {
   const totalOccurrences = useMemo(() => {
-    return processedData.reduce((acc, curr) => acc + curr.value, 0);
-  }, [processedData]);
+    return data.reduce((acc, curr) => acc + curr.value, 0);
+  }, [data]);
 
   return (
     <ChartContainer
@@ -51,7 +57,7 @@ const PieChartComponent = ({ data }: PieChartComponentProps) => {
           content={<ChartTooltipContent hideLabel />}
         />
         <Pie
-          data={processedData}
+          data={data}
           dataKey="value"
           nameKey="name"
           innerRadius={60}
@@ -102,10 +108,47 @@ const chartConfig = {
 
 // PieChartCard component (main component)
 interface PieChartCardProps {
-  data: string[];
+  data: FeederMessage[];
 }
 
 const PieChartCard = ({ data }: PieChartCardProps) => {
+  // Memoized processing of data for the pie chart and finding the oldest timestamp
+  const { processedData, oldestTimestamp } = useMemo(() => {
+    const counts: { [key: string]: number } = {};
+    let oldestTime: Date | null = null;
+
+    data.forEach((message) => {
+      // Get the prediction value and map it to the corresponding attack type
+      const prediction = message.prediction;
+      const attackType = invertedClassMap[prediction]?.name || "Unknown";
+
+      // Increment the count for this attack type
+      counts[attackType] = (counts[attackType] || 0) + 1;
+
+      // Parse the timestamp and track the oldest one
+      const timestamp = new Date(message.metadata.Timestamp);
+      if (!oldestTime || timestamp < oldestTime) {
+        oldestTime = timestamp;
+      }
+    });
+
+    // Convert counts object into the format needed for the PieChart
+    const processedData = Object.keys(counts).map((key) => ({
+      name: key,
+      value: counts[key],
+      fill:
+        invertedClassMap[classMap[key as keyof typeof classMap]?.value]
+          ?.color || "gray", // Use corresponding color from classMap
+    }));
+
+    return {
+      processedData,
+      oldestTimestamp: oldestTime
+        ? (oldestTime as Date).toLocaleString()
+        : "N/A", // Format the oldest timestamp
+    };
+  }, [data]);
+
   return (
     <Card>
       <CardHeader>
@@ -114,14 +157,14 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
           <div>
             <p>Anomalies detected since network monitor started</p>
             <label className="font-bold italic">
-              First packet received: 12:45
+              First packet received: {oldestTimestamp}
             </label>
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Render PieChartComponent with passed data */}
-        <PieChartComponent data={data} />
+        {/* Render PieChartComponent with processed data */}
+        <PieChartComponent data={processedData} />
       </CardContent>
     </Card>
   );

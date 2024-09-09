@@ -28,4 +28,9 @@ docker system prune --volumes -af | true
 docker volume rm mongo-data | true
 
 # make mongo service accessible from host
-echo "127.0.0.1 mongo" | sudo tee -a /etc/hosts
+if ! grep -q "# NIDS" /etc/hosts; then
+    echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
+    echo "NIDS entry added to /etc/hosts"
+else
+    echo "NIDS entry already exists in /etc/hosts"
+fi

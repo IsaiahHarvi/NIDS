@@ -5,12 +5,6 @@ services:
       dockerfile: deploy/logger/Dockerfile
     ports:
       - "50055:50055"
-    depends_on:
-      - feeder
-      - offline-feeder
-      - neural-network
-      - store-db
-      - store-file
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     container_name: logger

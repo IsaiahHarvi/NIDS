@@ -17,14 +17,20 @@ else
 fi
 
 # update and install deps/utils
+echo -e "\nInstalling system packages..."
 sudo apt update > /dev/null 2>&1
 sudo apt upgrade -y > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
-    dnsutils iputils-ping curl wget tshark 
+    dnsutils iputils-ping curl wget # tshark 
 
 # clear all residual docker stuff
 docker system prune --volumes -af | true
 docker volume rm mongo-data | true
 
 # make mongo service accessible from host
-echo "127.0.0.1 mongo" | sudo tee -a /etc/hosts
+if ! grep -q "# NIDS" /etc/hosts; then
+    echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
+    echo "NIDS entry added to /etc/hosts"
+else
+    echo "NIDS entry already exists in /etc/hosts"
+fi

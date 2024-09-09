@@ -1,79 +1,41 @@
-name: Deploy
+# This can come back after I fix the webserver container. -@IsaiahHarvi
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+# name: Deploy
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   workflow_dispatch:
     
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: ${{ github.workspace }}/src
-      WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-    steps:
-    - uses: actions/checkout@v4
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     env:
+#       PYTHONPATH: ${{ github.workspace }}/src
+#       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+#     steps:
+#     - uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
+#     - name: Set up Python 3.11
+#       uses: actions/setup-python@v3
+#       with:
+#         python-version: "3.11"
 
-    - name: Install Python Dependencies
-      run: |
-        pip install --no-cache-dir -r .devcontainer/requirements-cpu.txt -e .
+#     - name: Run NIDS
+#       run: | # This is a modified version of scripts/deploy.sh for CI/CD
+#         if ! grep -q "# NIDS" /etc/hosts; then
+#             echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
+#             echo "NIDS entry added to /etc/hosts"
+#         else
+#             echo "NIDS entry already exists in /etc/hosts"
+#         fi
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+#         echo "Checking Existing Docker Environment..."
+#         docker-compose --profile feeder --profile gui down
 
-    - name: Install bun
-      run: |
-        npm install -g bun
-
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements-cpu.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Cache bun dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.bun
-        key: ${{ runner.os }}-bun-${{ hashFiles('app/**/package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-bun-
-
-    - name: Verify Setup
-      run: |
-        git lfs install
-        git lfs pull
-        echo $PWD
-        echo "PYTHONPATH is: $PYTHONPATH"
-
-    - name: Test Build
-      run: pytest
-
-    - name: Run Docker Services 
-      run: | # NOTE: This excludes the webserver and feeder service
-        docker compose up --build -d
-        docker compose down
-
-    - name: Run Client
-      run: |
-        cd src/app/client
-        bun install
-        bun dev &
-
-    - name: Run Server
-      run: |
-        cd src/app/server
-        bun install
-        bun dev &
+#         echo "Starting Services..."
+#         docker-compose --profile feeder --profile gui up -d
+    

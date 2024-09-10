@@ -12,8 +12,8 @@ class Logger:
         ic(f"Logger started on port {os.environ.get('PORT')}")
         self.client = docker.from_env()
         self.mongo_client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
-        self.db = self.mongo_client["logging_service"]
-        self.collection = self.db["logs"]
+        self.db = self.mongo_client["logs"]
+        self.collection = self.db["log_entries"]
 
         self.services = self.get_service_names()
         ic(f"Collecting logs for: {', '.join(self.services)}")
@@ -25,7 +25,7 @@ class Logger:
             services = [
                 container.name
                 for container in containers
-                if "nids-" in container.name and "logger" not in container.name
+                if container.name in ["neural-network", "mongo", "mongo-express", "offline-feeder", "webserver"] and "logger" not in container.name
             ]
             ic(f"Identified services: {services}")
             return services

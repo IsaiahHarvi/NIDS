@@ -8,6 +8,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     container_name: logger
+    depends_on:
+      - mongo
     profiles:
       - log
     attach: false # silence terminal output

@@ -13,7 +13,7 @@ from src.services.feeder.feeder import Feeder
 
 from src.ai.DataModule import DataModule
 @pytest.mark.skip("feeder disconnects")
-def test_model():
+def test_feeder():
     server_process = multiprocessing.Process(
         target=start_server,
         args=(Feeder("eth0", "capture.pcap", 10), 50053),

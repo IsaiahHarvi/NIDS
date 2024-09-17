@@ -34,8 +34,7 @@ class OfflineFeeder(ComponentServicer):
         )
         full_sample = df.sample(n=1)
         metadata = {
-            col: str(full_sample[col].values[0]) 
-            for col in list(full_sample.columns)
+            col: str(full_sample[col].values[0]) for col in list(full_sample.columns)
         }
 
         y = full_sample["Label"].values[0]
@@ -56,7 +55,7 @@ class OfflineFeeder(ComponentServicer):
             msg=ComponentMessage(flow=x), host="neural-network", port=50052
         )
         pred: int = model_response.prediction
-        
+
         sendto_mongo(
             {
                 "id_": uuid,

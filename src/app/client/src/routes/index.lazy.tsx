@@ -9,9 +9,8 @@ import Balancer from "react-wrap-balancer";
 import type { LucideIcon } from "lucide-react";
 import { Sparkles, Crosshair, ScrollText, Gamepad2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/nids_logo.png";
-import "@/assets/logo.css";
-
+import logo from "@/components/logo/nids_logo.png";
+import "@/components/logo/logo.css";
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });

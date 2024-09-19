@@ -1,8 +1,7 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-// import { persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
-// Define the types for your collections
 interface Feeder {
   id_: string;
   flow_data: number[];
@@ -29,7 +28,6 @@ interface Default {
   prediction: number;
 }
 
-// Define the state interfaces for each collection
 interface FeederState {
   feeders: Feeder[];
   setFeeders: (feeders: Feeder[]) => void;
@@ -68,98 +66,95 @@ export type ServicesState = FeederState &
   DefaultState;
 
 export const useServicesStore = create<ServicesState>()(
-  devtools(
-    (set) => ({
-      // Feeder collection state and actions
-      feeders: [],
+  persist(
+    devtools(
+      (set) => ({
+        feeders: [],
+        setFeeders: (feeders: Feeder[]) => set({ feeders }),
+        addFeeder: (feeder: Feeder) =>
+          set((state) => ({ feeders: [...state.feeders, feeder] })),
 
-      setFeeders: (feeders: Feeder[]) => set({ feeders }),
+        updateFeeder: (feeder: Feeder) =>
+          set((state) => ({
+            feeders: state.feeders.map((f) =>
+              f.id_ === feeder.id_ ? feeder : f
+            ),
+          })),
 
-      addFeeder: (feeder: Feeder) =>
-        set((state) => ({ feeders: [...state.feeders, feeder] })),
+        removeFeeder: (feederId: string) =>
+          set((state) => ({
+            feeders: state.feeders.filter((f) => f.id_ !== feederId),
+          })),
 
-      updateFeeder: (feeder: Feeder) =>
-        set((state) => ({
-          feeders: state.feeders.map((f) =>
-            f.id_ === feeder.id_ ? feeder : f
-          ),
-        })),
+        neuralNetworks: [],
 
-      removeFeeder: (feederId: string) =>
-        set((state) => ({
-          feeders: state.feeders.filter((f) => f.id_ !== feederId),
-        })),
+        setNeuralNetworks: (neuralNetworks: NeuralNetwork[]) =>
+          set({ neuralNetworks }),
 
-      // NeuralNetwork collection state and actions
-      neuralNetworks: [],
+        addNeuralNetwork: (neuralNetwork: NeuralNetwork) =>
+          set((state) => ({
+            neuralNetworks: [...state.neuralNetworks, neuralNetwork],
+          })),
 
-      setNeuralNetworks: (neuralNetworks: NeuralNetwork[]) =>
-        set({ neuralNetworks }),
+        updateNeuralNetwork: (neuralNetwork: NeuralNetwork) =>
+          set((state) => ({
+            neuralNetworks: state.neuralNetworks.map((n) =>
+              n.id_ === neuralNetwork.id_ ? neuralNetwork : n
+            ),
+          })),
 
-      addNeuralNetwork: (neuralNetwork: NeuralNetwork) =>
-        set((state) => ({
-          neuralNetworks: [...state.neuralNetworks, neuralNetwork],
-        })),
+        removeNeuralNetwork: (neuralNetworkId: string) =>
+          set((state) => ({
+            neuralNetworks: state.neuralNetworks.filter(
+              (n) => n.id_ !== neuralNetworkId
+            ),
+          })),
 
-      updateNeuralNetwork: (neuralNetwork: NeuralNetwork) =>
-        set((state) => ({
-          neuralNetworks: state.neuralNetworks.map((n) =>
-            n.id_ === neuralNetwork.id_ ? neuralNetwork : n
-          ),
-        })),
+        offlineFeeders: [],
 
-      removeNeuralNetwork: (neuralNetworkId: string) =>
-        set((state) => ({
-          neuralNetworks: state.neuralNetworks.filter(
-            (n) => n.id_ !== neuralNetworkId
-          ),
-        })),
+        setOfflineFeeders: (offlineFeeders: OfflineFeeder[]) =>
+          set({ offlineFeeders }),
 
-      // OfflineFeeder collection state and actions
-      offlineFeeders: [],
+        addOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
+          set((state) => ({
+            offlineFeeders: [...state.offlineFeeders, offlineFeeder],
+          })),
 
-      setOfflineFeeders: (offlineFeeders: OfflineFeeder[]) =>
-        set({ offlineFeeders }),
+        updateOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
+          set((state) => ({
+            offlineFeeders: state.offlineFeeders.map((o) =>
+              o.id_ === offlineFeeder.id_ ? offlineFeeder : o
+            ),
+          })),
 
-      addOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
-        set((state) => ({
-          offlineFeeders: [...state.offlineFeeders, offlineFeeder],
-        })),
+        removeOfflineFeeder: (offlineFeederId: string) =>
+          set((state) => ({
+            offlineFeeders: state.offlineFeeders.filter(
+              (o) => o.id_ !== offlineFeederId
+            ),
+          })),
 
-      updateOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
-        set((state) => ({
-          offlineFeeders: state.offlineFeeders.map((o) =>
-            o.id_ === offlineFeeder.id_ ? offlineFeeder : o
-          ),
-        })),
+        defaults: [],
 
-      removeOfflineFeeder: (offlineFeederId: string) =>
-        set((state) => ({
-          offlineFeeders: state.offlineFeeders.filter(
-            (o) => o.id_ !== offlineFeederId
-          ),
-        })),
+        setDefaults: (defaults: Default[]) => set({ defaults }),
 
-      // Default collection state and actions
-      defaults: [],
+        addDefault: (defaultDoc: Default) =>
+          set((state) => ({ defaults: [...state.defaults, defaultDoc] })),
 
-      setDefaults: (defaults: Default[]) => set({ defaults }),
+        updateDefault: (defaultDoc: Default) =>
+          set((state) => ({
+            defaults: state.defaults.map((d) =>
+              d.id_ === defaultDoc.id_ ? defaultDoc : d
+            ),
+          })),
 
-      addDefault: (defaultDoc: Default) =>
-        set((state) => ({ defaults: [...state.defaults, defaultDoc] })),
-
-      updateDefault: (defaultDoc: Default) =>
-        set((state) => ({
-          defaults: state.defaults.map((d) =>
-            d.id_ === defaultDoc.id_ ? defaultDoc : d
-          ),
-        })),
-
-      removeDefault: (defaultId: string) =>
-        set((state) => ({
-          defaults: state.defaults.filter((d) => d.id_ !== defaultId),
-        })),
-    }),
+        removeDefault: (defaultId: string) =>
+          set((state) => ({
+            defaults: state.defaults.filter((d) => d.id_ !== defaultId),
+          })),
+      }),
+      { name: "services-store" }
+    ),
     { name: "services-store" }
   )
 );

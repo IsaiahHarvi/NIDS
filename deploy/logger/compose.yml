@@ -11,6 +11,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      mongo-express:
+        condition: service_healthy
     profiles:
       - log
     attach: false # silence terminal output

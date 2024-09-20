@@ -9,6 +9,8 @@ ic.configureOutput(includeContext=False, prefix="")
 
 class Logger:
     def __init__(self):
+        # Delete any existing collections in logs database
+
         ic(f"Logger started on port {os.environ.get('PORT')}")
         self.client = docker.from_env()
         self.mongo_client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
@@ -21,6 +23,8 @@ class Logger:
         self.start_log_collection()
 
     def get_service_names(self):
+        # Modify this to get names from deploy directory - change neural network dir from model to neural-network
+
         try:
             containers = self.client.containers.list()
             services = [

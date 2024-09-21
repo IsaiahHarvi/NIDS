@@ -47,7 +47,7 @@ class Logger:
             container = self.client.containers.get(name)
             for line in container.logs(stream=True):
                 out = f"{name}{' ' * (spc - len(name))}| {line.strip().decode('utf-8')}"
-                # ic(out)
+                ic(out)
         except Exception as e:
             ic(f"Error occurred while monitoring {name}: {e}")
         except KeyboardInterrupt:

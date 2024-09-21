@@ -1,5 +1,4 @@
 import os
-import numpy as np
 from pymongo import MongoClient
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse

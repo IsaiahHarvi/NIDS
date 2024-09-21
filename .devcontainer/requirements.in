@@ -21,3 +21,5 @@ pymongo
 wandb
 nfstream
 ruff
+dpkt
+pypcap

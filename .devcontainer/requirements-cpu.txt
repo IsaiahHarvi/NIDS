@@ -426,7 +426,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 tomlkit==0.13.2
     # via dvc
-torch==2.4.1+cpu
+torch==2.4.1
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   lightning

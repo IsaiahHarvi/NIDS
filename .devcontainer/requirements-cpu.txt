@@ -437,7 +437,7 @@ torchmetrics==1.4.1
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.19.1+cpu
+torchvision==0.19.1
     # via -r .devcontainer/requirements-cpu.in
 tqdm==4.66.5
     # via

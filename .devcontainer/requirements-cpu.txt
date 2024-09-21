@@ -104,7 +104,9 @@ docker-pycreds==0.4.0
 dpath==2.2.0
     # via dvc
 dpkt==1.9.8
-    # via nfstream
+    # via
+    #   -r .devcontainer/requirements-cpu.in
+    #   nfstream
 dulwich==0.22.1
     # via
     #   dvc
@@ -332,6 +334,8 @@ pyparsing==3.1.2
     #   grandalf
     #   matplotlib
     #   pydot
+pypcap==1.3.0
+    # via -r .devcontainer/requirements-cpu.in
 pyproject-hooks==1.1.0
     # via
     #   build
@@ -422,7 +426,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 tomlkit==0.13.2
     # via dvc
-torch==2.4.1
+torch==2.4.1+cpu
     # via
     #   -r .devcontainer/requirements-cpu.in
     #   lightning
@@ -433,7 +437,7 @@ torchmetrics==1.4.1
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.19.1
+torchvision==0.19.1+cpu
     # via -r .devcontainer/requirements-cpu.in
 tqdm==4.66.5
     # via

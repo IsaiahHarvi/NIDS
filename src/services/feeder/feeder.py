@@ -65,7 +65,8 @@ class Feeder(ComponentServicer):
             writer = dpkt.pcap.Writer(f)
             start_time = time.time()
             for ts, pkt in pc:
-                if time.time() - start_time > duration:
+                if (time.time() - start_time) > duration:
+
                     break
                 writer.writepkt(pkt, ts)
 

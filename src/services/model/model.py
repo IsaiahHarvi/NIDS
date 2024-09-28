@@ -33,7 +33,7 @@ class NeuralNetwork(ComponentServicer):
 
         if x.dim() == 1:
             x = x.unsqueeze(0)
-        assert x.dim() == 2, f"Expected [batch_size, input_size] but got {x.shape}"
+        assert x.dim() == 2, f"Expected shape [0, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)

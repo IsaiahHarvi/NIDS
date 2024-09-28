@@ -40,28 +40,24 @@ class ResidualNetwork(nn.Module):
         return self.net(x)
 
 
-class Autoencoder(nn.Module):
-    def __init__(self, in_features, hidden_size, out_features):
-        super(Autoencoder, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(in_features, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, 64),
-            nn.ReLU(),
-            nn.Linear(32, out_features),
+class MLP(nn.Module):
+    def __init__(self, input_size, hidden_size, out_fatures, dropout_prob=0.5):
+        super(MLP, self).__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_size, hidden_size),
+            nn.SELU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.SELU(),
+            nn.Dropout(dropout_prob),
+            nn.Linear(hidden_size, hidden_size),
+            nn.SELU(),
+            nn.Dropout(dropout_prob),
+            nn.Linear(hidden_size, out_fatures),
+            nn.Softmax(dim=1)
         )
-        self.decoder = nn.Sequential(
-            nn.Linear(out_features, 32),
-            nn.ReLU(),
-            nn.Linear(64, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, in_features),
-            nn.Sigmoid(),
-        )
-
+    
     def forward(self, x):
-        return self.decoder(self.encoder(x))
-
+        return self.net(x)
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -72,7 +68,7 @@ class BasicModule(pl.LightningModule):
         out_features,
         lr=0.001,
         class_weights: torch.Tensor = None,
-        criterion: nn.CrossEntropyLoss | nn.MSELoss = nn.CrossEntropyLoss,
+        criterion: nn.CrossEntropyLoss = nn.CrossEntropyLoss,
         model_constructor_kwargs={},
     ):
         super(BasicModule, self).__init__()
@@ -176,11 +172,3 @@ class BasicModule(pl.LightningModule):
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
-
-    def state_dict(self, destination=None, prefix="", keep_vars=False):
-        state_dict = super().state_dict(
-            destination=destination, prefix=prefix, keep_vars=keep_vars
-        )
-        if "criterion.weight" in state_dict:
-            del state_dict["criterion.weight"]
-        return state_dict

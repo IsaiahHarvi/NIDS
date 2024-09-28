@@ -5,9 +5,8 @@ on:
     branches: [ "main" ]
     paths:
       - 'src/**'
+      - '!src/app/**'
       - 'tests/**'
-    paths-ignore:
-      - 'src/app/**'
 
 permissions:
   contents: read

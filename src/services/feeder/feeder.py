@@ -1,11 +1,13 @@
 import pandas as pd
-import subprocess
 import os
 import numpy as np
+import dpkt
+import pcap
+import time
 
 from typing import Tuple
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
+from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server, sendto_service, sendto_mongo
 from nfstream import NFStreamer
 
@@ -55,9 +57,19 @@ class Feeder(ComponentServicer):
         return ComponentResponse(flow=x)
 
     def capture_pcap(self, interface: str, file_name: str, duration: int) -> str:
+        ic(f"Capturing packets from {interface} for {duration} seconds")
         pcap_file = file_name + (".pcap" if not file_name.endswith(".pcap") else "")
-        cmd = ["tshark", "-i", interface, "-a", f"duration:{duration}", "-w", pcap_file]
-        subprocess.run(cmd, check=True)
+        pc = pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50)
+
+        with open(pcap_file, 'wb') as f:
+            writer = dpkt.pcap.Writer(f)
+            start_time = time.time()
+            for ts, pkt in pc:
+                if (time.time() - start_time) > duration:
+
+                    break
+                writer.writepkt(pkt, ts)
+
         ic(f"Captured packets to {pcap_file}")
         return pcap_file
 

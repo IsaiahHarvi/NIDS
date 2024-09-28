@@ -7,3 +7,5 @@ numpy<2
 scikit-learn
 nfstream
 pymongo
+dpkt
+pypcap

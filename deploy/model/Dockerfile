@@ -12,7 +12,7 @@ COPY src/grpc_ /app/src/grpc_
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
 
 ARG MODEL_PATH
-COPY $MODEL_PATH /app/${MODEL_PATH}
+COPY $MODEL_PATH /app/model.ckpt
 COPY src/services/model/model.py /app/main.py
 
 CMD ["python", "main.py"]

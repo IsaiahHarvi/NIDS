@@ -1,6 +1,4 @@
-"""
-Simple method to interact with the gRPC services oustide of the test suite.
-"""
+# !/usr/bin/env python3
 
 import time
 import click

@@ -53,7 +53,6 @@ class MLP(nn.Module):
             nn.SELU(),
             nn.Dropout(dropout_prob),
             nn.Linear(hidden_size, out_fatures),
-            nn.Softmax(dim=1)
         )
     
     def forward(self, x):

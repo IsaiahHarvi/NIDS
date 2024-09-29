@@ -36,11 +36,19 @@ class OfflineFeeder(ComponentServicer):
             col: str(full_sample[col].values[0]) for col in list(full_sample.columns)
         }
         y = full_sample["Label"].values[0]
-        
-        sample = full_sample.drop([
-            'Flow_ID', 'Source_IP', 'Destination_IP', 'Timestamp',  # Redundant features
-            'Bwd_PSH_Flags', 'Bwd_URG_Flags', 'Fwd_Avg_Bytes/Bulk', 'Fwd_Avg_Packets/Bulk',
-            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate'
+
+        sample = full_sample.drop(
+            [
+                "Flow_ID",
+                "Timestamp",
+                "Bwd_PSH_Flags",
+                "Bwd_URG_Flags",
+                "Fwd_Avg_Bytes/Bulk",
+                "Fwd_Avg_Packets/Bulk",
+                "Fwd_Avg_Bulk_Rate",
+                "Bwd_Avg_Bytes/Bulk",
+                "Bwd_Avg_Packets/Bulk",
+                "Bwd_Avg_Bulk_Rate",
             ],
             axis=1,
             errors="ignore",

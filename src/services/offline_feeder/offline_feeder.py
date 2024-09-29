@@ -37,6 +37,12 @@ class OfflineFeeder(ComponentServicer):
         }
         y = full_sample["Label"].values[0]
 
+        def change_ip(x):
+            return sum([256 ** j * int(i) for j, i in enumerate(x.split(".")[::-1])])
+            
+        full_sample["Source_IP"] = full_sample["Source_IP"].apply(change_ip)
+        full_sample["Destination_IP"] = full_sample["Destination_IP"].apply(change_ip)
+
         sample = full_sample.drop(
             [
                 "Flow_ID",
@@ -49,6 +55,7 @@ class OfflineFeeder(ComponentServicer):
                 "Bwd_Avg_Bytes/Bulk",
                 "Bwd_Avg_Packets/Bulk",
                 "Bwd_Avg_Bulk_Rate",
+                "Fwd_Header_Length.1",
             ],
             axis=1,
             errors="ignore",

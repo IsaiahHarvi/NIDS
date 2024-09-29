@@ -41,6 +41,5 @@ class NeuralNetwork(ComponentServicer):
 
 
 if __name__ == "__main__":
-    ckpt_path = os.environ.get("MODEL_PATH", "model.ckpt")
-    service = NeuralNetwork(ckpt_path)
+    service = NeuralNetwork(ckpt_path="model.ckpt")
     start_server(service, port=int(os.environ.get("PORT")))

@@ -12,15 +12,15 @@ from collections import Counter
 
 
 class CIC_IDS(Dataset):
-    def __init__(self, data, labels, transform=None):
+    def __init__(self, data, labels, transform=None) -> None:
         self.data = data
         self.labels = labels
         self.transform = transform
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         x = self.data[idx]
         y = self.labels[idx]
 
@@ -44,7 +44,7 @@ class DataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.scaler = StandardScaler()
 
-    def setup(self):
+    def setup(self) -> None:
         dfs: list[pd.DataFrame] = []
         for path in self.paths:
             df: pd.DataFrame = pd.read_csv(path)
@@ -95,6 +95,22 @@ class DataModule(pl.LightningDataModule):
 
         # Store indices for the validation set to retrieve metadata later
         self.val_idx = val_idx
+
+    def train_dataloader(self) -> DataLoader:
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+        )
+
+    def val_dataloader(self, shuffle: bool = False) -> DataLoader:
+        return DataLoader(
+            self.val_dataset,
+            batch_size=self.batch_size,
+            shuffle=shuffle,
+            num_workers=self.num_workers,
+        )
 
     def get_metadata(self, idx):
         """Fetch the original metadata for the given index before normalization."""

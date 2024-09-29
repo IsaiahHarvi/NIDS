@@ -20,7 +20,7 @@ class OfflineFeeder(ComponentServicer):
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(flow=msg.flow)
+            return ComponentResponse(return_code=0)
 
         dm = DataModule(
             paths=["data/CIC/test_data.csv"],

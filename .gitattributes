@@ -7,3 +7,4 @@ data/checkpoints/ResidualNetwork.ckpt filter=lfs diff=lfs merge=lfs -text
 data/CIC/test_data.csv filter=lfs diff=lfs merge=lfs -text
 data/checkpoints/ResidualSmall.ckpt filter=lfs diff=lfs merge=lfs -text
 data/checkpoints/MLP.ckpt filter=lfs diff=lfs merge=lfs -text
+data/checkpoints/MLP-v1.ckpt filter=lfs diff=lfs merge=lfs -text

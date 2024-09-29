@@ -67,6 +67,7 @@ class DataModule(pl.LightningDataModule):
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
 
         x = df.select_dtypes(include=[float, int])
+        self.columns = x.columns
         label_encoder = LabelEncoder()
         y = label_encoder.fit_transform(df["Label"])
         ic(f"Label mapping: {dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))}")

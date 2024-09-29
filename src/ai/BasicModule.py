@@ -181,3 +181,11 @@ class BasicModule(pl.LightningModule):
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
+
+    def state_dict(self, destination=None, prefix="", keep_vars=False):
+        state_dict = super().state_dict(
+            destination=destination, prefix=prefix, keep_vars=keep_vars
+        )
+        if "criterion.weight" in state_dict:
+            del state_dict["criterion.weight"]
+        return state_dict

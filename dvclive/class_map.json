@@ -1,13 +1,14 @@
 {
     "BENIGN": 0,
-    "Bot": 10,
-    "DoS GoldenEye": 8,
-    "DoS Hulk": 7,
-    "DoS Slowhttptest": 6,
-    "DoS slowloris": 5,
-    "FTP-Patator": 3,
-    "Heartbleed": 9,
-    "Infiltration": 11,
-    "PortScan": 2,
-    "SSH-Patator": 4
+    "Bot": 1,
+    "DDoS": 2,
+    "DoS GoldenEye": 3,
+    "DoS Hulk": 4,
+    "DoS Slowhttptest": 5,
+    "DoS slowloris": 6,
+    "FTP-Patator": 7,
+    "Heartbleed": 8,
+    "Infiltration": 9,
+    "PortScan": 10,
+    "SSH-Patator": 11
 }

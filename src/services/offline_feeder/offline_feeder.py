@@ -38,8 +38,8 @@ class OfflineFeeder(ComponentServicer):
         y = full_sample["Label"].values[0]
 
         def change_ip(x):
-            return sum([256 ** j * int(i) for j, i in enumerate(x.split(".")[::-1])])
-            
+            return sum([256**j * int(i) for j, i in enumerate(x.split(".")[::-1])])
+
         full_sample["Source_IP"] = full_sample["Source_IP"].apply(change_ip)
         full_sample["Destination_IP"] = full_sample["Destination_IP"].apply(change_ip)
 

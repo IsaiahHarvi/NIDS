@@ -3,7 +3,6 @@
 import time
 import click
 import grpc
-import numpy as np
 from icecream import ic
 
 from src.grpc_.services_pb2 import ComponentMessage
@@ -74,10 +73,12 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                 with grpc.insecure_channel(
                     f"localhost:{port}", options=options
                 ) as channel:
+                    from numpy import random
+
                     while True:
                         stub = ComponentStub(channel)
                         request = ComponentMessage(
-                            flow=[np.random.uniform(1, 9000) for _ in range(80)],
+                            flow=[random.uniform(1, 9000) for _ in range(80)],
                         )
                         response = stub.forward(request)
                         # ic(response.flow)

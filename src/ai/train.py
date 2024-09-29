@@ -45,7 +45,7 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
 def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_name):
     dm = DataModule(
         paths=paths,
-        val_split=0.1,
+        val_split=0.3,
         batch_size=batch_size, 
         num_workers=os.cpu_count(),
         # transform=MinMaxTransform(),

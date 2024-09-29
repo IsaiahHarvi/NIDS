@@ -94,17 +94,25 @@ class Feeder(ComponentServicer):
 
     def preprocessor(self, flow_row: pd.Series) -> list:
         df = flow_row.to_frame().T
-       # Drop unnecessary columns
+        # Drop unnecessary columns
         drop_columns = [
-            'Flow_ID', 'Timestamp', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate',
-            'Bwd_PSH_Flags', 'Bwd_URG_Flags', 'Fwd_Avg_Bytes/Bulk', 'Fwd_Avg_Packets/Bulk',
-            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk', 'Fwd_Header_Length.1'
+            "Flow_ID",
+            "Timestamp",
+            "Bwd_Avg_Packets/Bulk",
+            "Bwd_Avg_Bulk_Rate",
+            "Bwd_PSH_Flags",
+            "Bwd_URG_Flags",
+            "Fwd_Avg_Bytes/Bulk",
+            "Fwd_Avg_Packets/Bulk",
+            "Fwd_Avg_Bulk_Rate",
+            "Bwd_Avg_Bytes/Bulk",
+            "Fwd_Header_Length.1",
         ]
         df = df.drop(drop_columns, axis=1, errors="ignore")
 
         # Convert IP addresses to numeric format
         def change_ip(x):
-            return sum([256 ** j * int(i) for j, i in enumerate(x.split(".")[::-1])])
+            return sum([256**j * int(i) for j, i in enumerate(x.split(".")[::-1])])
 
         if "Source_IP" in df.columns:
             df["Source_IP"] = df["Source_IP"].apply(change_ip)
@@ -112,17 +120,15 @@ class Feeder(ComponentServicer):
             df["Destination_IP"] = df["Destination_IP"].apply(change_ip)
 
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
-        pd.set_option('display.max_rows', None)
-        pd.set_option('display.max_columns', None)
+        pd.set_option("display.max_rows", None)
+        pd.set_option("display.max_columns", None)
         ic(df)
         x = df.select_dtypes(include=[float, int])
 
         x = StandardScaler().fit_transform(x)
         x = np.array(x).flatten()
 
-        assert (
-            x.shape[0] == 73
-        ), f"Expected 73 features, got {x.shape[0]}"
+        assert x.shape[0] == 73, f"Expected 73 features, got {x.shape[0]}"
 
         return x.tolist()
 

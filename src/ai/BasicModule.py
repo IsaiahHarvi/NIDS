@@ -147,11 +147,10 @@ class BasicModule(pl.LightningModule):
         import matplotlib
 
         matplotlib.use("Agg")
-        # import wandb
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
-        from sklearn.metrics import ConfusionMatrixDisplay
+        from sklearn.metrics import ConfusionMatrixDisplay # , precision_recall_fscore_support
 
         cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
             preds.device
@@ -166,8 +165,19 @@ class BasicModule(pl.LightningModule):
         plt.title(f"{stage.capitalize()} Confusion Matrix")
 
         Live().log_image(f"{stage}_confusion_matrix.png", fig)
-        # wandb.log({f"{stage}_confusion_matrix": wandb.Image(f"dvclive/plots/images/{stage}_confusion_matrix.png")})  # noqa: E501
         plt.close(fig)
+
+        # precision, recall, f1, _ = precision_recall_fscore_support(labels.cpu(), preds.cpu(), average='macro')
+
+        # FP = cm.sum(axis=0) - cm.diagonal()
+        # FN = cm.sum(axis=1) - cm.diagonal()
+
+        # with open(f"dvclive/{stage}_f1.txt", "r") as f:
+        #     f.write(f"Precision: {precision}\n")
+        #     f.write(f"Recall: {recall}\n")
+        #     f.write(f"F1: {f1}\n")
+        #     f.write(f"False Positives: {FP}\n")
+        #     f.write(f"False Negatives: {FN}\n")
 
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)

@@ -94,7 +94,9 @@ class Feeder(ComponentServicer):
         numeric_row.fillna(numeric_row.mean(), inplace=True)
         numeric_row = np.array(numeric_row).flatten()
 
-        assert numeric_row.shape[0] == 72, f"Expected 72 features, got {numeric_row.shape[0]}"
+        assert (
+            numeric_row.shape[0] == 72
+        ), f"Expected 72 features, got {numeric_row.shape[0]}"
 
         return numeric_row.tolist()
 

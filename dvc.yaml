@@ -24,14 +24,6 @@ stages:
       --ckpt_name MLP
       --constructor MLP
       --all_data
-    deps:
-    - src/ai/train.py
-    - data/CIC
-    outs:
-    - data/checkpoints/MLP.ckpt
-    metrics:
-    - dvclive/metrics.json
-
 params:
 - dvclive/params.yaml
 metrics:

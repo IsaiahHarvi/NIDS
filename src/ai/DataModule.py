@@ -34,7 +34,7 @@ class DataModule(pl.LightningDataModule):
         paths: list[str],
         batch_size: int = 64,
         val_split: float = 0.2,
-        num_workers: int = os.cpu_count(),
+        num_workers: int = (os.cpu_count() // 4),
     ):
         super().__init__()
         self.paths = paths
@@ -54,9 +54,9 @@ class DataModule(pl.LightningDataModule):
         df = pd.concat(dfs, ignore_index=True)
 
         drop_columns = [
-            'Flow_ID', 'Source_IP', 'Destination_IP', 'Timestamp',  # Redundant features
+            'Flow_ID', 'Timestamp', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate',
             'Bwd_PSH_Flags', 'Bwd_URG_Flags', 'Fwd_Avg_Bytes/Bulk', 'Fwd_Avg_Packets/Bulk',
-            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate'
+            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk',
         ]
 
         df = df.drop(drop_columns, axis=1, errors="ignore")

@@ -17,17 +17,17 @@ import { FeederMessage } from "../../../types/client-types";
 
 const classMap = {
   BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 1, color: "yellow" },
-  "FTP-Patator": { value: 2, color: "yellow" },
-  "SSH-Patator": { value: 3, color: "yellow" },
+  PortScan: { value: 9, color: "yellow" },
+  "FTP-Patator": { value: 7, color: "yellow" },
+  "SSH-Patator": { value: 10, color: "yellow" },
   "DoS slowloris": { value: 4, color: "orange" },
   "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 6, color: "orange" },
-  "DoS Hulk": { value: 7, color: "orange" },
+  "DoS GoldenEye": { value: 3, color: "orange" },
+  "DoS Hulk": { value: 4, color: "orange" },
+  Bot: { value: 1, color: "red" },
   Heartbleed: { value: 8, color: "red" },
-  Bot: { value: 9, color: "red" },
-  Infiltration: { value: 10, color: "red" },
-  DDoS: { value: 11, color: "red" },
+  // Infiltration: { value: 9, color: "red" },
+  DDoS: { value: 2, color: "red" },
 };
 
 const invertedClassMap = Object.fromEntries(

@@ -8,7 +8,7 @@
     "DoS slowloris": 6,
     "FTP-Patator": 7,
     "Heartbleed": 8,
-    "Infiltration": 9,
-    "PortScan": 10,
-    "SSH-Patator": 11
+    // "Infiltration": 9,
+    "PortScan": 9,
+    "SSH-Patator": 10
 }

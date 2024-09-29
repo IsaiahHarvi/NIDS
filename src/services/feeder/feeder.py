@@ -25,7 +25,7 @@ class Feeder(ComponentServicer):
         self.duration = duration
         ic(f"Started on {os.environ.get('PORT')}")
 
-    def forward(self, msg: ComponentMessage, context):
+    def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")

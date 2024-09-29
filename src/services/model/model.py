@@ -26,17 +26,17 @@ class NeuralNetwork(ComponentServicer):
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(flow=msg.flow)
+            return ComponentResponse(return_code=0)
 
         x = torch.tensor(msg.flow)
         # ic(x.shape)
 
-        if x.dim() == 1:
-            x = x.unsqueeze(0)
+        x = x.unsqueeze(0) if x.dim() == 1 else x
         assert x.dim() == 2, f"Expected shape [0, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)
+
         return ComponentResponse(prediction=pred, return_code=0)
 
 

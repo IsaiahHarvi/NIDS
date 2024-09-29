@@ -95,8 +95,8 @@ class Feeder(ComponentServicer):
         numeric_row = np.array(numeric_row).flatten()
 
         assert (
-            numeric_row.shape[0] == 72
-        ), f"Expected 72 features, got {numeric_row.shape[0]}"
+            numeric_row.shape[0] == 73
+        ), f"Expected 73 features, got {numeric_row.shape[0]}"
 
         return numeric_row.tolist()
 
@@ -133,7 +133,7 @@ class Feeder(ComponentServicer):
                 "dst2src_syn_packets": "Bwd PSH Flags",
                 "dst2src_ack_packets": "Bwd URG Flags",
             }
-        )
+        ).str.replace(" ", "_")
 
 
 if __name__ == "__main__":

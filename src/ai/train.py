@@ -47,7 +47,7 @@ def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_
         paths=paths,
         val_split=0.3,
         batch_size=batch_size, 
-        num_workers=os.cpu_count(),
+        num_workers=(os.cpu_count() // 2),
         # transform=MinMaxTransform(),
     )
     dm.setup()

@@ -30,8 +30,9 @@ class OfflineFeeder(ComponentServicer):
         )
         dm.setup()
 
-        x, y = random.choice(dm.val_dataset)
-        metadata = {col: str(x[i].item()) for i, col in enumerate(dm.columns)}
+        idx = random.randint(0, len(dm.val_dataset) - 1)
+        x, y = dm.val_dataset[idx]
+        metadata = dm.get_metadata(idx)
 
         ic(x.shape)
         ic(y.item())

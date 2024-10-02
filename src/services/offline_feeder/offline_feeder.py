@@ -1,10 +1,9 @@
-import grpc
 import os
 import numpy as np
 import pandas as pd
 
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentServicer, ComponentStub
+from src.grpc_.services_pb2_grpc import ComponentServicer 
 from src.grpc_.utils import start_server, sendto_service, sendto_mongo
 
 # from sklearn.preprocessing import StandardScaler
@@ -34,8 +33,7 @@ class OfflineFeeder(ComponentServicer):
         )
         full_sample = df.sample(n=1)
         metadata = {
-            col: str(full_sample[col].values[0]) 
-            for col in list(full_sample.columns)
+            col: str(full_sample[col].values[0]) for col in list(full_sample.columns)
         }
 
         y = full_sample["Label"].values[0]
@@ -56,7 +54,7 @@ class OfflineFeeder(ComponentServicer):
             msg=ComponentMessage(flow=x), host="neural-network", port=50052
         )
         pred: int = model_response.prediction
-        
+
         sendto_mongo(
             {
                 "id_": uuid,

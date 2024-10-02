@@ -1,47 +1,21 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
-// import PieChartComponent from "../PieChart";
 import PieChartCard from "../PieChart";
 import { useServicesStore } from "@/stores/services-store";
-// import { getFeeders } from "@/middleware/api/functions/getFeeders";
-// import { getOfflineFeeders } from "@/middleware/api/functions/getOfflineFeeders";
-// import { getNeuralNetworks } from "@/middleware/api/functions/getNeuralNetworks";
-// import { useEffect } from "react";
 import NetworkTableCard from "../NetworkTableCard";
 import { Button } from "../ui/button";
 import { startFeeders } from "@/middleware/api/functions/startFeeders";
 import { stopFeeders } from "@/middleware/api/functions/stopFeeders";
 import { useToast } from "@/hooks/use-toast";
 import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
+import { useState } from "react";
+import { Switch } from "../ui/switch";
 
 const Dashboard = () => {
   const { toast } = useToast();
-  const {
-    // feeders,
-    // setFeeders,
-    offlineFeeders,
-    // setOfflineFeeders,
-    // neuralNetworks,
-    // setNeuralNetworks,
-  } = useServicesStore();
+  const { offlineFeeders } = useServicesStore();
+  const [isOfflineFeeder, setIsOfflineFeeder] = useState(true);
 
-  // TODO: figure out how to handle this
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedFeeders = await getFeeders();
-  //       setFeeders(fetchedFeeders);
-  //       const fetchedOfflineFeeders = await getOfflineFeeders();
-  //       setOfflineFeeders(fetchedOfflineFeeders);
-  //       const fetchedNeuralNetworks = await getNeuralNetworks();
-  //       setNeuralNetworks(fetchedNeuralNetworks);
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error);
-  //     }
-  //   };
-  //   fetchData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
+  const feederMode = isOfflineFeeder ? "offline_feeder" : "feeder";
   return (
     <div className="p-4">
       <Card>
@@ -51,13 +25,22 @@ const Dashboard = () => {
             <div className="pt-3 flex flex-row justify-between items-center">
               <span>Overview of your network and collected data</span>
               <div className="flex gap-5">
+                {/*Switch between feeder modes*/}
+                <div className="flex items-center gap-2">
+                  <span>{isOfflineFeeder ? "Test Feeder" : "Feeder"}</span>
+                  <Switch
+                    checked={isOfflineFeeder}
+                    onCheckedChange={() => setIsOfflineFeeder((prev) => !prev)}
+                  />
+                </div>
+
                 <Button
                   size={"sm"}
                   onClick={() => {
-                    startFeeders("offline_feeder");
+                    startFeeders(feederMode);
                     toast({
                       title: "Feeders Started",
-                      description: "Feeders have been started successfully",
+                      description: `Started ${feederMode} successfully`,
                       duration: 2000,
                     });
                   }}

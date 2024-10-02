@@ -167,7 +167,8 @@ DvcLiveLogger/
 *acc.tsv
 *loss.tsv
 *epoch.tsv
-# *.png       //this may need to be added back but this is a temporary fix
+*.png       
+!src/app/client/src/components/logo/nids_logo.png
 scripts/setup_git_personal.sh
 data/CIC/*.csv
 !data/CIC/test_data.csv

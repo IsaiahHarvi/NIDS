@@ -21,7 +21,7 @@ echo -e "\nInstalling system packages..."
 sudo apt update > /dev/null 2>&1
 sudo apt upgrade -y > /dev/null
 sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
-    dnsutils iputils-ping curl wget # tshark 
+    dnsutils iputils-ping curl wget libpcap-dev build-essential 
 
 # clear all residual docker stuff
 docker system prune --volumes -af | true

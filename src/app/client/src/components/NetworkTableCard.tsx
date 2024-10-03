@@ -37,12 +37,23 @@ const invertedClassMap = Object.fromEntries(
   ])
 );
 
-export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
+export const NetworkTable = ({
+  data,
+}: {
+  data: FeederMessage[] | null | undefined;
+}) => {
   const [showNewestFirst, setShowNewestFirst] = useState(false);
 
   const sortedData = useMemo(() => {
+    if (!data || data.length === 0) {
+      return [];
+    }
     return showNewestFirst ? [...data].reverse() : data;
   }, [data, showNewestFirst]);
+
+  if (!data || data.length === 0) {
+    return <p>No data available.</p>;
+  }
 
   return (
     <>
@@ -73,7 +84,7 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
               <TableCell>{message.id_}</TableCell>
               <TableCell>
                 {message.flow_data
-                  ? `Size: ${message.flow_data.length}, Peak: ${Math.max(...message.flow_data)}`
+                  ? `Size: ${message.flow_data.length}, Peak: ${Math.max(...(message.flow_data || []))}`
                   : "N/A"}
               </TableCell>
               <TableCell
@@ -83,13 +94,15 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
               >
                 {invertedClassMap[message.prediction]?.name || "Unknown"}
               </TableCell>
-              <TableCell>{message.metadata.Source_IP}</TableCell>
-              <TableCell>{message.metadata.Destination_IP}</TableCell>
-              <TableCell>{message.metadata.Destination_Port}</TableCell>
+              <TableCell>{message?.metadata?.Source_IP || "Unknown"}</TableCell>
               <TableCell>
-                <PcapMetaDataModal
-                  metadata={message.metadata}
-                ></PcapMetaDataModal>
+                {message?.metadata?.Destination_IP || "Unknown"}
+              </TableCell>
+              <TableCell>
+                {message?.metadata?.Destination_Port || "Unknown"}
+              </TableCell>
+              <TableCell>
+                <PcapMetaDataModal metadata={message?.metadata} />
               </TableCell>
             </TableRow>
           ))}
@@ -104,7 +117,11 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
   );
 };
 
-export const NetworkTableCard = ({ data }: { data: FeederMessage[] }) => {
+export const NetworkTableCard = ({
+  data,
+}: {
+  data: FeederMessage[] | null | undefined;
+}) => {
   return (
     <Card>
       <CardHeader>

@@ -43,8 +43,17 @@ const PieChartComponent = ({
   data: { name: string; value: number; fill: string }[];
 }) => {
   const totalOccurrences = useMemo(() => {
+    if (!data || data.length === 0) return 0;
     return data.reduce((acc, curr) => acc + curr.value, 0);
   }, [data]);
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-center">
+        <p>No data available to display the chart.</p>
+      </div>
+    );
+  }
 
   return (
     <ChartContainer
@@ -99,53 +108,53 @@ const PieChartComponent = ({
   );
 };
 
-// Define chart configuration (for pie chart)
 const chartConfig = {
   visitors: {
     label: "Occurrences",
   },
 } satisfies ChartConfig;
 
-// PieChartCard component (main component)
 interface PieChartCardProps {
-  data: FeederMessage[];
+  data: FeederMessage[] | null | undefined;
 }
 
 const PieChartCard = ({ data }: PieChartCardProps) => {
-  // Memoized processing of data for the pie chart and finding the oldest timestamp
   const { processedData, oldestTimestamp } = useMemo(() => {
     const counts: { [key: string]: number } = {};
     let oldestTime: Date | null = null;
 
+    if (!data || data.length === 0) {
+      return {
+        processedData: [],
+        oldestTimestamp: "N/A",
+      };
+    }
+
     data.forEach((message) => {
-      // Get the prediction value and map it to the corresponding attack type
       const prediction = message.prediction;
       const attackType = invertedClassMap[prediction]?.name || "Unknown";
 
-      // Increment the count for this attack type
       counts[attackType] = (counts[attackType] || 0) + 1;
 
-      // Parse the timestamp and track the oldest one
-      const timestamp = new Date(message.metadata.Timestamp);
+      const timestamp = new Date(message?.metadata?.Timestamp);
       if (!oldestTime || timestamp < oldestTime) {
         oldestTime = timestamp;
       }
     });
 
-    // Convert counts object into the format needed for the PieChart
     const processedData = Object.keys(counts).map((key) => ({
       name: key,
       value: counts[key],
       fill:
         invertedClassMap[classMap[key as keyof typeof classMap]?.value]
-          ?.color || "gray", // Use corresponding color from classMap
+          ?.color || "gray",
     }));
 
     return {
       processedData,
       oldestTimestamp: oldestTime
         ? (oldestTime as Date).toLocaleString()
-        : "N/A", // Format the oldest timestamp
+        : "N/A",
     };
   }, [data]);
 
@@ -163,7 +172,6 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Render PieChartComponent with processed data */}
         <PieChartComponent data={processedData} />
       </CardContent>
     </Card>

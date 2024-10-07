@@ -72,7 +72,8 @@ export function NetworkTrafficLineChart({ data }: { data: FeederMessage[] }) {
                 stroke="hsl(var(--primary))"
                 strokeWidth={2}
                 activeDot={{
-                  onClick: (e: any, payload: any) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  onClick: (_e: any, payload: any) => {
                     handleDotClick(payload.payload);
                   },
                 }}

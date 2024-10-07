@@ -1,15 +1,13 @@
 import os
-import numpy as np
-import pandas as pd
-
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentServicer 
-from src.grpc_.utils import start_server, sendto_service, sendto_mongo
-
-# from sklearn.preprocessing import StandardScaler
+import random
 from uuid import uuid4 as UUID
 
 from icecream import ic
+
+from src.ai.DataModule import DataModule
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import ComponentServicer
+from src.grpc_.utils import sendto_mongo, sendto_service, start_server
 
 ic.configureOutput(includeContext=False)
 
@@ -22,34 +20,22 @@ class OfflineFeeder(ComponentServicer):
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(flow=msg.flow)
+            return ComponentResponse(return_code=0)
 
-        df = pd.read_csv("data/CIC/test_data.csv")
-        df.columns = (
-            df.columns.str.strip()
-            .str.replace(" ", "_")
-            .str.replace("/", "_")
-            .str.replace(".", "_")
+        dm = DataModule(
+            paths=["data/CIC/test_data.csv"],
+            val_split=0.9,
+            batch_size=1,
+            num_workers=1,
         )
-        full_sample = df.sample(n=1)
-        metadata = {
-            col: str(full_sample[col].values[0]) for col in list(full_sample.columns)
-        }
+        dm.setup()
 
-        y = full_sample["Label"].values[0]
-        sample = full_sample.drop(
-            ["Flow_ID", "Source_IP", "Destination_IP", "Timestamp", "Label"],
-            axis=1,
-            errors="ignore",
-        )
-        sample = sample.select_dtypes(include=[float, int])
-        sample.replace([np.inf, -np.inf], np.nan, inplace=True)
-        sample.fillna(sample.mean(), inplace=True)
-        x = sample.iloc[0].to_numpy().flatten()
-        # scaler = StandardScaler()
-        # x = scaler.fit_transform(np.expand_dims(data, axis=0)).squeeze(0).tolist()
-        # ic(scaler.mean_, scaler.scale_)
-        ic(y)
+        idx = random.randint(0, len(dm.val_dataset) - 1)
+        x, y = dm.val_dataset[idx]
+        metadata = dm.get_metadata(idx)
+
+        ic(x.shape)
+        ic(y.item())
         model_response = sendto_service(
             msg=ComponentMessage(flow=x), host="neural-network", port=50052
         )

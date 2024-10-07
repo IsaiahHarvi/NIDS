@@ -7,3 +7,5 @@ grpcio
 grpcio-tools
 scikit-learn
 pymongo
+torch
+lightning

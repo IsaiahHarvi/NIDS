@@ -1,3 +1,4 @@
+import asyncio
 import os
 import subprocess
 
@@ -12,43 +13,70 @@ def execute(command):
         output = f"Error: {str(e)}"
     return output
 
+async def async_execute(command: str):
+    """Run a shell command asynchronously."""
+    process = await asyncio.create_subprocess_shell(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+
+    stdout, stderr = await process.communicate()
+
+    return stdout.decode().strip(), stderr.decode().strip()
+
+
 CSS = """
-    Button {
-        width: 80%;
-        margin: 1 0;
-        color: white;
-        background: dimgrey;
-        outline: darkgrey;
-    }
-    RichLog#output_log {
-        color: white;
-        padding: 1;
-        border: heavy darkslategray;
-        overflow: auto;
-    }
-    Static#docker_ps {
-        background: darkslategray;
-        color: white;
-        padding: 1;
-        border: hkey white;
-        height: 50%;
-    }
-    Static#docker_logs {
-        background: darkslategray;
-        color: white;
-        padding: 1;
-        border: hkey white;
-        height: 50%;
-    }
-    Container#left {
-        width: 50%;
-        border: heavy white;
-    }
-    Container#right {
-        width: 50%;
-        border: heavy white;
-    }
-    Horizontal {
-        height: auto;
-    }
+Button {
+    width: 25%;
+    margin: 1 0;
+    color: white;
+    background: black;
+    outline: heavy white;
+}
+
+RichLog#output_log {
+    background: black;
+    color: white;
+    padding: 1;
+    border: heavy white;
+    overflow: auto;
+}
+
+Static#docker_ps {
+    background: black;
+    border: heavy white;
+    color: white;
+    padding: 1;
+    height: 50%;
+}
+
+RichLog#docker_logs {
+    background: black;
+    border: heavy white;
+    color: white;
+    padding: 1;
+    height: 50%;
+}
+
+Container#left {
+    width: 50%;
+    background: black;
+}
+
+Container#right {
+    width: 50%;
+    background: black;
+}
+
+Container#button {
+    overflow-x: auto;
+    background: black;
+    width: 50%;
+    height: 30%;
+}
+
+Horizontal {
+    height: auto;
+}
 """

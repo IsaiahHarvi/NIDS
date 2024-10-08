@@ -158,6 +158,9 @@ class NIDS(App):
     def action_clear_logs(self):
         self.query_one("#docker_logs", RichLog).clear()
 
+    def action_clear_terminal(self):
+        self.query_one("#output_log", RichLog).clear()
+        
     async def action_health_check(self):
         """Run the health check asynchronously."""
         output, error = await async_execute("python src/services/comms.py --check --sleep 0")

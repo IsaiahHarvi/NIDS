@@ -4,7 +4,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Footer, Header, RichLog, Static
 
-from src.tui.utils import CSS, execute
+from src.tui.utils import CSS, async_execute, execute
 
 
 class NIDS(App):
@@ -15,6 +15,7 @@ class NIDS(App):
         ("ctrl+3", "webserver_logs", "GUI Logs"),
         ("ctrl+4", "all_logs", "All Logs"),
         ("ctrl+5", "clear_logs", "Clear"),
+        ("ctrl+6", "health_check", "Healthchecks"),
     ]
 
     def __init__(self):
@@ -23,31 +24,34 @@ class NIDS(App):
         self.compose_up_button = Button("Start Components", id="compose_up")
         self.compose_down_button = Button("Stop Components", id="compose_down")
         self.output_log = RichLog(highlight=False, markup=False, id="output_log")
+        self.log_tasks = {}
 
     def compose(self) -> ComposeResult:
         """Create the layout of the application."""
         yield Header(show_clock=True)
         yield Horizontal(
-
+            self.compose_up_button,
+            self.compose_down_button,
+            Button("Kill Components", id="kill_components"),
+            id="button",
+        )
+        yield Horizontal(
             Container(
-                self.compose_up_button,
-                self.compose_down_button,
-                Button("Kill Components", id="kill_components"),
                 self.output_log,
                 id="left"
             ),
             Container(
                 Static(id="docker_ps", name="docker_ps_display"),
-                Static(id="docker_logs", name="docker_logs_display"),
+                RichLog(id="docker_logs", highlight=False),
                 id="right",
-            ),
+            )
         )
         yield Footer()
 
     async def on_mount(self):
         """Run when the app starts."""
         asyncio.create_task(self.monitor_docker_ps())
-        self.compose_down_button.disabled = True  # Disable Stop button initially
+        self.compose_down_button.disabled = True
 
     async def monitor_docker_ps(self):
         """Continuously run `docker ps` and update the display every 5 seconds."""
@@ -60,11 +64,29 @@ class NIDS(App):
             self.query_one("#docker_ps", Static).update(output)
             await asyncio.sleep(5)
         
-    def monitor_docker_logs(self, container_name: str):
-        """Fetch logs for the selected container."""
-        _, err = execute(f'docker logs --tail 10 {container_name}')
-        self.output_log.write(err)
-        self.query_one("#docker_logs", Static).update(err)
+    async def monitor_docker_logs(self, container_name: str):
+        """Fetch and stream logs for the selected container."""
+        process = await asyncio.create_subprocess_shell(
+            f'docker logs -f {container_name}',
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+
+        async def stream_logs(stream, is_stdout=True):
+            """Stream logs continuously and write to the RichLog widget."""
+            docker_logs_widget = self.query_one("#docker_logs", RichLog)
+            while True:
+                line = await stream.readline()
+                if line:
+                    output = line.decode().strip()
+                    docker_logs_widget.write(output)
+                else:
+                    break
+
+        await asyncio.gather(
+            stream_logs(process.stdout),
+            stream_logs(process.stderr)
+        )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses."""
@@ -121,19 +143,39 @@ class NIDS(App):
                 break
     
     def action_feeder_logs(self):
-        self.monitor_docker_logs("feeder")
+        self.query_one("#docker_logs", RichLog).clear()
+        self.start_log_task("feeder")
     
     def action_nn_logs(self):
-        self.monitor_docker_logs("neural-network")
+        self.query_one("#docker_logs", RichLog).clear()
+        self.start_log_task("neural-network")
  
     def action_webserver_logs(self):
-        self.monitor_docker_logs("webserver")
+        self.query_one("#docker_logs", RichLog).clear()
+        self.start_log_task("webserver")
     
     def action_all_logs(self):
-        self.monitor_docker_logs("logger")
+        self.query_one("#docker_logs", RichLog).clear()
+        self.start_log_task("logger")
 
     def action_clear_logs(self):
-        self.query_one("#docker_logs", Static).update("")
+        self.query_one("#docker_logs", RichLog).clear()
+
+    async def action_health_check(self):
+        """Run the health check asynchronously."""
+        output, error = await async_execute("python src/services/comms.py --check --sleep 0")
+        if output:
+            self.output_log.write(output)
+        if error:
+            self.output_log.write(error)
+
+    def start_log_task(self, container_name):
+        """Start log streaming task for the container."""
+        if container_name in self.log_tasks:
+            self.log_tasks[container_name].cancel()
+
+        task = asyncio.create_task(self.monitor_docker_logs(container_name))
+        self.log_tasks[container_name] = task
 
     def set_compose(self, running: bool):
         self.compose_running = running

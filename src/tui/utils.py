@@ -28,8 +28,9 @@ BINDINGS = [
     ("ctrl+2", "nn_logs", "Neural Network Logs"),
     ("ctrl+3", "webserver_logs", "GUI Logs"),
     ("ctrl+4", "all_logs", "All Logs"),
-    ("ctrl+5", "clear_logs", "Clear"),
-    ("ctrl+6", "health_check", "Healthchecks"),
+    ("ctrl+5", "clear_terminal", "Clear Terminal"),
+    ("ctrl+6", "clear_logs", "Clear Logs"),
+    ("ctrl+7", "health_check", "Healthchecks"),
 ]
 
 CSS = """

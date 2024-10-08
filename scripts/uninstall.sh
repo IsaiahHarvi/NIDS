@@ -7,7 +7,7 @@ if grep -q "# NIDS" /etc/hosts; then
     echo "Removed NIDS entry from /etc/hosts."
 fi
 
-docker-compose --profile feeder --profile gui down
+docker-compose down
 docker kill $(docker ps -q) > /dev/null 2>&1
 docker system prune --volumes -af
 docker volume rm mongo-data -f > /dev/null 2>&1

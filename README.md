@@ -1,8 +1,7 @@
 # NIDS: Real-Time Network Intrusion Detection, Monitoring, and Analysis
 
 ## Overview
-**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks.
-
+**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks. The user guide is available [here](./USERGUIDE.md)
 ## Key Features
 
 ### Real-Time Network Traffic Monitoring

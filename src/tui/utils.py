@@ -7,7 +7,6 @@ def execute(command):
     """Run a command and return the output."""
     try:
         result = subprocess.run(command, shell=True, capture_output=True, text=True, env=os.environ)
-        output = result.stdout
         return result.stdout, result.stderr
     except Exception as e:
         output = f"Error: {str(e)}"
@@ -22,9 +21,16 @@ async def async_execute(command: str):
     )
 
     stdout, stderr = await process.communicate()
-
     return stdout.decode().strip(), stderr.decode().strip()
 
+BINDINGS = [
+    ("ctrl+1", "feeder_logs", "Feeder Logs"),
+    ("ctrl+2", "nn_logs", "Neural Network Logs"),
+    ("ctrl+3", "webserver_logs", "GUI Logs"),
+    ("ctrl+4", "all_logs", "All Logs"),
+    ("ctrl+5", "clear_logs", "Clear"),
+    ("ctrl+6", "health_check", "Healthchecks"),
+]
 
 CSS = """
 Button {

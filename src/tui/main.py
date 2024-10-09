@@ -93,7 +93,7 @@ class NIDS(App):
                 execute("docker system prune --volumes -af")
 
     async def run_docker_compose(self) -> None:
-        """Run docker-compose up and display output in the TUI, with auto-scrolling."""
+        """Run docker compose up and display output in the TUI, with auto-scrolling."""
         if self.compose_running:
             return
 
@@ -124,7 +124,7 @@ class NIDS(App):
         self.output_log.write(Text("Stopping components...", style="bold yellow"))
 
         process = await asyncio.create_subprocess_shell(
-            "dockercompose --profile feeder --profile gui down",
+            "docker compose --profile feeder --profile gui down",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )

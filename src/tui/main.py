@@ -162,7 +162,7 @@ class NIDS(App):
     async def action_health_check(self):
         """Run the health check asynchronously."""
         output, error = await async_execute(
-            "python src/services/comms.py --check --sleep 0"
+            "python3 src/services/comms.py --check --sleep 0"
         )
         if output:
             self.output_log.write(output)

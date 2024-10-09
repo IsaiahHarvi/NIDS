@@ -11,7 +11,7 @@ else
     echo "NIDS entry already exists in /etc/hosts"
 fi
 
-pip3 install --no-cache-dir --user -r .devcontainer/requirements-cpu.txt -e .
+pip3 install --no-cache-dir --user -r .devcontainer/requirements-minimal.txt -e .
 
 # Install Docker if not installed
 if ! command_exists docker; then
@@ -23,7 +23,6 @@ if ! command_exists docker; then
         curl \
         gnupg \
         lsb-release \
-        xdg-utils
     
     # Add Docker’s official GPG key
     sudo mkdir -p /etc/apt/keyrings

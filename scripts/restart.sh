@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# NOTE: This is for use in a production environment.
-command_exists() {
-    command -v "$1" &> /dev/null
-}
-
-
 if ! grep -q "# NIDS" /etc/hosts; then
     echo -e "\n# NIDS\n127.0.0.1 mongo" | sudo tee -a /etc/hosts
     echo "NIDS entry added to /etc/hosts"

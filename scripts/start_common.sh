@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker-compose --profile feeder --profile gui down # stop any running services, just in case
+docker-compose --profile feeder --profile gui down
 
 echo "-------------------------------------------------------------------"
 echo "Starting Services..."
@@ -26,5 +26,5 @@ if ! grep -q "alias nids=" "$SHELL_CONFIG"; then
 fi
 
 echo "-----------------------------------------------------------------------"
-echo "Open Terminal Interface with the 'NIDS' command or 'python3 display.py'"
+echo "Open Terminal Interface with the 'NIDS' command or 'python3 scripts/display.py'"
 echo "-----------------------------------------------------------------------"

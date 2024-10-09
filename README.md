@@ -1,7 +1,14 @@
 # NIDS: Real-Time Network Intrusion Detection, Monitoring, and Analysis
 
 ## Overview
-**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks. The user guide is available [here](./USERGUIDE.md)
+**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. After installation, NIDS is just another client on a network, allowing it to be a drop-in service. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks. The user guide is available [here](./docs/USERGUIDE.md)
+
+### Architecture
+The following diagram illustrates a high-level overview of the NIDS system. NIDS is intended to be ran on a linux server connected to the network that you would like to monitor. The system consists of several components, including a packet capture module, a detection engine, a logging service, and a data visualization dashboard. The system is designed to be modular and scalable, allowing for easy integration with other security tools and services. It can be accessed via a web-based dashboard for real-time management, monitoring and analysis of network traffic. NIDS also has a built-in terminal interface for management if the web interface is not accessible.
+
+![Program Architecture](./docs/Program.png)
+>The Feeder service is the only part of NIDS that is on the host network.
+
 ## Key Features
 
 ### Real-Time Network Traffic Monitoring

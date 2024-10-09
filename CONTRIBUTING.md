@@ -10,6 +10,7 @@
 - `docker compose --profile feeder up --build`: run the services and the online feeder which has host devices
 - `ruff check .`: lint all python files
 - `ruff check . --fix`: fix linting errors
+- `ruff format`: re-format all python files
 
 ## Opening Issues
 

@@ -1,0 +1,7 @@
+textual==0.82.0
+click==8.1.7
+numpy==1.26.4
+protobuf==5.27.3
+grpcio==1.66.0
+grpcio-tools==1.66.0
+icecream==2.1.3

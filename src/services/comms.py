@@ -1,6 +1,8 @@
 # !/usr/bin/env python3
 
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import click
 import grpc
 from icecream import ic
@@ -32,7 +34,10 @@ from src.grpc_.services_pb2_grpc import ComponentStub
     help="Time to sleep between requests when running in live mode.",
 )
 @click.option("--test", is_flag=True, default=False)
-def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> None:
+@click.option("--check", is_flag=True, default=False)
+def main(
+    port: int, interactive: bool, live: bool, sleep: int, test: bool, check: bool
+) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
@@ -43,11 +48,27 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool) -> No
             time.sleep(3)
             ic(f"Testing Service on port {i}")
             connect(port=i, live=False)
+
+    elif check:
+        ports = range(50052, 50057)  # [50052, 50053, 50054]
+        with ThreadPoolExecutor(max_workers=len(ports)) as executor:
+            futures = {executor.submit(run_health_check, p, sleep): p for p in ports}
+            for future in as_completed(futures):
+                port = futures[future]
+                try:
+                    future.result()
+                except Exception as exc:
+                    ic(f"Service on port {port} generated an exception: {exc}")
     else:
         connect(port, live, sleep)
 
 
-def connect(port: int, live: bool, sleep: int = 7) -> None:
+def run_health_check(port: int, sleep: int) -> None:
+    """Function to run health check for a specific port."""
+    connect(port, live=False, health_check=True)
+
+
+def connect(port: int, live: bool, sleep: int = 7, health_check: bool = False) -> None:
     options = [
         ("grpc.max_send_message_length", 50 * 1024 * 1024),  # 50 MB
         ("grpc.max_receive_message_length", 50 * 1024 * 1024),  # 50 MB
@@ -61,7 +82,9 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                 ) as channel:
                     while True:
                         stub = ComponentStub(channel)
-                        response = stub.forward(ComponentMessage())
+                        response = stub.forward(
+                            ComponentMessage(health_check=health_check)
+                        )
                         # ic(response)
                         if not live:
                             break
@@ -79,6 +102,7 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                         stub = ComponentStub(channel)
                         request = ComponentMessage(
                             flow=[random.uniform(1, 9000) for _ in range(80)],
+                            health_check=health_check,
                         )
                         response = stub.forward(request)
                         # ic(response.flow)
@@ -93,6 +117,7 @@ def connect(port: int, live: bool, sleep: int = 7) -> None:
                     request = ComponentMessage(flow=[1.0, 2.0, 3.0], health_check=True)
                     response = stub.forward(request)
                     assert response.return_code == 0
+
     except grpc.RpcError as e:
         if e.code() == grpc.StatusCode.UNAVAILABLE:  # pylint: disable=E1101
             ic(f"Server at {port} is unavailable. Is it running?")

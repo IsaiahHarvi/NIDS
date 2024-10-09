@@ -22,11 +22,11 @@ git clone https://github.com/IsaiahHarvi/NIDS.git
 ```
 cd NIDS
 ```
-3. Run deployment script:
+3. Run Install script:
 ```
-./scripts/deploy.sh
+./scripts/install.sh
 ```
-> This will install any needed dependencies and start the NIDS service.
+> This will install any needed dependencies.
 
 ## Usage
 To use NIDS, follow the steps below:
@@ -52,7 +52,8 @@ If you encounter any issues with the NIDS service, please refer to the following
 ```
 ./scripts/uninstall.sh
 ```
-2. Reinstall
+2. Reinstall & Run
 ```
+./scripts/install.sh
 ./scripts/deploy.sh
 ```

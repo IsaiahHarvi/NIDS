@@ -31,15 +31,12 @@ class NIDS(App):
             id="button",
         )
         yield Horizontal(
-            Container(
-                self.output_log,
-                id="left"
-            ),
+            Container(self.output_log, id="left"),
             Container(
                 Static(id="docker_ps", name="docker_ps_display"),
                 RichLog(id="docker_logs", highlight=False),
                 id="right",
-            )
+            ),
         )
         yield Footer()
 
@@ -50,17 +47,19 @@ class NIDS(App):
     async def monitor_docker_ps(self):
         """Continuously run `docker ps` and update the display every 5 seconds."""
         while True:
-            output, _ = execute('docker ps --format "table {{.ID}}\t{{.Status}}\t{{.Names}}"')
+            output, _ = execute(
+                'docker ps --format "table {{.ID}}\t{{.Status}}\t{{.Names}}"'
+            )
             self.set_compose(running=len(output.strip().splitlines()) > 1)
             self.query_one("#docker_ps", Static).update(output)
             await asyncio.sleep(5)
-        
+
     async def monitor_docker_logs(self, container_name: str):
         """Fetch and stream logs for the selected container."""
         process = await asyncio.create_subprocess_shell(
-            f'docker logs -f {container_name}',
+            f"docker logs -f {container_name}",
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
         )
 
         async def stream_logs(stream, is_stdout=True):
@@ -75,10 +74,7 @@ class NIDS(App):
                 else:
                     break
 
-        await asyncio.gather(
-            stream_logs(process.stdout),
-            stream_logs(process.stderr)
-        )
+        await asyncio.gather(stream_logs(process.stdout), stream_logs(process.stderr))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses."""
@@ -88,7 +84,9 @@ class NIDS(App):
             case "compose_down":
                 asyncio.create_task(self.stop_docker_compose())
             case "kill_components":
-                self.output_log.write(Text("Killing all components...", style="bold red"))
+                self.output_log.write(
+                    Text("Killing all components...", style="bold red")
+                )
                 execute("docker kill $(docker ps -q)")
             case "clear_cache":
                 self.output_log.write(Text("System Prune...", style="bold red"))
@@ -105,7 +103,7 @@ class NIDS(App):
         process = await asyncio.create_subprocess_shell(
             "docker compose --profile gui --profile feeder up --build -d",
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
         )
 
         while True:
@@ -126,9 +124,9 @@ class NIDS(App):
         self.output_log.write(Text("Stopping components...", style="bold yellow"))
 
         process = await asyncio.create_subprocess_shell(
-            "docker compose down",
+            "dockercompose --profile feeder --profile gui down",
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
         )
 
         while True:
@@ -142,16 +140,16 @@ class NIDS(App):
                 self.output_log.write(Text(output, style="red"))
             if not stdout_line and not stderr_line:
                 break
-    
+
     def action_feeder_logs(self):
         self.start_log_task("feeder")
-    
+
     def action_nn_logs(self):
         self.start_log_task("neural-network")
- 
+
     def action_webserver_logs(self):
         self.start_log_task("webserver")
-    
+
     def action_all_logs(self):
         self.start_log_task("logger")
 
@@ -160,10 +158,12 @@ class NIDS(App):
 
     def action_clear_terminal(self):
         self.query_one("#output_log", RichLog).clear()
-        
+
     async def action_health_check(self):
         """Run the health check asynchronously."""
-        output, error = await async_execute("python src/services/comms.py --check --sleep 0")
+        output, error = await async_execute(
+            "python src/services/comms.py --check --sleep 0"
+        )
         if output:
             self.output_log.write(output)
         if error:
@@ -182,6 +182,7 @@ class NIDS(App):
         self.compose_running = running
         self.compose_up_button.disabled = self.compose_running
         self.compose_down_button.disabled = not self.compose_running
+
 
 if __name__ == "__main__":
     NIDS().run()

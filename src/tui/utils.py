@@ -6,22 +6,24 @@ import subprocess
 def execute(command):
     """Run a command and return the output."""
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, env=os.environ)
+        result = subprocess.run(
+            command, shell=True, capture_output=True, text=True, env=os.environ
+        )
         return result.stdout, result.stderr
     except Exception as e:
         output = f"Error: {str(e)}"
     return output
 
+
 async def async_execute(command: str):
     """Run a shell command asynchronously."""
     process = await asyncio.create_subprocess_shell(
-        command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
+        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
 
     stdout, stderr = await process.communicate()
     return stdout.decode().strip(), stderr.decode().strip()
+
 
 BINDINGS = [
     ("ctrl+1", "feeder_logs", "Feeder Logs"),

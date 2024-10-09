@@ -35,7 +35,9 @@ from src.grpc_.services_pb2_grpc import ComponentStub
 )
 @click.option("--test", is_flag=True, default=False)
 @click.option("--check", is_flag=True, default=False)
-def main(port: int, interactive: bool, live: bool, sleep: int, test: bool, check: bool) -> None:
+def main(
+    port: int, interactive: bool, live: bool, sleep: int, test: bool, check: bool
+) -> None:
     if interactive:
         while True:
             connect(port=int(input("PORT: ")), live=False)
@@ -48,7 +50,7 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool, check
             connect(port=i, live=False)
 
     elif check:
-        ports = range(50052, 50057)# [50052, 50053, 50054]
+        ports = range(50052, 50057)  # [50052, 50053, 50054]
         with ThreadPoolExecutor(max_workers=len(ports)) as executor:
             futures = {executor.submit(run_health_check, p, sleep): p for p in ports}
             for future in as_completed(futures):
@@ -60,9 +62,11 @@ def main(port: int, interactive: bool, live: bool, sleep: int, test: bool, check
     else:
         connect(port, live, sleep)
 
+
 def run_health_check(port: int, sleep: int) -> None:
     """Function to run health check for a specific port."""
     connect(port, live=False, health_check=True)
+
 
 def connect(port: int, live: bool, sleep: int = 7, health_check: bool = False) -> None:
     options = [
@@ -78,7 +82,9 @@ def connect(port: int, live: bool, sleep: int = 7, health_check: bool = False) -
                 ) as channel:
                     while True:
                         stub = ComponentStub(channel)
-                        response = stub.forward(ComponentMessage(health_check=health_check))
+                        response = stub.forward(
+                            ComponentMessage(health_check=health_check)
+                        )
                         # ic(response)
                         if not live:
                             break

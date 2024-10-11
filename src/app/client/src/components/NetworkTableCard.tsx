@@ -17,17 +17,17 @@ import PcapMetaDataModal from "./PcapMetaDataModal";
 
 const classMap = {
   BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 1, color: "yellow" },
-  "FTP-Patator": { value: 2, color: "yellow" },
-  "SSH-Patator": { value: 3, color: "yellow" },
+  PortScan: { value: 9, color: "yellow" },
+  "FTP-Patator": { value: 7, color: "yellow" },
+  "SSH-Patator": { value: 10, color: "yellow" },
   "DoS slowloris": { value: 4, color: "orange" },
   "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 6, color: "orange" },
-  "DoS Hulk": { value: 7, color: "orange" },
-  Bot: { value: 9, color: "red" },
+  "DoS GoldenEye": { value: 3, color: "orange" },
+  "DoS Hulk": { value: 4, color: "orange" },
+  Bot: { value: 1, color: "red" },
   Heartbleed: { value: 8, color: "red" },
-  Infiltration: { value: 10, color: "red" },
-  DDoS: { value: 11, color: "red" },
+  // Infiltration: { value: 9, color: "red" },
+  DDoS: { value: 2, color: "red" },
 };
 
 const invertedClassMap = Object.fromEntries(
@@ -37,12 +37,23 @@ const invertedClassMap = Object.fromEntries(
   ])
 );
 
-export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
+export const NetworkTable = ({
+  data,
+}: {
+  data: FeederMessage[] | null | undefined;
+}) => {
   const [showNewestFirst, setShowNewestFirst] = useState(false);
 
   const sortedData = useMemo(() => {
+    if (!data || data.length === 0) {
+      return [];
+    }
     return showNewestFirst ? [...data].reverse() : data;
   }, [data, showNewestFirst]);
+
+  if (!data || data.length === 0) {
+    return <p>No data available.</p>;
+  }
 
   return (
     <>
@@ -73,7 +84,7 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
               <TableCell>{message.id_}</TableCell>
               <TableCell>
                 {message.flow_data
-                  ? `Size: ${message.flow_data.length}, Peak: ${Math.max(...message.flow_data)}`
+                  ? `Size: ${message.flow_data.length}, Peak: ${Math.max(...(message.flow_data || []))}`
                   : "N/A"}
               </TableCell>
               <TableCell
@@ -83,13 +94,15 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
               >
                 {invertedClassMap[message.prediction]?.name || "Unknown"}
               </TableCell>
-              <TableCell>{message.metadata.Source_IP}</TableCell>
-              <TableCell>{message.metadata.Destination_IP}</TableCell>
-              <TableCell>{message.metadata.Destination_Port}</TableCell>
+              <TableCell>{message?.metadata?.Source_IP || "Unknown"}</TableCell>
               <TableCell>
-                <PcapMetaDataModal
-                  metadata={message.metadata}
-                ></PcapMetaDataModal>
+                {message?.metadata?.Destination_IP || "Unknown"}
+              </TableCell>
+              <TableCell>
+                {message?.metadata?.Destination_Port || "Unknown"}
+              </TableCell>
+              <TableCell>
+                <PcapMetaDataModal metadata={message?.metadata} />
               </TableCell>
             </TableRow>
           ))}
@@ -104,7 +117,11 @@ export const NetworkTable = ({ data }: { data: FeederMessage[] }) => {
   );
 };
 
-export const NetworkTableCard = ({ data }: { data: FeederMessage[] }) => {
+export const NetworkTableCard = ({
+  data,
+}: {
+  data: FeederMessage[] | null | undefined;
+}) => {
   return (
     <Card>
       <CardHeader>

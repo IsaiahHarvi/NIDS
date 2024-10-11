@@ -17,17 +17,17 @@ import { FeederMessage } from "../../../types/client-types";
 
 const classMap = {
   BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 1, color: "yellow" },
-  "FTP-Patator": { value: 2, color: "yellow" },
-  "SSH-Patator": { value: 3, color: "yellow" },
+  PortScan: { value: 9, color: "yellow" },
+  "FTP-Patator": { value: 7, color: "yellow" },
+  "SSH-Patator": { value: 10, color: "yellow" },
   "DoS slowloris": { value: 4, color: "orange" },
   "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 6, color: "orange" },
-  "DoS Hulk": { value: 7, color: "orange" },
+  "DoS GoldenEye": { value: 3, color: "orange" },
+  "DoS Hulk": { value: 4, color: "orange" },
+  Bot: { value: 1, color: "red" },
   Heartbleed: { value: 8, color: "red" },
-  Bot: { value: 9, color: "red" },
-  Infiltration: { value: 10, color: "red" },
-  DDoS: { value: 11, color: "red" },
+  // Infiltration: { value: 9, color: "red" },
+  DDoS: { value: 2, color: "red" },
 };
 
 const invertedClassMap = Object.fromEntries(
@@ -43,8 +43,17 @@ const PieChartComponent = ({
   data: { name: string; value: number; fill: string }[];
 }) => {
   const totalOccurrences = useMemo(() => {
+    if (!data || data.length === 0) return 0;
     return data.reduce((acc, curr) => acc + curr.value, 0);
   }, [data]);
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-center">
+        <p>No data available to display the chart.</p>
+      </div>
+    );
+  }
 
   return (
     <ChartContainer
@@ -99,53 +108,53 @@ const PieChartComponent = ({
   );
 };
 
-// Define chart configuration (for pie chart)
 const chartConfig = {
   visitors: {
     label: "Occurrences",
   },
 } satisfies ChartConfig;
 
-// PieChartCard component (main component)
 interface PieChartCardProps {
-  data: FeederMessage[];
+  data: FeederMessage[] | null | undefined;
 }
 
 const PieChartCard = ({ data }: PieChartCardProps) => {
-  // Memoized processing of data for the pie chart and finding the oldest timestamp
   const { processedData, oldestTimestamp } = useMemo(() => {
     const counts: { [key: string]: number } = {};
     let oldestTime: Date | null = null;
 
+    if (!data || data.length === 0) {
+      return {
+        processedData: [],
+        oldestTimestamp: "N/A",
+      };
+    }
+
     data.forEach((message) => {
-      // Get the prediction value and map it to the corresponding attack type
       const prediction = message.prediction;
       const attackType = invertedClassMap[prediction]?.name || "Unknown";
 
-      // Increment the count for this attack type
       counts[attackType] = (counts[attackType] || 0) + 1;
 
-      // Parse the timestamp and track the oldest one
-      const timestamp = new Date(message.metadata.Timestamp);
+      const timestamp = new Date(message?.metadata?.Timestamp);
       if (!oldestTime || timestamp < oldestTime) {
         oldestTime = timestamp;
       }
     });
 
-    // Convert counts object into the format needed for the PieChart
     const processedData = Object.keys(counts).map((key) => ({
       name: key,
       value: counts[key],
       fill:
         invertedClassMap[classMap[key as keyof typeof classMap]?.value]
-          ?.color || "gray", // Use corresponding color from classMap
+          ?.color || "gray",
     }));
 
     return {
       processedData,
       oldestTimestamp: oldestTime
         ? (oldestTime as Date).toLocaleString()
-        : "N/A", // Format the oldest timestamp
+        : "N/A",
     };
   }, [data]);
 
@@ -163,7 +172,6 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Render PieChartComponent with processed data */}
         <PieChartComponent data={processedData} />
       </CardContent>
     </Card>

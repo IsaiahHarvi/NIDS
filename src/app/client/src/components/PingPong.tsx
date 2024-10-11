@@ -5,7 +5,7 @@ const PingPong = () => {
 
   const handlePing = async () => {
     try {
-      const res = await fetch("http://localhost:3000/ping");
+      const res = await fetch("http://localhost:8000/ping");
       const data = await res.json();
       setResponse(data.message);
     } catch (error) {

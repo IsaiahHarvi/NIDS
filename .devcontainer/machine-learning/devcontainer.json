@@ -13,9 +13,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-toolsai.jupyter",
 				"iterative.dvc",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"charliermarsh.ruff"
 			]
 		}
 	},

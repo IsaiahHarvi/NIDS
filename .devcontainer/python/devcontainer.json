@@ -13,7 +13,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-toolsai.jupyter"
+				"tamasfe.even-better-toml",
+				"charliermarsh.ruff"
 			]
 		}
 	},

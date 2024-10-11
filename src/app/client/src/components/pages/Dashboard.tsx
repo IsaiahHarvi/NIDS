@@ -24,24 +24,6 @@ const Dashboard = () => {
     // setNeuralNetworks,
   } = useServicesStore();
 
-  // TODO: figure out how to handle this
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedFeeders = await getFeeders();
-  //       setFeeders(fetchedFeeders);
-  //       const fetchedOfflineFeeders = await getOfflineFeeders();
-  //       setOfflineFeeders(fetchedOfflineFeeders);
-  //       const fetchedNeuralNetworks = await getNeuralNetworks();
-  //       setNeuralNetworks(fetchedNeuralNetworks);
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error);
-  //     }
-  //   };
-  //   fetchData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   return (
     <div className="p-4">
       <Card>

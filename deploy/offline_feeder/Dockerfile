@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt --retries 1 && rm /app/r
 
 COPY data/CIC/test_data.csv /app/data/CIC/test_data.csv
 COPY src/grpc_ /app/src/grpc_
+COPY src/ai/ /app/src/ai
 COPY src/services/offline_feeder/offline_feeder.py /app/main.py
 
 ENV PYTHONPATH=/app/src

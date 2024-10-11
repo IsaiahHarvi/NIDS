@@ -15,9 +15,9 @@ class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
         try:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
-            self.model = BasicModule.load_from_checkpoint(checkpoint_path=ckpt_path).to(
-                "cpu"
-            )
+            self.model = BasicModule.load_from_checkpoint(
+                checkpoint_path=ckpt_path, strict=False
+            ).to("cpu")
         except Exception as e:
             raise RuntimeError(f"Failed to load the model from {ckpt_path}: {e}")
         self.model.eval()
@@ -26,21 +26,20 @@ class NeuralNetwork(ComponentServicer):
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         if msg.health_check:
             ic("Health check")
-            return ComponentResponse(flow=msg.flow)
+            return ComponentResponse(return_code=0)
 
         x = torch.tensor(msg.flow)
         # ic(x.shape)
 
-        if x.dim() == 1:
-            x = x.unsqueeze(0)
-        assert x.dim() == 2, f"Expected [batch_size, input_size] but got {x.shape}"
+        x = x.unsqueeze(0) if x.dim() == 1 else x
+        assert x.dim() == 2, f"Expected shape [0, input_size] but got {x.shape}"
 
         pred = torch.argmax(self.model(x), dim=1).item()
         ic(pred)
+
         return ComponentResponse(prediction=pred, return_code=0)
 
 
 if __name__ == "__main__":
-    ckpt_path = os.environ.get("MODEL_PATH", "model.ckpt")
-    service = NeuralNetwork(ckpt_path)
+    service = NeuralNetwork(ckpt_path="model.ckpt")
     start_server(service, port=int(os.environ.get("PORT")))

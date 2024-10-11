@@ -23,7 +23,22 @@ import {
 
 import type { FeederMessage } from "../../../types/client-types";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// Define a more specific type for the tooltip payload
+interface TooltipPayload {
+  payload: {
+    name: string;
+    value: number;
+    sourceIp: string;
+  };
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[] | null;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -55,6 +70,13 @@ const availableMetrics = [
   { label: "Packet Length Mean", key: "Packet_Length_Mean" },
 ];
 
+// Define the shape of the data used for charting
+interface ChartData {
+  name: string;
+  value: number;
+  sourceIp: string;
+}
+
 export default function NetworkTrafficLineChart({
   data,
 }: {
@@ -63,9 +85,9 @@ export default function NetworkTrafficLineChart({
   const [selectedMetric, setSelectedMetric] = useState<string>(
     availableMetrics[0].key
   );
-  const [selectedPoint, setSelectedPoint] = useState<any | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<ChartData | null>(null);
 
-  const chartData = useMemo(() => {
+  const chartData: ChartData[] = useMemo(() => {
     if (!data || data.length === 0) {
       return [];
     }
@@ -76,7 +98,7 @@ export default function NetworkTrafficLineChart({
     }));
   }, [data, selectedMetric]);
 
-  const handleDotClick = (data: any) => {
+  const handleDotClick = (data: ChartData) => {
     setSelectedPoint(data);
   };
 
@@ -137,8 +159,14 @@ export default function NetworkTrafficLineChart({
                   }}
                   activeDot={{
                     r: 6,
-                    onClick: (e: any, payload: any) => {
-                      handleDotClick(payload.payload);
+                    onClick: (
+                      e: React.MouseEvent<SVGCircleElement, MouseEvent> & {
+                        payload: ChartData;
+                      }
+                    ) => {
+                      if (e && e.payload) {
+                        handleDotClick(e.payload as ChartData);
+                      }
                     },
                   }}
                   isAnimationActive={false}

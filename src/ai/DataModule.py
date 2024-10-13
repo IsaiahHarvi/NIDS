@@ -29,6 +29,7 @@ class CIC_IDS(Dataset):
 
         return torch.tensor(x, dtype=torch.float32), torch.tensor(y, dtype=torch.long)
 
+
 class DataModule(pl.LightningDataModule):
     def __init__(
         self,
@@ -59,18 +60,24 @@ class DataModule(pl.LightningDataModule):
         df = df[df["Label"] != "Infiltration"]
 
         drop_columns = [
-            'Flow_ID', 'Timestamp', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate',
-            'Bwd_PSH_Flags', 'Bwd_URG_Flags', 'Fwd_Avg_Bytes/Bulk', 'Fwd_Avg_Packets/Bulk',
-            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk', 'Fwd_Header_Length.1'
+            "Flow_ID",
+            "Timestamp",
+            "Bwd_Avg_Packets/Bulk",
+            "Bwd_Avg_Bulk_Rate",
+            "Bwd_PSH_Flags",
+            "Bwd_URG_Flags",
+            "Fwd_Avg_Bytes/Bulk",
+            "Fwd_Avg_Packets/Bulk",
+            "Fwd_Avg_Bulk_Rate",
+            "Bwd_Avg_Bytes/Bulk",
+            "Fwd_Header_Length.1",
         ]
-        df = df.drop(drop_columns, axis=1, errors="ignore")
+        df.drop(drop_columns, axis=1, errors="ignore", inplace=True)
 
         # Save pre-normalized metadata
         self.metadata = df.copy()
 
-        change_ip = lambda x: sum([256**j * int(i) for j, i in enumerate(x.split('.')[::-1])])
-        df["Source_IP"] = df["Source_IP"].apply(change_ip)
-        df["Destination_IP"] = df["Destination_IP"].apply(change_ip)
+        df.drop(["Source_IP", "Destination_IP"], axis=1, errors="ignore", inplace=True)
 
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         x = df.select_dtypes(include=[float, int])

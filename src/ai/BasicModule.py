@@ -54,9 +54,10 @@ class MLP(nn.Module):
             nn.Dropout(dropout_prob),
             nn.Linear(hidden_size, out_fatures),
         )
-    
+
     def forward(self, x):
         return self.net(x)
+
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -150,7 +151,9 @@ class BasicModule(pl.LightningModule):
         from matplotlib import pyplot as plt
         from dvclive import Live
         from torchmetrics import ConfusionMatrix
-        from sklearn.metrics import ConfusionMatrixDisplay # , precision_recall_fscore_support
+        from sklearn.metrics import (
+            ConfusionMatrixDisplay,
+        )  # , precision_recall_fscore_support
 
         cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
             preds.device

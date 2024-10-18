@@ -1,16 +1,17 @@
 import os
-import click
-import wandb
-import torch
-import lightning.pytorch as pl
-from lightning.pytorch.loggers import WandbLogger
-from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
-from torch.nn import CrossEntropyLoss
-from icecream import ic
-from dvclive.lightning import DVCLiveLogger
 
+import click
+import lightning.pytorch as pl
+import torch
+from dvclive.lightning import DVCLiveLogger
+from icecream import ic
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.loggers import WandbLogger
+from torch.nn import CrossEntropyLoss
+
+import wandb
+from ai.BasicModule import MLP, BasicModule, ResidualNetwork
 from ai.DataModule import DataModule
-from ai.BasicModule import BasicModule, ResidualNetwork, MLP
 
 
 @click.command()

@@ -1,9 +1,11 @@
-import subprocess
-import pytest
 import os
 import re
+import subprocess
 from time import sleep
+
+import pytest
 from icecream import ic
+
 from tests.conftest import compose
 
 

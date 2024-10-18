@@ -1,14 +1,15 @@
 import os
-import torch
-import numpy as np
-import lightning.pytorch as pl
-import pandas as pd
-from torch.utils.data import DataLoader, Dataset, Subset
-from sklearn.utils.class_weight import compute_class_weight
-from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from icecream import ic
 from collections import Counter
+
+import lightning.pytorch as pl
+import numpy as np
+import pandas as pd
+import torch
+from icecream import ic
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
+from torch.utils.data import DataLoader, Dataset, Subset
 
 
 class CIC_IDS(Dataset):
@@ -53,11 +54,6 @@ class DataModule(pl.LightningDataModule):
             dfs.append(df)
 
         df = pd.concat(dfs, ignore_index=True)
-
-        # Drop rows where the label is "Infiltration"
-        # Its underrepresented and this is just for school
-        # so i dont care about it
-        df = df[df["Label"] != "Infiltration"]
 
         drop_columns = [
             "Flow_ID",

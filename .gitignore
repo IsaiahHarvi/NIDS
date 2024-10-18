@@ -167,7 +167,7 @@ DvcLiveLogger/
 *acc.tsv
 *loss.tsv
 *epoch.tsv
-*.png 
+*.png
 !docs/*.png
 !src/app/client/src/components/logo/nids_logo.png
 scripts/setup_git_personal.sh
@@ -176,3 +176,7 @@ data/CIC/*.csv
 .devcontainer/wandb.env
 wandb/
 dvclive/plots
+data/CICIDS2017_pcap
+!data/CICIDS2017_pcap/README.md
+data/CIC_NFlows/
+!data/CIC_NFlows/README.md

@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 88
-# fix = true
+fix = true
 
 exclude = [
     "src/grpc_",
@@ -8,7 +8,11 @@ exclude = [
     "tests"
 ]
 
-[tool.ruff.lint]
 
-# line too long warnings
-per-file-ignores = { "src/services/feeder/feeder.py" = ["E501"] }
+[tool.ruff.lint]
+per-file-ignores = {"src/services/feeder/feeder.py" = ["E501"]}
+select = ["E4", "E7", "E9", "F", "B", "R", "C", "E", "W", "I"]
+external = ["isort"]
+
+unfixable = ["B"]
+fixable = ["I"]

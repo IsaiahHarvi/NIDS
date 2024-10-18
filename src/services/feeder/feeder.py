@@ -12,6 +12,7 @@ from icecream import ic
 from nfstream import NFStreamer
 from sklearn.preprocessing import StandardScaler
 
+from pcaps.utils import rename_cols
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import sendto_mongo, sendto_service, start_server
@@ -80,7 +81,7 @@ class Feeder(ComponentServicer):
             flow_data = NFStreamer(
                 source=temp_pcap.name, statistical_analysis=True
             ).to_pandas()
-        flow_data = self.rename_cols(flow_data)
+        flow_data = rename_cols(flow_data)
 
         # Convert flow data into a list of flows and metadata
         flow_list = flow_data.to_dict(orient="records")
@@ -107,94 +108,19 @@ class Feeder(ComponentServicer):
             "Fwd_Avg_Bulk_Rate",
             "Bwd_Avg_Bytes/Bulk",
             "Fwd_Header_Length.1",
+            "Source_IP",
+            "Destination_IP",
         ]
         df = df.drop(drop_columns, axis=1, errors="ignore")
-
-        # Convert IP addresses to numeric format
-        def change_ip(x):
-            return sum([256**j * int(i) for j, i in enumerate(x.split(".")[::-1])])
-
-        if "Source_IP" in df.columns:
-            df["Source_IP"] = df["Source_IP"].apply(change_ip)
-        if "Destination_IP" in df.columns:
-            df["Destination_IP"] = df["Destination_IP"].apply(change_ip)
-
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
-        pd.set_option("display.max_rows", None)
-        pd.set_option("display.max_columns", None)
-        ic(df)
-        x = df.select_dtypes(include=[float, int])
 
+        x = df.select_dtypes(include=[float, int])
         x = StandardScaler().fit_transform(x)
         x = np.array(x).flatten()
 
-        assert x.shape[0] == 73, f"Expected 73 features, got {x.shape[0]}"
+        assert x.shape[0] == 71, f"Expected 71 features, got {x.shape[0]}"
 
         return x.tolist()
-
-    def rename_cols(self, flow_data: pd.DataFrame) -> pd.DataFrame:
-        # Mapping to CICIDS2017 feature names
-        return flow_data.rename(
-            columns={
-                # IP and port information
-                "src_ip": "Source_IP",
-                "dst_ip": "Destination_IP",
-                "src_port": "Source_Port",
-                "dst_port": "Destination_Port",
-                "protocol": "Protocol",
-                # Flow duration and packet-related information
-                "bidirectional_duration_ms": "Flow_Duration",
-                "src2dst_packets": "Total_Fwd_Packets",
-                "dst2src_packets": "Total_Backward_Packets",
-                "src2dst_bytes": "Total_Length_of_Fwd_Packets",
-                "dst2src_bytes": "Total_Length_of_Bwd_Packets",
-                # Packet inter-arrival time (IAT) information
-                "src2dst_min_piat_ms": "Fwd_IAT_Min",
-                "src2dst_mean_piat_ms": "Fwd_IAT_Mean",
-                "src2dst_stddev_piat_ms": "Fwd_IAT_Std",
-                "src2dst_max_piat_ms": "Fwd_IAT_Max",
-                "dst2src_min_piat_ms": "Bwd_IAT_Min",
-                "dst2src_mean_piat_ms": "Bwd_IAT_Mean",
-                "dst2src_stddev_piat_ms": "Bwd_IAT_Std",
-                "dst2src_max_piat_ms": "Bwd_IAT_Max",
-                "bidirectional_min_piat_ms": "Flow_IAT_Min",
-                "bidirectional_mean_piat_ms": "Flow_IAT_Mean",
-                "bidirectional_stddev_piat_ms": "Flow_IAT_Std",
-                "bidirectional_max_piat_ms": "Flow_IAT_Max",
-                # Packet size information
-                "src2dst_min_ps": "Fwd_Packet_Length_Min",
-                "src2dst_mean_ps": "Fwd_Packet_Length_Mean",
-                "src2dst_stddev_ps": "Fwd_Packet_Length_Std",
-                "src2dst_max_ps": "Fwd_Packet_Length_Max",
-                "dst2src_min_ps": "Bwd_Packet_Length_Min",
-                "dst2src_mean_ps": "Bwd_Packet_Length_Mean",
-                "dst2src_stddev_ps": "Bwd_Packet_Length_Std",
-                "dst2src_max_ps": "Bwd_Packet_Length_Max",
-                "bidirectional_min_ps": "Flow_Packet_Length_Min",
-                "bidirectional_mean_ps": "Flow_Packet_Length_Mean",
-                "bidirectional_stddev_ps": "Flow_Packet_Length_Std",
-                "bidirectional_max_ps": "Flow_Packet_Length_Max",
-                # TCP flag-related fields
-                "src2dst_syn_packets": "Fwd_PSH_Flags",
-                "bidirectional_syn_packets": "Fwd_Syn_Flags",
-                "bidirectional_ack_packets": "Fwd_Ack_Flags",
-                "bidirectional_psh_packets": "Fwd_PSH_Flags",
-                "bidirectional_urg_packets": "Fwd_URG_Flags",
-                "bidirectional_cwr_packets": "Fwd_CWR_Flags",
-                "bidirectional_ece_packets": "Fwd_ECE_Flags",
-                "bidirectional_rst_packets": "Fwd_RST_Flags",
-                "bidirectional_fin_packets": "Fwd_FIN_Flags",
-                # ACK and other TCP packet counters
-                "src2dst_ack_packets": "Fwd_Ack_Flags",
-                "src2dst_psh_packets": "Fwd_PSH_Flags",
-                "src2dst_rst_packets": "Fwd_RST_Flags",
-                "src2dst_fin_packets": "Fwd_FIN_Flags",
-                "dst2src_syn_packets": "Bwd_Syn_Flags",
-                "dst2src_ack_packets": "Bwd_Ack_Flags",
-                "dst2src_rst_packets": "Bwd_RST_Flags",
-                "dst2src_fin_packets": "Bwd_FIN_Flags",
-            }
-        )
 
 
 if __name__ == "__main__":

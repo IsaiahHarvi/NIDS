@@ -1,13 +1,13 @@
-import pandas as pd
-import numpy as np
 import click
-from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from icecream import ic
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report
-from icecream import ic
-import matplotlib.pyplot as plt
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 
 
 @click.command()

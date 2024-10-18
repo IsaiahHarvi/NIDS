@@ -1,10 +1,8 @@
-import torch
 import lightning.pytorch as pl
-
-from torch import nn
-from torch.nn import functional as F
-from torch import optim
+import torch
 from icecream import ic
+from torch import nn, optim
+from torch.nn import functional as F
 
 
 class ResidualUnit(nn.Module):
@@ -54,9 +52,10 @@ class MLP(nn.Module):
             nn.Dropout(dropout_prob),
             nn.Linear(hidden_size, out_fatures),
         )
-    
+
     def forward(self, x):
         return self.net(x)
+
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -148,9 +147,11 @@ class BasicModule(pl.LightningModule):
 
         matplotlib.use("Agg")
         from matplotlib import pyplot as plt
-        from dvclive import Live
+        from sklearn.metrics import \
+            ConfusionMatrixDisplay  # , precision_recall_fscore_support
         from torchmetrics import ConfusionMatrix
-        from sklearn.metrics import ConfusionMatrixDisplay # , precision_recall_fscore_support
+
+        from dvclive import Live
 
         cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
             preds.device

@@ -1,15 +1,15 @@
 # python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. src/grpc_/services.proto
 
-import time 
 import subprocess
-import grpc
+import time
 from concurrent import futures
 
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentStub
-from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
-
+import grpc
 from icecream import ic
+
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import (ComponentStub,
+                                         add_ComponentServicer_to_server)
 
 
 def start_server(
@@ -62,7 +62,8 @@ def sendto_service(msg: ComponentMessage, host: str, port: int) -> ComponentResp
         ic("Send Failed", e)
 
 def sendto_mongo(data: dict, collection_name: str) -> None:
-    from pymongo import MongoClient # not all services use this, so import here
+    from pymongo import \
+        MongoClient  # not all services use this, so import here
 
     client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
     db = client["services"]

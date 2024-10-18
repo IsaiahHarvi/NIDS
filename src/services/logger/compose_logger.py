@@ -1,7 +1,7 @@
 import os
-import docker
 from threading import Thread
 
+import docker
 from icecream import ic
 
 ic.configureOutput(includeContext=False, prefix="")

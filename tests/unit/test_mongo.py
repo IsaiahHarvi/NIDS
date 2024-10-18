@@ -1,8 +1,10 @@
 import os
+
 import pytest
+from icecream import ic
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from icecream import ic
+
 from src.grpc_.utils import wait_for_services
 
 

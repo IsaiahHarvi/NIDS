@@ -1,16 +1,17 @@
 import os
-import click
-import wandb
-import torch
-import lightning.pytorch as pl
-from lightning.pytorch.loggers import WandbLogger
-from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
-from torch.nn import CrossEntropyLoss
-from icecream import ic
-from dvclive.lightning import DVCLiveLogger
 
+import click
+import lightning.pytorch as pl
+import torch
+from dvclive.lightning import DVCLiveLogger
+from icecream import ic
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.loggers import WandbLogger
+from torch.nn import CrossEntropyLoss
+
+import wandb
+from ai.BasicModule import MLP, BasicModule, ResidualNetwork
 from ai.DataModule import DataModule
-from ai.BasicModule import BasicModule, ResidualNetwork, MLP
 
 
 @click.command()
@@ -30,7 +31,9 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
 
     if all_data:
         paths = [
-            f"data/CIC/{csv}" for csv in os.listdir("data/CIC") if csv.endswith(".csv") and "test_data" not in csv
+            f"data/CIC/{csv}"
+            for csv in os.listdir("data/CIC")
+            if csv.endswith(".csv") and "test_data" not in csv
         ]
     else:
         paths = [
@@ -38,15 +41,16 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
             "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
         ]
 
-    constructor = {"ResidualNetwork": ResidualNetwork, "MLP" : MLP}[constructor]
+    constructor = {"ResidualNetwork": ResidualNetwork, "MLP": MLP}[constructor]
 
     train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_name)
+
 
 def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_name):
     dm = DataModule(
         paths=paths,
         val_split=0.3,
-        batch_size=batch_size, 
+        batch_size=batch_size,
         num_workers=(os.cpu_count() // 2),
         # transform=MinMaxTransform(),
     )
@@ -56,7 +60,7 @@ def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_
     model = BasicModule(
         model_constructor=constructor,
         in_features=dm.example_shape,
-        hidden_size=256, 
+        hidden_size=256,
         out_features=dm.n_classes,
         lr=lr,
         class_weights=dm.class_weights,
@@ -74,10 +78,7 @@ def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_
     )
 
     early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=early_stop_patience,
-        verbose=False,
-        mode="min"
+        monitor="val_loss", patience=early_stop_patience, verbose=False, mode="min"
     )
 
     wandb.init(
@@ -109,6 +110,7 @@ def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_
     )
     trainer.test(model, dm.val_dataloader(shuffle=True))
     wandb.finish()
+
 
 if __name__ == "__main__":
     main()

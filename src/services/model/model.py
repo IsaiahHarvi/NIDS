@@ -1,25 +1,22 @@
-import torch
 import os
-from ai.BasicModule import BasicModule
 
+import torch
+from icecream import ic
+
+from ai.BasicModule import BasicModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import start_server
-
-from icecream import ic
 
 ic.configureOutput(includeContext=False)
 
 
 class NeuralNetwork(ComponentServicer):
     def __init__(self, ckpt_path: str) -> None:
-        try:
-            os.environ["CUDA_VISIBLE_DEVICES"] = ""
-            self.model = BasicModule.load_from_checkpoint(
-                checkpoint_path=ckpt_path, strict=False
-            ).to("cpu")
-        except Exception as e:
-            raise RuntimeError(f"Failed to load the model from {ckpt_path}: {e}")
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        self.model = BasicModule.load_from_checkpoint(
+            checkpoint_path=ckpt_path, strict=False
+        ).to("cpu")
         self.model.eval()
         ic(f"Started on {os.environ.get('PORT')}")
 

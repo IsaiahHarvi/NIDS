@@ -93,7 +93,7 @@ class NIDS(App):
                 execute("docker system prune --volumes -af")
 
     async def run_docker_compose(self) -> None:
-    """Run docker compose up and display output in the TUI, with auto-scrolling."""
+        """Run docker compose up and display output in the TUI, with auto-scrolling."""
         if self.compose_running:
             return
 

@@ -1,16 +1,16 @@
-import grpc
-import os
-import pytest
 import multiprocessing
+import os
 import time
-from icecream import ic
-from src.grpc_.utils import start_server
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentStub
 
-from src.services.model.model import NeuralNetwork
+import grpc
+import pytest
+from icecream import ic
 
 from src.ai.DataModule import DataModule
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import ComponentStub
+from src.grpc_.utils import start_server
+from src.services.model.model import NeuralNetwork
 
 
 @pytest.fixture(scope="module")

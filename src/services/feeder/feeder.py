@@ -97,20 +97,26 @@ class Feeder(ComponentServicer):
         df = flow_row.to_frame().T
         # Drop unnecessary columns
         drop_columns = [
-            "Flow_ID",
-            "Timestamp",
-            "Bwd_Avg_Packets/Bulk",
-            "Bwd_Avg_Bulk_Rate",
-            "Bwd_PSH_Flags",
-            "Bwd_URG_Flags",
-            "Fwd_Avg_Bytes/Bulk",
-            "Fwd_Avg_Packets/Bulk",
-            "Fwd_Avg_Bulk_Rate",
-            "Bwd_Avg_Bytes/Bulk",
-            "Fwd_Header_Length.1",
-            "Source_IP",
-            "Destination_IP",
+            "id",
+            "expiration_id",
+            "src_ip",
+            "src_mac",
+            "src_oui",
+            "src_port",
+            "dst_ip",
+            "dst_mac",
+            "dst_oui",
+            "dst_port",
+            "flow_id",
+            "flow_start",
+            "bidirectional_first_seen_ms",
+            "bidirectional_last_seen_ms",
+            "src2dst_first_seen_ms",
+            "src2dst_last_seen_ms",
+            "dst2src_first_seen_ms",
+            "dst2src_last_seen_ms" "label",
         ]
+
         df = df.drop(drop_columns, axis=1, errors="ignore")
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
 

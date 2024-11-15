@@ -33,12 +33,12 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
         paths = [
             f"data/CIC/{csv}"
             for csv in os.listdir("data/CIC")
-            if csv.endswith(".csv") and "test_data" not in csv
+            if csv.endswith(".csv") and (csv != "test_data.csv")
         ]
-    else:
+    else: # just for teting
         paths = [
-            "data/CIC/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-            "data/CIC/Friday-WorkingHours-Morning.pcap_ISCX.csv",
+            "data/CIC/Friday-WorkingHours_without_duplication_reordered.csv"
+            "data/CIC/Wednesday-workingHours_without_duplication_reordered.csv",
         ]
 
     constructor = {"ResidualNetwork": ResidualNetwork, "MLP": MLP}[constructor]

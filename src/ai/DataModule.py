@@ -56,30 +56,39 @@ class DataModule(pl.LightningDataModule):
         df = pd.concat(dfs, ignore_index=True)
 
         drop_columns = [
-            "Flow_ID",
-            "Timestamp",
-            "Bwd_Avg_Packets/Bulk",
-            "Bwd_Avg_Bulk_Rate",
-            "Bwd_PSH_Flags",
-            "Bwd_URG_Flags",
-            "Fwd_Avg_Bytes/Bulk",
-            "Fwd_Avg_Packets/Bulk",
-            "Fwd_Avg_Bulk_Rate",
-            "Bwd_Avg_Bytes/Bulk",
-            "Fwd_Header_Length.1",
+            "id",
+            "expiration_id",
+            "src_ip",
+            "src_mac",
+            "src_oui",
+            "src_port",
+            "dst_ip",
+            "dst_mac",
+            "dst_oui",
+            "dst_port",
+            "flow_id",
+            "flow_start",
+            "bidirectional_first_seen_ms",
+            "bidirectional_last_seen_ms",
+            "src2dst_first_seen_ms",
+            "src2dst_last_seen_ms",
+            "dst2src_first_seen_ms",
+            "dst2src_last_seen_ms",
         ]
+
         df.drop(drop_columns, axis=1, errors="ignore", inplace=True)
 
         # Save pre-normalized metadata
         self.metadata = df.copy()
 
-        df.drop(["Source_IP", "Destination_IP"], axis=1, errors="ignore", inplace=True)
+        df.drop(["src_ip", "dst_ip"], axis=1, errors="ignore", inplace=True)
 
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         x = df.select_dtypes(include=[float, int])
 
         label_encoder = LabelEncoder()
-        y = label_encoder.fit_transform(df["Label"])
+        y = label_encoder.fit_transform(df["label"])
+        df.drop("label", axis=1, inplace=True)
 
         class_weights = compute_class_weight("balanced", classes=np.unique(y), y=y)
         self.class_weights = torch.tensor(class_weights, dtype=torch.float32)

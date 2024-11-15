@@ -176,7 +176,4 @@ data/CIC/*.csv
 .devcontainer/wandb.env
 wandb/
 dvclive/plots
-data/CICIDS2017_pcap
-!data/CICIDS2017_pcap/README.md
-data/CIC_NFlows/
-!data/CIC_NFlows/README.md
+.DS_Store

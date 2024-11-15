@@ -25,3 +25,4 @@ dpkt
 pypcap
 textual
 isort
+imbalanced-learn

@@ -12,7 +12,6 @@ from icecream import ic
 from nfstream import NFStreamer
 from sklearn.preprocessing import StandardScaler
 
-from pcaps.utils import rename_cols
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import sendto_mongo, sendto_service, start_server
@@ -81,9 +80,7 @@ class Feeder(ComponentServicer):
             flow_data = NFStreamer(
                 source=temp_pcap.name, statistical_analysis=True
             ).to_pandas()
-        flow_data = rename_cols(flow_data)
 
-        # Convert flow data into a list of flows and metadata
         flow_list = flow_data.to_dict(orient="records")
         metadata_list = [
             {col: str(flow_data[col].iloc[i]) for col in flow_data.columns}
@@ -95,18 +92,13 @@ class Feeder(ComponentServicer):
 
     def preprocessor(self, flow_row: pd.Series) -> list:
         df = flow_row.to_frame().T
-        # Drop unnecessary columns
         drop_columns = [
             "id",
             "expiration_id",
-            "src_ip",
             "src_mac",
             "src_oui",
-            "src_port",
-            "dst_ip",
             "dst_mac",
             "dst_oui",
-            "dst_port",
             "flow_id",
             "flow_start",
             "bidirectional_first_seen_ms",
@@ -114,9 +106,12 @@ class Feeder(ComponentServicer):
             "src2dst_first_seen_ms",
             "src2dst_last_seen_ms",
             "dst2src_first_seen_ms",
-            "dst2src_last_seen_ms" "label",
+            "dst2src_last_seen_ms",
+            "src_ip",
+            "dst_ip",
+            "src_port",
+            "dst_port",
         ]
-
         df = df.drop(drop_columns, axis=1, errors="ignore")
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
 
@@ -124,7 +119,7 @@ class Feeder(ComponentServicer):
         x = StandardScaler().fit_transform(x)
         x = np.array(x).flatten()
 
-        assert x.shape[0] == 71, f"Expected 71 features, got {x.shape[0]}"
+        assert x.shape[0] == 61, f"Expected 61 features, got {x.shape[0]}"
 
         return x.tolist()
 

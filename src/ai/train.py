@@ -63,8 +63,7 @@ def train(epochs, batch_size, paths, constructor, lr, early_stop_patience, ckpt_
         hidden_size=256,
         out_features=dm.n_classes,
         lr=lr,
-        class_weights=dm.class_weights,
-        criterion=CrossEntropyLoss,
+        criterion=CrossEntropyLoss(weight=dm.class_weights),
         # model_constructor_kwargs={
         #     "num_layers": 2,
         # }

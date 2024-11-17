@@ -65,7 +65,6 @@ class BasicModule(pl.LightningModule):
         hidden_size,
         out_features,
         lr=0.001,
-        class_weights: torch.Tensor = None,
         criterion: nn.CrossEntropyLoss = nn.CrossEntropyLoss,
         model_constructor_kwargs={},
     ):
@@ -75,12 +74,7 @@ class BasicModule(pl.LightningModule):
         self.constructor = model_constructor(
             in_features, hidden_size, out_features, **self.constructor_kwargs
         )
-        self.criterion_type = criterion
-        self.criterion = (
-            criterion(weight=class_weights)
-            if class_weights is not None
-            else criterion()
-        )
+        self.criterion = criterion
         self.lr = lr
         self.validation_outputs = []
         self.test_outputs = []

@@ -76,11 +76,6 @@ class DataModule(pl.LightningDataModule):
             "dst2src_last_seen_ms",
         ]
         df.drop(drop_columns, axis=1, errors="ignore", inplace=True)
-        df = df[
-            ~df["label"].isin(
-                {"web_attack_brute_force", "web_attack_xss", "web_attack_sql_injection"}
-            )
-        ]  # remove webattack classes bc lazy
 
         label_encoder = LabelEncoder()
         y = label_encoder.fit_transform(df["label"])
@@ -97,8 +92,6 @@ class DataModule(pl.LightningDataModule):
         x = df.select_dtypes(include=[float, int]).to_numpy()
         self.example_shape = x.shape[1]
 
-        # missing_classes = {key: value for key, value in dl.items() if key not in label_encoder.classes_}
-        # ic("Missing Classes: ", missing_classes)
         df.drop("label", axis=1, inplace=True)
 
         x = self.scaler.fit_transform(x)
@@ -110,44 +103,22 @@ class DataModule(pl.LightningDataModule):
 
         x_train, y_train = x[train_idx], y[train_idx]
         x_val, y_val = x[val_idx], y[val_idx]
-
-        label_to_index = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
-        ss_over = {
-            label_to_index[label]: count for label, count in {
-                "dos_hulk": 200000,
-                "ddos": 150000,
-                "portscan": 130000,
-                "dos_goldeneye": 10000,
-                "ftp_patator": 10200,
-                "dos_slowloris": 10200,
-                "dos_slowhttptest": 10200,
-                "ssh_patator": 5000,
-                "bot": 3000,
-                # "web_attack___brute_force": 2000,
-                # "web_attack___xss": 1500,
-                "infiltration": 1500,
-                # "web_attack___sql_injection": 1500,
-                "heartbleed": 1500,
-            }.items() if label in label_to_index
-        }
-        ss_under = {
-            label_to_index["benign"]: 50000
-        }
-
-        ic(f"Classes in y_train: {Counter(y_train)}")
-        missing_classes = {
-            cls for cls in ss_over if cls not in label_encoder.classes_
-        }
-        ic(f"Missing classes in y_train: {missing_classes}")
-
-        over = SMOTE(sampling_strategy=ss_over, random_state=42)
-        under = RandomUnderSampler(
-            sampling_strategy=ss_under, random_state=42
-        )
-        pipeline = Pipeline(steps=[("oversample", over), ("undersample", under)])
+        assert len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys()))) == 0
 
         ic(f"Original class distribution: {Counter(y_train)}")
-        x_train, y_train = pipeline.fit_resample(x_train, y_train)
+        undersample_strategy = {0: 250_000}
+        oversample_strategy = {
+            9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
+            5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
+            3: 20_000, 6: 20_000
+        }
+
+        resample_pipeline = Pipeline([
+            ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
+            ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
+        ])
+
+        x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
         ic(f"Resampled class distribution: {Counter(y_train)}")
 
         self.train_dataset = CIC_IDS(x_train, y_train)

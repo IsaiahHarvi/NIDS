@@ -5,9 +5,7 @@ import pandas as pd
 
 
 def main():
-    dfs = [
-        pd.read_csv(f"data/CIC/{f}", delimiter="\t") for f in os.listdir("data/CIC")
-    ]
+    dfs = [pd.read_csv(f"data/CIC/{f}", delimiter="\t") for f in os.listdir("data/CIC")]
     df = pd.concat(dfs, ignore_index=True)
     df = df[df["label"].isin(["benign", "ddos"])]
 
@@ -35,6 +33,7 @@ def main():
         print(f"  {label}: {count}")
 
     print("\nSaved to data/CIC/test_data.csv")
+
 
 if __name__ == "__main__":
     main()

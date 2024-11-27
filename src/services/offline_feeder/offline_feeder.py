@@ -1,10 +1,11 @@
 import os
-import random
 from uuid import uuid4 as UUID
 
+import numpy as np
+import pandas as pd
 from icecream import ic
+from sklearn.preprocessing import StandardScaler
 
-from src.ai.DataModule import DataModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import sendto_mongo, sendto_service, start_server
@@ -16,27 +17,61 @@ class OfflineFeeder(ComponentServicer):
     def __init__(self) -> None:
         ic(f"Started on {os.environ.get('PORT')}")
 
+        df = pd.read_csv("data/CIC/test_data.csv", delimiter="\t")
+        df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
+
+        drop_columns = [
+            "id",
+            "expiration_id",
+            "src_mac",
+            "src_oui",
+            "dst_mac",
+            "dst_oui",
+            "flow_id",
+            "flow_start",
+            "bidirectional_first_seen_ms",
+            "bidirectional_last_seen_ms",
+            "src2dst_first_seen_ms",
+            "src2dst_last_seen_ms",
+            "dst2src_first_seen_ms",
+            "dst2src_last_seen_ms",
+        ]
+        df.drop(drop_columns, axis=1, inplace=True, errors="ignore")
+        self.metadata = df.copy()
+        print(f"Shape after dropping metadata columns: {df.shape}")
+
+        df.drop(
+            ["src_ip", "dst_ip", "src_port", "dst_port"],
+            axis=1,
+            inplace=True,
+            errors="ignore",
+        )
+        print(f"Shape after dropping IP/port columns: {df.shape}")
+
+        df = df.replace([np.inf, -np.inf], np.nan).dropna()
+        print(f"Shape after replacing infinities and dropping NaNs: {df.shape}")
+
+        x = df.select_dtypes(include=[float, int]).to_numpy()
+        if x.shape[0] == 0:
+            raise ValueError("Filtered dataset has zero rows.")
+
+        self.y = df["label"]
+        df.drop("label", axis=1, inplace=True)
+
+        self.x = StandardScaler().fit_transform(x)
+
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         uuid = str(UUID())
         if msg.health_check:
             ic("Health check")
             return ComponentResponse(return_code=0)
 
-        dm = DataModule(
-            paths=["data/CIC/test_data.csv"],
-            val_split=0.9,
-            batch_size=1,
-            num_workers=1,
-            resample=False,
-        )
-        dm.setup()
+        idx = np.random.randint(0, len(self.x))
+        x = self.x[idx]
+        y = self.y[idx]
+        metadata = self.metadata.iloc[idx].to_dict()
+        ic(y, metadata)
 
-        idx = random.randint(0, len(dm.val_dataset) - 1)
-        x, y = dm.val_dataset[idx]
-        metadata = dm.get_metadata(idx)
-
-        ic(x.shape)
-        ic(y.item())
         model_response = sendto_service(
             msg=ComponentMessage(flow=x), host="neural-network", port=50052
         )

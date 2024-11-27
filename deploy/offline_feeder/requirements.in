@@ -9,3 +9,4 @@ scikit-learn
 pymongo
 torch
 lightning
+imblearn

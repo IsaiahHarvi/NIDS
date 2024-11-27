@@ -17,8 +17,8 @@ def main():
         print(f"  {label}: {count}")
 
     distribution = {
-        "benign": 2000,
-        "ddos": 1000,
+        "benign": 200000,
+        "ddos": 100000,
     }
     capped = []
     for label, _ in distribution.items():
@@ -28,7 +28,7 @@ def main():
         capped.append(sampled_data)
 
     capped_df = pd.concat(capped, ignore_index=True)
-    capped_df.to_csv("data/CIC/test_data.csv", index=False)
+    capped_df.to_csv("data/CIC/test_data.csv", index=False, sep="\t")
 
     print("\nCapped counts:")
     for label, count in Counter(capped_df["label"]).items():

@@ -1,136 +1,103 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { TrendingUp } from "lucide-react";
-import { Label, Pie, PieChart } from "recharts";
-import { useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+"use client";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Mock data for logs
+const mockLogs = [
+  {
+    _id: "6732ab9b49d87b12192868ea",
+    id_: "76061bc7-5ed2-4c1f-bafd-1cb02c47e759",
+    prediction: 0,
+    metadata: {
+      Source_IP: "192.168.10.5",
+      Destination_IP: "91.215.100.40",
+      Protocol: 6,
+      Label: "BENIGN",
+    },
+  },
+  {
+    _id: "6732ab9b49d87b12192868eb",
+    id_: "8f061bc7-5ed2-4c1f-bafd-1cb02c47e760",
+    prediction: 1,
+    metadata: {
+      Source_IP: "10.0.0.1",
+      Destination_IP: "203.0.113.0",
+      Protocol: 17,
+      Label: "MALICIOUS",
+    },
+  },
+  {
+    _id: "6732ab9b49d87b12192868ec",
+    id_: "9a061bc7-5ed2-4c1f-bafd-1cb02c47e761",
+    prediction: 0,
+    metadata: {
+      Source_IP: "172.16.0.1",
+      Destination_IP: "8.8.8.8",
+      Protocol: 6,
+      Label: "BENIGN",
+    },
+  },
 ];
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "hsl(var(--chart-1))",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig;
-
 export const Route = createFileRoute("/logs/")({
-  component: () => (
-    <div className="p-8 max-w-3xl mx-auto font-sans">
-      <Button>Click here</Button>
-      <Component />
-    </div>
-  ),
+  component: LogTerminal,
 });
 
-export function Component() {
-  const totalVisitors = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+function LogTerminal() {
+  const [filter, setFilter] = useState("");
+
+  const filteredLogs = mockLogs.filter(
+    (log) =>
+      log._id.includes(filter) ||
+      log.id_.includes(filter) ||
+      log.metadata.Source_IP.includes(filter) ||
+      log.metadata.Destination_IP.includes(filter) ||
+      log.metadata.Label.includes(filter)
+  );
 
   return (
-    <Card className="flex flex-col mt-8">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+    <div className="p-8">
+      <Card className="border-2">
+        <CardContent className="p-6">
+          <div className="mb-4">
+            <h2 className="text-white text-xl mb-4">Logs</h2>
+            <Input
+              type="text"
+              placeholder="Filter logs..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className=" "
             />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {totalVisitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    );
-                  }
-                  return null;
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
-    </Card>
+          </div>
+          <ScrollArea className="h-[600px] w-full rounded-md border p-4">
+            <div className="font-mono text-sm space-y-6">
+              {filteredLogs.map((log, index) => (
+                <div key={log._id} className="">
+                  {`Log ${index + 1}:`}
+                  <br />
+                  {`ID: ${log._id}`}
+                  <br />
+                  {`UUID: ${log.id_}`}
+                  <br />
+                  {`Prediction: ${log.prediction}`}
+                  <br />
+                  {`Source IP: ${log.metadata.Source_IP}`}
+                  <br />
+                  {`Destination IP: ${log.metadata.Destination_IP}`}
+                  <br />
+                  {`Protocol: ${log.metadata.Protocol}`}
+                  <br />
+                  {`Label: ${log.metadata.Label}`}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

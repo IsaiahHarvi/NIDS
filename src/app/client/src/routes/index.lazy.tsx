@@ -7,7 +7,13 @@ import {
 } from "@/components/ui/card";
 import Balancer from "react-wrap-balancer";
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, Crosshair, ScrollText, Gamepad2 } from "lucide-react";
+import {
+  Sparkles,
+  Crosshair,
+  ScrollText,
+  Gamepad2,
+  Clipboard,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import logo from "@/components/logo/nids_logo.png";
 import "@/components/logo/logo.css";
@@ -34,8 +40,8 @@ export function Index() {
       <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 md:max-w-5xl">
         <LinkCard
           icon={Gamepad2}
-          title="Controls"
-          description="NIDS Controls"
+          title="Help"
+          description="NIDS Help Page"
           link="/help"
         />
         <LinkCard
@@ -52,9 +58,15 @@ export function Index() {
         />
         <LinkCard
           icon={Sparkles}
-          title="Status"
-          description="View the status of NIDS"
-          link="/status"
+          title="Reports"
+          description="View Reports of NIDS"
+          link="/reports"
+        />
+        <LinkCard
+          icon={Clipboard}
+          title="Dashboard"
+          description="NIDS Dashboard"
+          link="/dashboard"
         />
       </div>
     </div>

@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import torch
 from icecream import ic
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline
+from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.utils.class_weight import compute_class_weight
 from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import Pipeline
 
 
 class CIC_IDS(Dataset):
@@ -41,12 +41,14 @@ class DataModule(pl.LightningDataModule):
         batch_size: int = 64,
         val_split: float = 0.2,
         num_workers: int = (os.cpu_count() // 2),
+        resample: bool = True, # Flag for offline feeder
     ):
         super().__init__()
         self.paths = paths
         self.batch_size = batch_size
         self.val_split = val_split
         self.num_workers = num_workers
+        self.resample = resample
         self.scaler = StandardScaler()
 
     def setup(self) -> None:
@@ -105,21 +107,22 @@ class DataModule(pl.LightningDataModule):
         x_val, y_val = x[val_idx], y[val_idx]
         assert len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys()))) == 0
 
-        ic(f"Original class distribution: {Counter(y_train)}")
-        undersample_strategy = {0: 250_000}
-        oversample_strategy = {
-            9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
-            5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
-            3: 20_000, 6: 20_000
-        }
+        if self.resample:
+            ic(f"Original class distribution: {Counter(y_train)}")
+            undersample_strategy = {0: 250_000}
+            oversample_strategy = {
+                9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
+                5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
+                3: 20_000, 6: 20_000
+            }
 
-        resample_pipeline = Pipeline([
-            ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
-            ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
-        ])
+            resample_pipeline = Pipeline([
+                ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
+                ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
+            ])
 
-        x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
-        ic(f"Resampled class distribution: {Counter(y_train)}")
+            x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
+            ic(f"Resampled class distribution: {Counter(y_train)}")
 
         self.train_dataset = CIC_IDS(x_train, y_train)
         self.val_dataset = CIC_IDS(x_val, y_val)

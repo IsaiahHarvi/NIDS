@@ -27,6 +27,7 @@ class OfflineFeeder(ComponentServicer):
             val_split=0.9,
             batch_size=1,
             num_workers=1,
+            resample=False,
         )
         dm.setup()
 

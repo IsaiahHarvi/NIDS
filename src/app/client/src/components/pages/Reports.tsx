@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -17,44 +17,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Download, ChevronUp, ChevronDown } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { CalendarIcon, ChevronUp, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
-
-// Define the Severity type
-type Severity = "Low" | "Medium" | "High";
-type SeverityFilter = Severity | "All"; // Include "All" as a valid option
-
-// Mock data for reports
-const mockReports: { id: number; date: string; severity: Severity }[] = [
-  { id: 1, date: "2024-03-01", severity: "High" },
-  { id: 2, date: "2024-02-28", severity: "Low" },
-  { id: 3, date: "2024-02-27", severity: "Medium" },
-  { id: 4, date: "2024-02-26", severity: "High" },
-  { id: 5, date: "2024-02-25", severity: "Low" },
-  { id: 6, date: "2024-02-24", severity: "Medium" },
-  { id: 7, date: "2024-02-23", severity: "High" },
-  { id: 8, date: "2024-02-22", severity: "Low" },
-  { id: 9, date: "2024-02-21", severity: "Medium" },
-  { id: 10, date: "2024-02-20", severity: "High" },
-  { id: 11, date: "2024-02-19", severity: "Low" },
-  { id: 12, date: "2024-02-18", severity: "Medium" },
-  { id: 13, date: "2024-02-17", severity: "High" },
-  { id: 14, date: "2024-02-16", severity: "Low" },
-  { id: 15, date: "2024-02-15", severity: "Medium" },
-];
+import { getFeederReports } from "@/middleware/api/functions/getFeederReports";
+import { getOfflineFeederReports } from "@/middleware/api/functions/getOfflineFeederReports";
+import { getFeederReportById } from "@/middleware/api/functions/getFeederReportsById";
+import { getOfflineFeederReportById } from "@/middleware/api/functions/getOfflineFeederReportById";
+type Report = { id: string; timestamp: string };
 
 type SortDirection = "asc" | "desc";
 
@@ -62,14 +38,32 @@ export default function ReportsPage() {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | null>(
     null
   );
-  const [selectedSeverity, setSelectedSeverity] =
-    useState<SeverityFilter>("All");
-  const [sortColumn, setSortColumn] = useState<string>("date");
+  const [sortColumn, setSortColumn] = useState<string>("timestamp");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isOfflineFeeder, setIsOfflineFeeder] = useState<boolean>(true); // Switch state
 
-  const handleDownload = (reportId: number) => {
-    console.log(`Downloading report ${reportId}`);
-  };
+  // Fetch reports based on the switch state
+  useEffect(() => {
+    async function fetchReports() {
+      setLoading(true);
+      try {
+        if (isOfflineFeeder) {
+          const offlineReports = await getOfflineFeederReports();
+          setReports(offlineReports);
+        } else {
+          const feederReports = await getFeederReports();
+          setReports(feederReports);
+        }
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchReports();
+  }, [isOfflineFeeder]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -80,31 +74,37 @@ export default function ReportsPage() {
     }
   };
 
-  const severityOrder: Record<Severity, number> = {
-    Low: 1,
-    Medium: 2,
-    High: 3,
+  const handleDownload = async (id: string) => {
+    console.log(id);
+    try {
+      const report = isOfflineFeeder
+        ? await getOfflineFeederReportById(id)
+        : await getFeederReportById(id);
+
+      if (report) {
+        console.log("Fetched Report:", report);
+        // Add your logic to handle the downloaded report, e.g., save as PDF
+      } else {
+        console.error("Report not found");
+      }
+    } catch (error) {
+      console.error("Error downloading report:", error);
+    }
   };
 
-  const sortedReports = [...mockReports].sort((a, b) => {
-    if (sortColumn === "date") {
+  const sortedReports = [...reports].sort((a, b) => {
+    if (sortColumn === "timestamp") {
       return sortDirection === "asc"
-        ? a.date.localeCompare(b.date)
-        : b.date.localeCompare(a.date);
-    } else if (sortColumn === "severity") {
-      return sortDirection === "asc"
-        ? severityOrder[a.severity] - severityOrder[b.severity]
-        : severityOrder[b.severity] - severityOrder[a.severity];
+        ? new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        : new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     }
     return 0;
   });
 
   const filteredReports = sortedReports.filter((report) => {
-    const reportDate = new Date(report.date);
+    const reportDate = new Date(report.timestamp);
     return (
-      (selectedSeverity === "All" || report.severity === selectedSeverity) &&
-      (!dateRange ||
-        (reportDate >= dateRange.from && reportDate <= dateRange.to))
+      !dateRange || (reportDate >= dateRange.from && reportDate <= dateRange.to)
     );
   });
 
@@ -119,6 +119,15 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center space-x-4">
+              <Switch
+                checked={isOfflineFeeder}
+                onCheckedChange={() => setIsOfflineFeeder((prev) => !prev)}
+              />
+              <span>
+                {isOfflineFeeder ? "Offline Feeder Reports" : "Feeder Reports"}
+              </span>
+            </div>
             <div className="flex space-x-4">
               <Popover>
                 <PopoverTrigger asChild>
@@ -153,85 +162,50 @@ export default function ReportsPage() {
                   />
                 </PopoverContent>
               </Popover>
-              <Select
-                onValueChange={(value) =>
-                  setSelectedSeverity(value as SeverityFilter)
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select severity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Severities</SelectItem>
-                  <SelectItem value="Low">Low</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("date")}
-                >
-                  Date
-                  {sortColumn === "date" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="inline ml-2" />
-                    ) : (
-                      <ChevronDown className="inline ml-2" />
-                    ))}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("severity")}
-                >
-                  Severity
-                  {sortColumn === "severity" &&
-                    (sortDirection === "asc" ? (
-                      <ChevronUp className="inline ml-2" />
-                    ) : (
-                      <ChevronDown className="inline ml-2" />
-                    ))}
-                </TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredReports.map((report) => (
-                <TableRow key={report.id}>
-                  <TableCell>{report.date}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium
-                      ${
-                        report.severity === "Low"
-                          ? "bg-green-100 text-green-800"
-                          : report.severity === "Medium"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {report.severity}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDownload(report.id)}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Download PDF
-                    </Button>
-                  </TableCell>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("timestamp")}
+                  >
+                    Date
+                    {sortColumn === "timestamp" &&
+                      (sortDirection === "asc" ? (
+                        <ChevronUp className="inline ml-2" />
+                      ) : (
+                        <ChevronDown className="inline ml-2" />
+                      ))}
+                  </TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredReports.map((report) => (
+                  <TableRow key={report.id}>
+                    <TableCell>
+                      {format(new Date(report.timestamp), "PPpp")}
+                    </TableCell>
+                    <TableCell>
+                      {/* {console.log(report.id)} */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownload(report.id)}
+                      >
+                        Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

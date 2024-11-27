@@ -9,10 +9,17 @@ import { useToast } from "@/hooks/use-toast";
 import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
 import { useState } from "react";
 import { Switch } from "../ui/switch";
+import { sendReports } from "@/middleware/api/functions/sendReports";
 
 const Dashboard = () => {
   const { toast } = useToast();
-  const { offlineFeeders } = useServicesStore();
+  const {
+    offlineFeeders,
+    feeders,
+    setFeeders,
+    setOfflineFeeders,
+    setNeuralNetworks,
+  } = useServicesStore();
   const [isOfflineFeeder, setIsOfflineFeeder] = useState(true);
 
   const feederMode = isOfflineFeeder ? "offline_feeder" : "feeder";
@@ -59,7 +66,29 @@ const Dashboard = () => {
                     });
                   }}
                 >
-                  Stop
+                  Pause
+                </Button>
+                <Button
+                  size={"sm"}
+                  onClick={() => {
+                    console.log(offlineFeeders);
+                    // sendReports(clientType: "", feederState: offlineFeeders);
+                    sendReports(
+                      feederMode,
+                      feederMode === "offline_feeder" ? offlineFeeders : feeders
+                    );
+                    setFeeders([]);
+                    setOfflineFeeders([]);
+                    setNeuralNetworks([]);
+
+                    toast({
+                      title: "Feeders Reset",
+                      description: "Feeders have been reset successfully",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  Reset
                 </Button>
               </div>
             </div>

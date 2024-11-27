@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ReportsIndexImport } from './routes/reports/index'
 import { Route as LogsIndexImport } from './routes/logs/index'
 import { Route as HelpIndexImport } from './routes/help/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
@@ -34,6 +35,11 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const ReportsIndexRoute = ReportsIndexImport.update({
+  path: '/reports/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LogsIndexRoute = LogsIndexImport.update({
   path: '/logs/',
@@ -101,6 +107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogsIndexImport
       parentRoute: typeof rootRoute
     }
+    '/reports/': {
+      id: '/reports/'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -113,6 +126,7 @@ export const routeTree = rootRoute.addChildren({
   DashboardIndexRoute,
   HelpIndexRoute,
   LogsIndexRoute,
+  ReportsIndexRoute,
 })
 
 /* prettier-ignore-end */
@@ -128,7 +142,8 @@ export const routeTree = rootRoute.addChildren({
         "/attack-control/",
         "/dashboard/",
         "/help/",
-        "/logs/"
+        "/logs/",
+        "/reports/"
       ]
     },
     "/": {
@@ -148,6 +163,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/logs/": {
       "filePath": "logs/index.tsx"
+    },
+    "/reports/": {
+      "filePath": "reports/index.tsx"
     }
   }
 }

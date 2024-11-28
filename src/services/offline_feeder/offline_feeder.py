@@ -22,7 +22,12 @@ class OfflineFeeder(ComponentServicer):
         self.y = df["label"]
 
         self.metadata = df.copy()
-        df.drop([col for col in df.columns if 'piat' not in col.lower()], axis=1, errors="ignore", inplace=True)
+        df.drop(
+            [col for col in df.columns if "piat" not in col.lower()],
+            axis=1,
+            errors="ignore",
+            inplace=True,
+        )
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         x = df.select_dtypes(include=[float, int]).to_numpy()
 

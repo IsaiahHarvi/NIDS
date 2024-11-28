@@ -7,7 +7,6 @@ import pandas as pd
 def main():
     dfs = [pd.read_csv(f"data/CIC/{f}", delimiter="\t") for f in os.listdir("data/CIC")]
     df = pd.concat(dfs, ignore_index=True)
-    df = df[df["label"].isin(["benign", "ddos"])]
 
     class_counts = Counter(df["label"])
     print("Class counts:")

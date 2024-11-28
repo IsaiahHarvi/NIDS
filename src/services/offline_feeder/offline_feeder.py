@@ -19,25 +19,11 @@ class OfflineFeeder(ComponentServicer):
 
         df = pd.read_csv("data/CIC/test_data.csv", delimiter="\t")
         df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
+        self.y = df["label"]
 
-        drop_columns = [
-            "id",
-            "expiration_id",
-            "src_mac",
-            "src_oui",
-            "dst_mac",
-            "dst_oui",
-            "flow_id",
-            "flow_start",
-            "bidirectional_first_seen_ms",
-            "bidirectional_last_seen_ms",
-            "src2dst_first_seen_ms",
-            "src2dst_last_seen_ms",
-            "dst2src_first_seen_ms",
-            "dst2src_last_seen_ms",
-        ]
-        df.drop(drop_columns, axis=1, inplace=True, errors="ignore")
         self.metadata = df.copy()
+        df.drop([col for col in df.columns if 'piat' not in col.lower()], axis=1, errors="ignore", inplace=True)
+
         print(f"Shape after dropping metadata columns: {df.shape}")
 
         df.drop(
@@ -54,9 +40,6 @@ class OfflineFeeder(ComponentServicer):
         x = df.select_dtypes(include=[float, int]).to_numpy()
         if x.shape[0] == 0:
             raise ValueError("Filtered dataset has zero rows.")
-
-        self.y = df["label"]
-        df.drop("label", axis=1, inplace=True)
 
         self.x = StandardScaler().fit_transform(x)
 

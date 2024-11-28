@@ -60,41 +60,21 @@ class DataModule(pl.LightningDataModule):
 
         df = pd.concat(dfs, ignore_index=True)
         df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
+        y = df["label"]
 
-        drop_columns = [
-            "id",
-            "expiration_id",
-            "src_mac",
-            "src_oui",
-            "dst_mac",
-            "dst_oui",
-            "flow_id",
-            "flow_start",
-            "bidirectional_first_seen_ms",
-            "bidirectional_last_seen_ms",
-            "src2dst_first_seen_ms",
-            "src2dst_last_seen_ms",
-            "dst2src_first_seen_ms",
-            "dst2src_last_seen_ms",
-        ]
-        df.drop(drop_columns, axis=1, errors="ignore", inplace=True)
+        self.metadata = df.copy()
+        df.drop([col for col in df.columns if 'piat' not in col.lower()], axis=1, errors="ignore", inplace=True)
 
         label_encoder = LabelEncoder()
-        y = label_encoder.fit_transform(df["label"])
+        y = label_encoder.fit_transform(y)
         ic(
             f"Label to index mapping: {dict(zip(label_encoder.classes_, range(len(label_encoder.classes_))))}"
         )
-
-        # Save pre-normalized metadata
-        self.metadata = df.copy()
-        df.drop(["src_ip", "dst_ip", "src_port", "dst_port"], axis=1, inplace=True)
 
         # dl = Counter(df["label"])
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         x = df.select_dtypes(include=[float, int]).to_numpy()
         self.example_shape = x.shape[1]
-
-        df.drop("label", axis=1, inplace=True)
 
         x = self.scaler.fit_transform(x)
 

@@ -23,21 +23,9 @@ class OfflineFeeder(ComponentServicer):
 
         self.metadata = df.copy()
         df.drop([col for col in df.columns if 'piat' not in col.lower()], axis=1, errors="ignore", inplace=True)
-
-        print(f"Shape after dropping metadata columns: {df.shape}")
-
-        df.drop(
-            ["src_ip", "dst_ip", "src_port", "dst_port"],
-            axis=1,
-            inplace=True,
-            errors="ignore",
-        )
-        print(f"Shape after dropping IP/port columns: {df.shape}")
-
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
-        print(f"Shape after replacing infinities and dropping NaNs: {df.shape}")
-
         x = df.select_dtypes(include=[float, int]).to_numpy()
+
         if x.shape[0] == 0:
             raise ValueError("Filtered dataset has zero rows.")
 
@@ -53,7 +41,7 @@ class OfflineFeeder(ComponentServicer):
         x = self.x[idx]
         y = self.y[idx]
         metadata = self.metadata.iloc[idx].to_dict()
-        ic(y, metadata)
+        ic(y, metadata, x.shape)
 
         model_response = sendto_service(
             msg=ComponentMessage(flow=x), host="neural-network", port=50052

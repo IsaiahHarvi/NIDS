@@ -87,28 +87,31 @@ class DataModule(pl.LightningDataModule):
         x_val, y_val = x[val_idx], y[val_idx]
         assert len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys()))) == 0
 
-        # ic(f"Original class distribution: {Counter(y_train)}")
-        # undersample_strategy = {0: 250_000}
-        # oversample_strategy = {
-        #     9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
-        #     5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
-        #     3: 20_000, 6: 20_000
-        # }
+        ic(f"Original class distribution: {Counter(y_train)}")
+        undersample_strategy = {0: 250_000}
+        oversample_strategy = {
+            9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
+            5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
+            3: 20_000, 6: 20_000
+        }
 
-        # resample_pipeline = Pipeline([
-        #     ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
-        #     ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
-        # ])
+        resample_pipeline = Pipeline([
+            ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
+            ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
+        ])
 
-        # x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
-        # ic(f"Resampled class distribution: {Counter(y_train)}")
+        x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
+        ic(f"Resampled class distribution: {Counter(y_train)}")
+
+        # Binary classification
+        y_train = np.where(y_train == 0, 0, 1)
+        y_val = np.where(y_val == 0, 0, 1)
 
         self.train_dataset = CIC_IDS(x_train, y_train)
         self.val_dataset = CIC_IDS(x_val, y_val)
 
         class_weights = compute_class_weight(
-            # "balanced", classes=np.unique(y_train), y=y_train
-            "balanced", classes=np.array([0, 1]), y=y_train
+            "balanced", classes=np.unique(y_train), y=y_train
         )
         self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
         self.n_classes = len(np.unique(y_train))

@@ -58,8 +58,6 @@ class DataModule(pl.LightningDataModule):
 
         df = pd.concat(dfs, ignore_index=True)
         df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
-
-        df["label"] = df["label"].apply(lambda x: 1 if x == "benign" else 0)
         y = df["label"].to_numpy()
 
         self.metadata = df.copy()

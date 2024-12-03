@@ -35,7 +35,7 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
             for csv in os.listdir("data/CIC")
             if csv.endswith(".csv") and (csv != "test_data.csv")
         ]
-    else: # just for teting
+    else:  # just for teting
         paths = [
             "data/CIC/Friday-WorkingHours_without_duplication_reordered.csv"
             "data/CIC/Wednesday-workingHours_without_duplication_reordered.csv",

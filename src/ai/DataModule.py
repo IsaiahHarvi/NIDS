@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import torch
 from icecream import ic
-from imblearn.over_sampling import SMOTE
-from imblearn.pipeline import Pipeline
-from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.utils.class_weight import compute_class_weight
 from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
 
 
 class CIC_IDS(Dataset):
@@ -58,10 +58,16 @@ class DataModule(pl.LightningDataModule):
 
         df = pd.concat(dfs, ignore_index=True)
         df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
+        df["label"] = df["label"].replace({"portscan": "port_scan"})
         y = df["label"].to_numpy()
 
         self.metadata = df.copy()
-        df.drop([col for col in df.columns if 'piat' not in col.lower()], axis=1, errors="ignore", inplace=True)
+        df.drop(
+            [col for col in df.columns if "piat" not in col.lower()],
+            axis=1,
+            errors="ignore",
+            inplace=True,
+        )
 
         label_encoder = LabelEncoder()
         y = label_encoder.fit_transform(y)
@@ -69,7 +75,6 @@ class DataModule(pl.LightningDataModule):
             f"Label to index mapping: {dict(zip(label_encoder.classes_, range(len(label_encoder.classes_))))}"
         )
 
-        # dl = Counter(df["label"])
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         x = df.select_dtypes(include=[float, int]).to_numpy()
         self.example_shape = x.shape[1]
@@ -83,36 +88,45 @@ class DataModule(pl.LightningDataModule):
 
         x_train, y_train = x[train_idx], y[train_idx]
         x_val, y_val = x[val_idx], y[val_idx]
-        assert len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys()))) == 0
+        assert (
+            len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys())))
+            == 0
+        )
 
         ic(f"Original class distribution: {Counter(y_train)}")
-        undersample_strategy = {0: 250_000}
+        undersample_strategy = {0: 750_000}
         oversample_strategy = {
-            9: 1000, 13: 1000, 15: 1000, 14: 1000, 8: 1000,
-            5: 10_000, 7: 10_000, 12: 10_000, 1: 10_000,
-            3: 20_000, 6: 20_000
+            1: 5000,
+            2: 112_833,
+            3: 8326,
+            4: 150_000,
+            5: 5000,
+            6: 10188,
+            7: 5000,
+            8: 5000,
+            9: 5000,
+            10: 178869,
+            11: 5000,
+            12: 5000,
+            13: 5000,
+            14: 5000,
         }
-
-        resample_pipeline = Pipeline([
-            ("undersample", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
-            ("oversample", SMOTE(sampling_strategy=oversample_strategy, random_state=42)),
+        pipeline = Pipeline([
+            ("under", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
+            ("smote", SMOTE(sampling_strategy=oversample_strategy, random_state=42))
         ])
+        x_train, y_train = pipeline.fit_resample(x_train, y_train)
 
-        x_train, y_train = resample_pipeline.fit_resample(x_train, y_train)
         ic(f"Resampled class distribution: {Counter(y_train)}")
-
-        # Binary classification
-        y_train = np.where(y_train == 0, 0, 1)
-        y_val = np.where(y_val == 0, 0, 1)
-
-        self.train_dataset = CIC_IDS(x_train, y_train)
-        self.val_dataset = CIC_IDS(x_val, y_val)
 
         class_weights = compute_class_weight(
             "balanced", classes=np.unique(y_train), y=y_train
         )
         self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
         self.n_classes = len(np.unique(y_train))
+
+        self.train_dataset = CIC_IDS(x_train, y_train)
+        self.val_dataset = CIC_IDS(x_val, y_val)
 
         self.val_idx = val_idx
 

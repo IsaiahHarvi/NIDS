@@ -21,7 +21,7 @@ def grpc_server():
 
     server_process = multiprocessing.Process(
         target=start_server,
-        args=(NeuralNetwork("data/checkpoints/ResidualSmall.ckpt"), 50052),
+        args=(NeuralNetwork("data/checkpoints/MLP.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)
@@ -43,7 +43,7 @@ def test_model(grpc_server):
             dm.setup()
 
             data, label = next(iter(dm.train_dataloader()))
-            data = data.numpy().flatten().tolist()  # [80] bc it has to live over gRPC
+            data = data.numpy().flatten().tolist()
 
             msg = ComponentMessage(flow=data)
             response = stub.forward(msg)

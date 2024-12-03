@@ -1,5 +1,5 @@
 schema: '2.0'
 stages:
   train_MLP:
-    cmd: "python src/ai/train.py --lr 0.0001 --batch_size 64 --early_stop_patience
+    cmd: "python src/ai/train.py --lr 0.001 --batch_size 64 --early_stop_patience
       10 --ckpt_name MLP --constructor MLP --all_data\n"

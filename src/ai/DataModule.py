@@ -117,6 +117,9 @@ class DataModule(pl.LightningDataModule):
         ])
         x_train, y_train = pipeline.fit_resample(x_train, y_train)
 
+        y_train = np.where(y_train == 0, 0, 1)
+        y_val = np.where(y_val == 0, 0, 1)
+
         ic(f"Resampled class distribution: {Counter(y_train)}")
 
         class_weights = compute_class_weight(

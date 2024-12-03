@@ -39,18 +39,15 @@ class ResidualNetwork(nn.Module):
 
 
 class MLP(nn.Module):
-    def __init__(self, input_size, hidden_size, out_fatures, dropout_prob=0.5):
+    def __init__(self, input_size, hidden_size, out_features, dropout_prob=0.5):
         super(MLP, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(input_size, hidden_size),
             nn.SELU(),
             nn.Linear(hidden_size, hidden_size),
             nn.SELU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_size, hidden_size),
-            nn.SELU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_size, out_fatures),
+            nn.AlphaDropout(dropout_prob),
+            nn.Linear(hidden_size, out_features),
         )
 
     def forward(self, x):
@@ -175,7 +172,7 @@ class BasicModule(pl.LightningModule):
         #     f.write(f"False Negatives: {FN}\n")
 
     def configure_optimizers(self):
-        return optim.Adam(self.parameters(), lr=self.lr)
+        return optim.Adam(self.parameters(), lr=self.lr, weight_decay=1e-4)
 
     def state_dict(self, destination=None, prefix="", keep_vars=False):
         state_dict = super().state_dict(

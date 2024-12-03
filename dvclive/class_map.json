@@ -1,22 +1,17 @@
 {
     "benign": 0,
-    "anomalous": 1
-}
-// {
-//     "benign": 0,
-//     "bot": 1,
-//     "ddos": 2,
-//     "dos_goldeneye": 3,
-//     "dos_hulk": 4,
-//     "dos_slowhttptest": 5,
-//     "dos_slowloris": 6,
-//     "ftp_patator": 7,
-//     "heartbleed": 8,
-//     "infiltration": 9,
-//     "port_scan": 10,
-//     "portscan": 11,
-//     "ssh_patator": 12,
-//     "web_attack_brute_force": 13,
-//     "web_attack_sql_injection": 14,
-//     "web_attack_xss": 15
-// }
+    "bot": 1,
+    "ddos": 2,
+    "dos_goldeneye": 3,
+    "dos_hulk": 4,
+    "dos_slowhttptest": 5,
+    "dos_slowloris": 6,
+    "ftp_patator": 7,
+    "heartbleed": 8,
+    "infiltration": 9,
+    "port_scan": 10,
+    "ssh_patator": 11,
+    "web_attack_brute_force": 12,
+    "web_attack_sql_injection": 13,
+    "web_attack_xss": 14
+  }

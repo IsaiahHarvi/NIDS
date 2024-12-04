@@ -114,16 +114,16 @@ export function Navbar(): JSX.Element {
           pathCheck="/attack-control"
         />
         <LinkItem
-          to="/reports"
-          icon={Sparkles}
-          label="Reports"
-          pathCheck="/reports"
-        />
-        <LinkItem
           to="/dashboard"
           icon={Clipboard}
           label="Dashboard"
           pathCheck="/dashboard"
+        />
+        <LinkItem
+          to="/reports"
+          icon={Sparkles}
+          label="Reports"
+          pathCheck="/reports"
         />
       </nav>
       <nav className="mt-auto grid gap-1 p-2">

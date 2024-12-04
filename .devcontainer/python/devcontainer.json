@@ -19,6 +19,7 @@
 		}
 	},
 	"runArgs": [
+		"--shm-size=4g",
 		"--env-file", ".devcontainer/dev.env"
 	]
 }

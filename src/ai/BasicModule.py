@@ -1,10 +1,8 @@
-import torch
 import lightning.pytorch as pl
-
-from torch import nn
-from torch.nn import functional as F
-from torch import optim
+import torch
 from icecream import ic
+from torch import nn, optim
+from torch.nn import functional as F
 
 
 class ResidualUnit(nn.Module):
@@ -41,22 +39,20 @@ class ResidualNetwork(nn.Module):
 
 
 class MLP(nn.Module):
-    def __init__(self, input_size, hidden_size, out_fatures, dropout_prob=0.5):
+    def __init__(self, input_size, hidden_size, out_features, dropout_prob=0.5):
         super(MLP, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(input_size, hidden_size),
             nn.SELU(),
             nn.Linear(hidden_size, hidden_size),
             nn.SELU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_size, hidden_size),
-            nn.SELU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_size, out_fatures),
+            nn.AlphaDropout(dropout_prob),
+            nn.Linear(hidden_size, out_features),
         )
-    
+
     def forward(self, x):
         return self.net(x)
+
 
 class BasicModule(pl.LightningModule):
     def __init__(
@@ -66,7 +62,6 @@ class BasicModule(pl.LightningModule):
         hidden_size,
         out_features,
         lr=0.001,
-        class_weights: torch.Tensor = None,
         criterion: nn.CrossEntropyLoss = nn.CrossEntropyLoss,
         model_constructor_kwargs={},
     ):
@@ -76,12 +71,7 @@ class BasicModule(pl.LightningModule):
         self.constructor = model_constructor(
             in_features, hidden_size, out_features, **self.constructor_kwargs
         )
-        self.criterion_type = criterion
-        self.criterion = (
-            criterion(weight=class_weights)
-            if class_weights is not None
-            else criterion()
-        )
+        self.criterion = criterion
         self.lr = lr
         self.validation_outputs = []
         self.test_outputs = []
@@ -148,9 +138,11 @@ class BasicModule(pl.LightningModule):
 
         matplotlib.use("Agg")
         from matplotlib import pyplot as plt
-        from dvclive import Live
+        from sklearn.metrics import \
+            ConfusionMatrixDisplay  # , precision_recall_fscore_support
         from torchmetrics import ConfusionMatrix
-        from sklearn.metrics import ConfusionMatrixDisplay # , precision_recall_fscore_support
+
+        from dvclive import Live
 
         cm_metric = ConfusionMatrix(num_classes=self.num_classes, task="multiclass").to(
             preds.device
@@ -180,7 +172,7 @@ class BasicModule(pl.LightningModule):
         #     f.write(f"False Negatives: {FN}\n")
 
     def configure_optimizers(self):
-        return optim.Adam(self.parameters(), lr=self.lr)
+        return optim.Adam(self.parameters(), lr=self.lr, weight_decay=1e-4)
 
     def state_dict(self, destination=None, prefix="", keep_vars=False):
         state_dict = super().state_dict(

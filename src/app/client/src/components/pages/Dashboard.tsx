@@ -21,8 +21,11 @@ const Dashboard = () => {
     setNeuralNetworks,
   } = useServicesStore();
   const [isOfflineFeeder, setIsOfflineFeeder] = useState(true);
+  const [isFeedersStarted, setIsFeedersStarted] = useState(false);
+  const [isFeedersPaused, setIsFeedersPaused] = useState(false);
 
   const feederMode = isOfflineFeeder ? "offline_feeder" : "feeder";
+
   return (
     <div className="p-4">
       <Card>
@@ -32,7 +35,6 @@ const Dashboard = () => {
             <div className="pt-3 flex flex-row justify-between items-center">
               <span>Overview of your network and collected data</span>
               <div className="flex gap-5">
-                {/*Switch between feeder modes*/}
                 <div className="flex items-center gap-2">
                   <span>{isOfflineFeeder ? "Test Feeder" : "Feeder"}</span>
                   <Switch
@@ -45,6 +47,8 @@ const Dashboard = () => {
                   size={"sm"}
                   onClick={() => {
                     startFeeders(feederMode);
+                    setIsFeedersStarted(true);
+                    setIsFeedersPaused(false);
                     toast({
                       title: "Feeders Started",
                       description: `Started ${feederMode} successfully`,
@@ -57,8 +61,10 @@ const Dashboard = () => {
 
                 <Button
                   size={"sm"}
+                  disabled={!isFeedersStarted}
                   onClick={() => {
                     stopFeeders();
+                    setIsFeedersPaused(true);
                     toast({
                       title: "Feeders Stopped",
                       description: "Feeders have been stopped successfully",
@@ -68,11 +74,15 @@ const Dashboard = () => {
                 >
                   Pause
                 </Button>
+
                 <Button
                   size={"sm"}
+                  disabled={
+                    !isFeedersStarted ||
+                    !isFeedersPaused ||
+                    (offlineFeeders.length === 0 && feeders.length === 0)
+                  }
                   onClick={() => {
-                    console.log(offlineFeeders);
-                    // sendReports(clientType: "", feederState: offlineFeeders);
                     sendReports(
                       feederMode,
                       feederMode === "offline_feeder" ? offlineFeeders : feeders
@@ -80,7 +90,8 @@ const Dashboard = () => {
                     setFeeders([]);
                     setOfflineFeeders([]);
                     setNeuralNetworks([]);
-
+                    setIsFeedersStarted(false);
+                    setIsFeedersPaused(false);
                     toast({
                       title: "Feeders Reset",
                       description: "Feeders have been reset successfully",
@@ -88,7 +99,7 @@ const Dashboard = () => {
                     });
                   }}
                 >
-                  Reset
+                  Complete Scan
                 </Button>
               </div>
             </div>

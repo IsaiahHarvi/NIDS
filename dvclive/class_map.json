@@ -1,14 +1,17 @@
 {
-    "BENIGN": 0,
-    "Bot": 1,
-    "DDoS": 2,
-    "DoS GoldenEye": 3,
-    "DoS Hulk": 4,
-    "DoS Slowhttptest": 5,
-    "DoS slowloris": 6,
-    "FTP-Patator": 7,
-    "Heartbleed": 8,
-    // "Infiltration": 9,
-    "PortScan": 9,
-    "SSH-Patator": 10
-}
+    "benign": 0,
+    "bot": 1,
+    "ddos": 2,
+    "dos_goldeneye": 3,
+    "dos_hulk": 4,
+    "dos_slowhttptest": 5,
+    "dos_slowloris": 6,
+    "ftp_patator": 7,
+    "heartbleed": 8,
+    "infiltration": 9,
+    "port_scan": 10,
+    "ssh_patator": 11,
+    "web_attack_brute_force": 12,
+    "web_attack_sql_injection": 13,
+    "web_attack_xss": 14
+  }

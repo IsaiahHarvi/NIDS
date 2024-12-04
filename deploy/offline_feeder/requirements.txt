@@ -43,10 +43,16 @@ icecream==2.1.3
     # via -r deploy/offline_feeder/requirements.in
 idna==3.10
     # via yarl
+imbalanced-learn==0.12.4
+    # via imblearn
+imblearn==0.0
+    # via -r deploy/offline_feeder/requirements.in
 jinja2==3.1.4
     # via torch
 joblib==1.4.2
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
 lightning==2.4.0
     # via -r deploy/offline_feeder/requirements.in
 lightning-utilities==0.11.7
@@ -67,6 +73,7 @@ networkx==3.3
 numpy==1.26.4
     # via
     #   -r deploy/offline_feeder/requirements.in
+    #   imbalanced-learn
     #   pandas
     #   scikit-learn
     #   scipy
@@ -96,9 +103,13 @@ pyyaml==6.0.2
     #   lightning
     #   pytorch-lightning
 scikit-learn==1.5.1
-    # via -r deploy/offline_feeder/requirements.in
+    # via
+    #   -r deploy/offline_feeder/requirements.in
+    #   imbalanced-learn
 scipy==1.14.1
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
 six==1.16.0
     # via
     #   asttokens
@@ -106,7 +117,9 @@ six==1.16.0
 sympy==1.13.3
     # via torch
 threadpoolctl==3.5.0
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
 torch==2.4.1
     # via
     #   -r deploy/offline_feeder/requirements.in

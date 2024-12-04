@@ -1,14 +1,18 @@
 import os
-import torch
-import numpy as np
-import lightning.pytorch as pl
-import pandas as pd
-from torch.utils.data import DataLoader, Dataset, Subset
-from sklearn.utils.class_weight import compute_class_weight
-from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from icecream import ic
 from collections import Counter
+
+import lightning.pytorch as pl
+import numpy as np
+import pandas as pd
+import torch
+from icecream import ic
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
+from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
 
 
 class CIC_IDS(Dataset):
@@ -29,6 +33,7 @@ class CIC_IDS(Dataset):
 
         return torch.tensor(x, dtype=torch.float32), torch.tensor(y, dtype=torch.long)
 
+
 class DataModule(pl.LightningDataModule):
     def __init__(
         self,
@@ -45,62 +50,101 @@ class DataModule(pl.LightningDataModule):
         self.scaler = StandardScaler()
 
     def setup(self) -> None:
-        dfs: list[pd.DataFrame] = []
+        dfs = []
         for path in self.paths:
-            df: pd.DataFrame = pd.read_csv(path)
+            df = pd.read_csv(path, delimiter="\t", low_memory=False)
             df.columns = df.columns.str.strip().str.replace(" ", "_")
             dfs.append(df)
 
         df = pd.concat(dfs, ignore_index=True)
+        df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
+        df["label"] = df["label"].replace({"portscan": "port_scan"})
+        y = df["label"].to_numpy()
 
-        # Drop rows where the label is "Infiltration"
-        # Its underrepresented and this is just for school
-        # so i dont care about it
-        df = df[df["Label"] != "Infiltration"]
-
-        drop_columns = [
-            'Flow_ID', 'Timestamp', 'Bwd_Avg_Packets/Bulk', 'Bwd_Avg_Bulk_Rate',
-            'Bwd_PSH_Flags', 'Bwd_URG_Flags', 'Fwd_Avg_Bytes/Bulk', 'Fwd_Avg_Packets/Bulk',
-            'Fwd_Avg_Bulk_Rate', 'Bwd_Avg_Bytes/Bulk', 'Fwd_Header_Length.1'
-        ]
-        df = df.drop(drop_columns, axis=1, errors="ignore")
-
-        # Save pre-normalized metadata
         self.metadata = df.copy()
-
-        change_ip = lambda x: sum([256**j * int(i) for j, i in enumerate(x.split('.')[::-1])])
-        df["Source_IP"] = df["Source_IP"].apply(change_ip)
-        df["Destination_IP"] = df["Destination_IP"].apply(change_ip)
-
-        df = df.replace([np.inf, -np.inf], np.nan).dropna()
-        x = df.select_dtypes(include=[float, int])
+        df.drop(
+            [col for col in df.columns if "piat" not in col.lower()],
+            axis=1,
+            errors="ignore",
+            inplace=True,
+        )
 
         label_encoder = LabelEncoder()
-        y = label_encoder.fit_transform(df["Label"])
+        y = label_encoder.fit_transform(y)
+        ic(
+            f"Label to index mapping: {dict(zip(label_encoder.classes_, range(len(label_encoder.classes_))))}"
+        )
 
-        class_weights = compute_class_weight("balanced", classes=np.unique(y), y=y)
-        self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
-
-        self.n_classes = len(np.unique(y))
+        df = df.replace([np.inf, -np.inf], np.nan).dropna()
+        x = df.select_dtypes(include=[float, int]).to_numpy()
         self.example_shape = x.shape[1]
 
         x = self.scaler.fit_transform(x)
 
-        dataset = CIC_IDS(x, y)
-        shuffle_split = StratifiedShuffleSplit(n_splits=1, test_size=self.val_split)
+        shuffle_split = StratifiedShuffleSplit(
+            n_splits=1, test_size=self.val_split, random_state=42
+        )
         train_idx, val_idx = next(shuffle_split.split(x, y))
 
-        self.train_dataset = Subset(dataset, train_idx)
-        self.val_dataset = Subset(dataset, val_idx)
+        x_train, y_train = x[train_idx], y[train_idx]
+        x_val, y_val = x[val_idx], y[val_idx]
+        assert (
+            len(set(list(Counter(y_train).keys())) - set(list(Counter(y_val).keys())))
+            == 0
+        )
 
-        # Store indices for the validation set to retrieve metadata later
+        ic(f"Original class distribution: {Counter(y_train)}")
+        undersample_strategy = {0: 750_000}
+        oversample_strategy = {
+            1: 5000,
+            2: 112_833,
+            3: 8326,
+            4: 150_000,
+            5: 5000,
+            6: 10188,
+            7: 5000,
+            8: 5000,
+            9: 5000,
+            10: 178869,
+            11: 5000,
+            12: 5000,
+            13: 5000,
+            14: 5000,
+        }
+        pipeline = Pipeline([
+            ("under", RandomUnderSampler(sampling_strategy=undersample_strategy, random_state=42)),
+            ("smote", SMOTE(sampling_strategy=oversample_strategy, random_state=42))
+        ])
+        x_train, y_train = pipeline.fit_resample(x_train, y_train)
+
+        y_train = np.where(y_train == 0, 0, 1)
+        y_val = np.where(y_val == 0, 0, 1)
+
+        ic(f"Resampled class distribution: {Counter(y_train)}")
+
+        class_weights = compute_class_weight(
+            "balanced", classes=np.unique(y_train), y=y_train
+        )
+        self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
+        self.n_classes = len(np.unique(y_train))
+
+        self.train_dataset = CIC_IDS(x_train, y_train)
+        self.val_dataset = CIC_IDS(x_val, y_val)
+
         self.val_idx = val_idx
 
     def train_dataloader(self) -> DataLoader:
+        train_weights = [
+            self.class_weights[label.item()] for label in self.train_dataset.labels
+        ]
+        train_sampler = WeightedRandomSampler(
+            train_weights, num_samples=len(self.train_dataset), replacement=True
+        )
+
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
-            shuffle=True,
+            sampler=train_sampler,
             num_workers=self.num_workers,
         )
 
@@ -113,5 +157,4 @@ class DataModule(pl.LightningDataModule):
         )
 
     def get_metadata(self, idx):
-        """Fetch the original metadata for the given index before normalization."""
         return self.metadata.iloc[idx].to_dict()

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-docker-compose --profile feeder --profile gui down
+docker-compose --profile gui down
 
 echo "-------------------------------------------------------------------"
 echo "Starting Services..."
 
-docker compose --profile feeder --profile gui up --build -d
+docker compose --profile gui up --build -d
 echo "-----------------------------------------------------------------------"
 echo "View GUI at http://localhost:8000"
 echo -e "-----------------------------------------------------------------------\n"

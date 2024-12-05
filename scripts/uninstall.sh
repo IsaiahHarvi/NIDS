@@ -10,4 +10,4 @@ docker kill $(docker ps -q) > /dev/null 2>&1
 docker system prune --volumes -af
 docker volume rm mongo-data -f > /dev/null 2>&1
 
-echo "Cleared Docker Environment.
+echo "Cleared Docker Environment."

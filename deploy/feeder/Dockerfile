@@ -19,15 +19,22 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git && \
     rm -rf /var/lib/apt/lists/*
 
+COPY deploy/feeder/requirements.txt /app/requirements.txt
+RUN pip3 install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
+
 ENV PORT=50053
 ENV INTERFACE="eth0"
+# ENV INTERFACE="en0"
+
+ENV FILE_NAME="capture.pcap"
+ENV DURATION=5
+
+
+
 ENV FILE_NAME="capture.pcap"
 ENV DURATION=5
 
 LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION"
-
-COPY deploy/feeder/requirements.txt /app/requirements.txt
-RUN pip3 install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
 
 COPY src/grpc_ /app/src/grpc_
 COPY src/services/feeder/feeder.py /app/main.py

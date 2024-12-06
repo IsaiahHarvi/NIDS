@@ -1,6 +1,7 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 import { persist } from "zustand/middleware";
+import { sendReports } from "@/middleware/api/functions/sendReports";
 
 interface Feeder {
   id_: string;
@@ -71,9 +72,19 @@ export const useServicesStore = create<ServicesState>()(
       (set) => ({
         feeders: [],
         setFeeders: (feeders: Feeder[]) => set({ feeders }),
-        addFeeder: (feeder: Feeder) =>
-          set((state) => ({ feeders: [...state.feeders, feeder] })),
+        // addFeeder: (feeder: Feeder) =>
+        //   set((state) => ({ feeders: [...state.feeders, feeder] })),
 
+        addFeeder: async (feeder: Feeder) =>
+          set((state) => {
+            if (state.feeders.length >= 100) {
+              sendReports("feeder", state.feeders);
+              return { feeders: [] };
+            }
+            return {
+              feeders: [...state.feeders, feeder],
+            };
+          }),
         updateFeeder: (feeder: Feeder) =>
           set((state) => ({
             feeders: state.feeders.map((f) =>
@@ -115,10 +126,16 @@ export const useServicesStore = create<ServicesState>()(
         setOfflineFeeders: (offlineFeeders: OfflineFeeder[]) =>
           set({ offlineFeeders }),
 
-        addOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
-          set((state) => ({
-            offlineFeeders: [...state.offlineFeeders, offlineFeeder],
-          })),
+        addOfflineFeeder: async (offlineFeeder: OfflineFeeder) =>
+          set((state) => {
+            if (state.offlineFeeders.length >= 100) {
+              sendReports("offline_feeder", state.offlineFeeders);
+              return { offlineFeeders: [] };
+            }
+            return {
+              offlineFeeders: [...state.offlineFeeders, offlineFeeder],
+            };
+          }),
 
         updateOfflineFeeder: (offlineFeeder: OfflineFeeder) =>
           set((state) => ({

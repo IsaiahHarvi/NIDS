@@ -79,7 +79,9 @@ class Feeder(ComponentServicer):
         start_time = time.time()
 
         try:
-            for _, pkt in pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50):
+            for _, pkt in pcap.pcap(
+                name=interface, promisc=True, immediate=True, timeout_ms=50
+            ):
                 if (time.time() - start_time) > duration:
                     break
                 eth = dpkt.ethernet.Ethernet(pkt)

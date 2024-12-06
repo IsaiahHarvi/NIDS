@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import tempfile
 import time
@@ -15,8 +16,6 @@ from sklearn.preprocessing import StandardScaler
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import sendto_mongo, sendto_service, start_server
-
-ic.configureOutput(includeContext=False)
 
 
 class Feeder(ComponentServicer):
@@ -107,6 +106,10 @@ class Feeder(ComponentServicer):
 
 
 if __name__ == "__main__":
+    ic.configureOutput(includeContext=False)
+    multiprocessing.set_start_method("forkserver", force=True)
+    os.environ["GRPC_ENABLE_FORK_SUPPORT"] = "1"
+
     interface = os.environ.get("INTERFACE", "eth0")
     duration = int(os.environ.get("DURATION", 5))
 

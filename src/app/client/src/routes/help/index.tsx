@@ -2,9 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 
-import readme from "/workspaces/NIDS/README.md?raw";
-import userGuide from "/workspaces/NIDS/docs/USERGUIDE.md?raw";
-import aiReadMe from "/workspaces/NIDS/src/ai/README.md?raw";
+import { userGuide, mainReadMe, aiReadMe } from "@/components/markdowns";
 
 export const Route = createFileRoute("/help/")({
   component: () => (
@@ -19,7 +17,7 @@ export const Route = createFileRoute("/help/")({
         </TabsList>
 
         <TabsContent value="file1" className="markdown-content">
-          <ReactMarkdown>{readme}</ReactMarkdown>
+          <ReactMarkdown>{mainReadMe}</ReactMarkdown>
         </TabsContent>
 
         <TabsContent value="file2" className="markdown-content">

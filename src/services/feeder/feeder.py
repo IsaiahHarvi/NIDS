@@ -32,6 +32,7 @@ class Feeder(ComponentServicer):
 
         flows, metadata_list = self.get_flows(self.interface, self.duration)
 
+        records: List[dict] = []
         for i, flow_row in enumerate(flows):
             x = self.preprocessor(pd.Series(flow_row))
 
@@ -42,15 +43,19 @@ class Feeder(ComponentServicer):
             )
             pred: int = model_response.prediction
 
-            sendto_mongo(
+            records.append(
                 {
                     "id_": uuid,
                     "flow_data": x.tolist(),
                     "prediction": pred,
                     "metadata": metadata_list[i],
-                },
-                collection_name=self.__class__.__name__,
+                }
             )
+
+        sendto_mongo(
+            data=records,
+            collection_name=self.__class__.__name__,
+        )
 
         return ComponentResponse(return_code=0)
 

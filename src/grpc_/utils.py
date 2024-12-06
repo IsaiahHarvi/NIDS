@@ -67,6 +67,13 @@ def sendto_mongo(data: dict, collection_name: str) -> None:
 
     client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
     db = client["services"]
-    collection = db[collection_name]
-    result = collection.insert_one(data)
-    ic(result.inserted_id)
+
+    if isinstance(data, list):
+        collection = db[collection_name]
+        result = collection.insert_many(data)
+        ic(result.inserted_ids)
+
+    elif isinstance(data, dict):
+        collection = db[collection_name]
+        result = collection.insert_one(data)
+        ic(result.inserted_id)

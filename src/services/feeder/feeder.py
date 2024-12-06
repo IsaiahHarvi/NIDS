@@ -74,16 +74,13 @@ class Feeder(ComponentServicer):
         ic(f"Capturing packets from {interface} for {duration} seconds")
 
         captured_packets = []
-        pc = pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50)
         start_time = time.time()
 
-        for _, pkt in pc:
+        for _, pkt in pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50):
             if (time.time() - start_time) > duration:
                 break
-            # decode using dpkt
             eth = dpkt.ethernet.Ethernet(pkt)
-            ip = eth.data
-            if isinstance(ip, dpkt.ip.IP):
+            if isinstance(eth.data, dpkt.ip.IP):
                 captured_packets.append(pkt)
 
         # temporary PCAP file

@@ -15,7 +15,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libusb-1.0-0-dev \
     libdbus-glib-1-dev \
     libbluetooth-dev \
-    libnl-genl-3-dev && \
+    libnl-genl-3-dev \
     git && \
     rm -rf /var/lib/apt/lists/*
 

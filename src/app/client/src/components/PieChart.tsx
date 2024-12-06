@@ -37,7 +37,6 @@ const classMap = {
 //   web_attack_xss: { value: 14, color: "red" }
 // };
 
-
 const invertedClassMap = Object.fromEntries(
   Object.entries(classMap).map(([key, obj]) => [
     obj.value,
@@ -129,7 +128,7 @@ interface PieChartCardProps {
 const PieChartCard = ({ data }: PieChartCardProps) => {
   const { processedData, oldestTimestamp } = useMemo(() => {
     const counts: { [key: string]: number } = {};
-    let oldestTime: Date | null = null;
+    let oldestTime: Date = new Date(8640000000000000);
 
     if (!data || data.length === 0) {
       return {
@@ -144,9 +143,11 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
 
       counts[attackType] = (counts[attackType] || 0) + 1;
 
-      const timestamp = new Date(message?.metadata?.Timestamp);
-      if (!oldestTime || timestamp < oldestTime) {
-        oldestTime = timestamp;
+      const flowStartStr = message.metadata?.flow_start;
+      const flowStartTime = flowStartStr ? new Date(flowStartStr) : null;
+
+      if (flowStartTime && (!oldestTime || flowStartTime < oldestTime)) {
+        oldestTime = flowStartTime;
       }
     });
 
@@ -160,9 +161,7 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
 
     return {
       processedData,
-      oldestTimestamp: oldestTime
-        ? (oldestTime as Date).toLocaleString()
-        : "N/A",
+      oldestTimestamp: oldestTime ? oldestTime.toLocaleString() : "N/A",
     };
   }, [data]);
 

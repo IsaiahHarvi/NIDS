@@ -1,7 +1,10 @@
 FROM python:3.11-slim
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    build-essential libpcap-dev
+    build-essential \
+    libpcap-dev \
+    git && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV PORT=50053
 ENV INTERFACE="eth0"

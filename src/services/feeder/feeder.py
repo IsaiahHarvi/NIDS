@@ -8,21 +8,28 @@ import dpkt
 import numpy as np
 import pandas as pd
 import pcap
+import torch
 from icecream import ic
 from nfstream import NFStreamer
 from sklearn.preprocessing import StandardScaler
 
+from ai.BasicModule import BasicModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
-from src.grpc_.utils import sendto_mongo, sendto_service, start_server
-
-ic.configureOutput(includeContext=False)
+from src.grpc_.utils import sendto_mongo, start_server
 
 
 class Feeder(ComponentServicer):
     def __init__(self, interface, duration):
         self.interface = interface
         self.duration = duration
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        self.model = BasicModule.load_from_checkpoint(
+            checkpoint_path="model.ckpt", strict=False
+        ).to("cpu")
+        self.model.eval()
+
         ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
@@ -33,25 +40,33 @@ class Feeder(ComponentServicer):
 
         flows, metadata_list = self.get_flows(self.interface, self.duration)
 
+        records: List[dict] = []
         for i, flow_row in enumerate(flows):
             x = self.preprocessor(pd.Series(flow_row))
 
-            model_response = sendto_service(
-                msg=ComponentMessage(flow=x),
-                host="127.0.0.1",  # "neural-network",
-                port=50052,
-            )
-            pred: int = model_response.prediction
+            # model_response = sendto_service(
+            #     msg=ComponentMessage(flow=x),
+            #     host="127.0.0.1",  # "neural-network",
+            #     port=50052,
+            # )
 
-            sendto_mongo(
+            x = torch.tensor(x)
+            x = x.unsqueeze(0) if x.dim() == 1 else x
+            pred = torch.argmax(self.model(x), dim=1).item()
+
+            records.append(
                 {
                     "id_": uuid,
-                    "flow_data": x,
+                    "flow_data": x.tolist(),
                     "prediction": pred,
                     "metadata": metadata_list[i],
-                },
-                collection_name=self.__class__.__name__,
+                }
             )
+
+        sendto_mongo(
+            data=records,
+            collection_name=self.__class__.__name__,
+        )
 
         return ComponentResponse(return_code=0)
 
@@ -92,41 +107,24 @@ class Feeder(ComponentServicer):
 
     def preprocessor(self, flow_row: pd.Series) -> list:
         df = flow_row.to_frame().T
-        drop_columns = [
-            "id",
-            "expiration_id",
-            "src_mac",
-            "src_oui",
-            "dst_mac",
-            "dst_oui",
-            "flow_id",
-            "flow_start",
-            "bidirectional_first_seen_ms",
-            "bidirectional_last_seen_ms",
-            "src2dst_first_seen_ms",
-            "src2dst_last_seen_ms",
-            "dst2src_first_seen_ms",
-            "dst2src_last_seen_ms",
-            "src_ip",
-            "dst_ip",
-            "src_port",
-            "dst_port",
-        ]
-        df = df.drop(drop_columns, axis=1, errors="ignore")
-        df = df.replace([np.inf, -np.inf], np.nan).dropna()
+        df.drop(
+            [col for col in df.columns if "piat" not in col.lower()],
+            axis=1,
+            errors="ignore",
+            inplace=True,
+        )
 
-        x = df.select_dtypes(include=[float, int])
+        df = df.replace([np.inf, -np.inf], np.nan).dropna().infer_objects(copy=False)
+        x = df.select_dtypes(include=[float, int]).to_numpy()
+
         x = StandardScaler().fit_transform(x)
-        x = np.array(x).flatten()
-
-        assert x.shape[0] == 61, f"Expected 61 features, got {x.shape[0]}"
-
-        return x.tolist()
+        return np.array(x).flatten()
 
 
 if __name__ == "__main__":
+    ic.configureOutput(includeContext=False)
     interface = os.environ.get("INTERFACE", "eth0")
-    duration = int(os.environ.get("DURATION", 10))
+    duration = int(os.environ.get("DURATION", 5))
 
     service = Feeder(interface, duration)
-    start_server(service, port=int(os.environ.get("PORT")))
+    start_server(service, port=int(os.environ.get("PORT")), workers=1)

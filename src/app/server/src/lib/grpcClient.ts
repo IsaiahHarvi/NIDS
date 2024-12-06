@@ -3,8 +3,6 @@ import * as protoLoader from "@grpc/proto-loader";
 import { Client } from "@grpc/grpc-js";
 import path from "path";
 
-// const PROTO_PATH = path.resolve(__dirname, "../grpc_/services.proto");
-// TODO: Fix the path to the proto file to not be hardcoded
 const PROTO_PATH = "/workspaces/NIDS/src/grpc_/services.proto";
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
@@ -17,33 +15,32 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const servicesProto = (protoDescriptor as any).services;
 
-// Variable to store the running gRPC client
 let activeGrpcClient: any = null;
 
-// gRPC Client logic
+function createGrpcClient(mode: "feeder" | "offlineFeeder"): any {
+  const port = mode === "feeder" ? "50053" : "50054";
+  return new servicesProto.Component(
+    `localhost:${port}`,
+    grpc.credentials.createInsecure()
+  ) as Client & { forward: Function };
+}
+
 export function runGrpcClient(
   mode: "feeder" | "offlineFeeder",
   live: boolean
 ): void {
-  const port = mode === "feeder" ? "50053" : "50054";
-
-  // Create the client using the `Component` service within `services`
-  const client = new servicesProto.Component(
-    `localhost:${port}`,
-    grpc.credentials.createInsecure()
-  ) as Client & { forward: Function };
-
-  activeGrpcClient = client; // Store the running client globally
+  const client = createGrpcClient(mode);
+  activeGrpcClient = client;
 
   const message = {
-    input: [], // Assuming input is an empty float array for now
+    input: [],
     health_check: false,
     collection_name: "",
     prediction: -1,
     mongo_id: "",
   };
 
-  const sendRequest = () => {
+  const sendRequest = (retryCount = 0) => {
     if (!activeGrpcClient) {
       console.log("gRPC client stopped");
       return;
@@ -51,27 +48,44 @@ export function runGrpcClient(
 
     client.forward(message, (error: grpc.ServiceError, response: any) => {
       if (error) {
-        console.error("Error:", error);
-      } else {
-        console.log("Response:", response.flow);
-        if (!live) {
-          client.close();
-          activeGrpcClient = null;
+        console.error("Error:", error.message);
+
+        if (
+          error.code === grpc.status.UNAVAILABLE ||
+          error.message.includes("Channel has been shut down")
+        ) {
+          console.log("Recreating gRPC client...");
+          activeGrpcClient = createGrpcClient(mode);
+
+          if (retryCount < 5) {
+            const backoffDelay = Math.pow(2, retryCount) * 1000;
+            console.log(`Retrying in ${backoffDelay}ms...`);
+            setTimeout(() => sendRequest(retryCount + 1), backoffDelay);
+          } else {
+            console.error("Max retries reached. Stopping client.");
+            activeGrpcClient.close();
+            activeGrpcClient = null;
+          }
         }
+        return;
       }
 
-      // Repeat if live is true
+      console.log("Response:", response.flow);
+
+      if (!live) {
+        client.close();
+        activeGrpcClient = null;
+      }
+
       if (live && activeGrpcClient) {
         sendRequest();
       }
     });
   };
 
-  // Initial request
   sendRequest();
 }
 
-// Function to stop the gRPC client
 export function stopGrpcClient() {
   if (activeGrpcClient) {
     console.log("Stopping the gRPC client...");

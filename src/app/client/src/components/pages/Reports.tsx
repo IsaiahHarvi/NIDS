@@ -17,14 +17,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+// import { Calendar } from "@/components/ui/calendar";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { CalendarIcon, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { getFeederReports } from "@/middleware/api/functions/getFeederReports";
 import { getOfflineFeederReports } from "@/middleware/api/functions/getOfflineFeederReports";
@@ -38,23 +38,23 @@ type Report = { id: string; timestamp: string };
 type SortDirection = "asc" | "desc";
 
 const classMap = {
-  BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 9, color: "yellow" },
-  "FTP-Patator": { value: 7, color: "yellow" },
-  "SSH-Patator": { value: 10, color: "yellow" },
-  "DoS slowloris": { value: 4, color: "orange" },
-  "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 3, color: "orange" },
-  "DoS Hulk": { value: 4, color: "orange" },
-  Bot: { value: 1, color: "red" },
-  Heartbleed: { value: 8, color: "red" },
-  DDoS: { value: 2, color: "red" },
+  benign: { value: 0, color: "green" },
+  malicious: { value: 1, color: "red" },
+  // BENIGN: { value: 0, color: "green" },
+  // PortScan: { value: 9, color: "yellow" },
+  // "FTP-Patator": { value: 7, color: "yellow" },
+  // "SSH-Patator": { value: 10, color: "yellow" },
+  // "DoS slowloris": { value: 4, color: "orange" },
+  // "DoS Slowhttptest": { value: 5, color: "orange" },
+  // "DoS GoldenEye": { value: 3, color: "orange" },
+  // "DoS Hulk": { value: 4, color: "orange" },
+  // Bot: { value: 1, color: "red" },
+  // Heartbleed: { value: 8, color: "red" },
+  // DDoS: { value: 2, color: "red" },
 };
 
 export default function ReportsPage() {
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | null>(
-    null
-  );
+  const [dateRange] = useState<{ from: Date; to: Date } | null>(null);
   const [sortColumn, setSortColumn] = useState<string>("timestamp");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [reports, setReports] = useState<Report[]>([]);
@@ -136,7 +136,7 @@ export default function ReportsPage() {
       .filter(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (r: any) =>
-          r.prediction !== classMap.BENIGN.value && r.metadata !== undefined
+          r.prediction !== classMap.benign.value && r.metadata !== undefined
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((r: any) => {
@@ -241,41 +241,6 @@ export default function ReportsPage() {
               <span>
                 {isOfflineFeeder ? "Offline Feeder Reports" : "Feeder Reports"}
               </span>
-            </div>
-            <div className="flex space-x-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[300px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                        {format(dateRange.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      <span>Pick a date range</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    initialFocus
-                    mode="range"
-                    selected={dateRange || undefined}
-                    onSelect={(range: { from?: Date; to?: Date } | undefined) =>
-                      setDateRange(
-                        range?.from && range?.to
-                          ? { from: range.from, to: range.to }
-                          : null
-                      )
-                    }
-                    numberOfMonths={2}
-                  />
-                </PopoverContent>
-              </Popover>
             </div>
           </div>
           {loading ? (

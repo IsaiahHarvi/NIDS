@@ -77,7 +77,7 @@ export const useServicesStore = create<ServicesState>()(
 
         addFeeder: async (feeder: Feeder) =>
           set((state) => {
-            if (state.feeders.length >= 100) {
+            if (state.feeders.length >= 200) {
               sendReports("feeder", state.feeders);
               return { feeders: [] };
             }
@@ -128,7 +128,7 @@ export const useServicesStore = create<ServicesState>()(
 
         addOfflineFeeder: async (offlineFeeder: OfflineFeeder) =>
           set((state) => {
-            if (state.offlineFeeders.length >= 100) {
+            if (state.offlineFeeders.length >= 200) {
               sendReports("offline_feeder", state.offlineFeeders);
               return { offlineFeeders: [] };
             }

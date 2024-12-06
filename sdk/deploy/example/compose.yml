@@ -1,0 +1,10 @@
+services:
+  example:
+    build:
+      context: ../../../
+      dockerfile: sdk/deploy/example/Dockerfile
+    ports:
+      - "50070:50070"
+    container_name: example
+    profiles:
+      - sdk

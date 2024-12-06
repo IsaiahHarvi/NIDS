@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import tempfile
 import time
@@ -15,8 +16,6 @@ from sklearn.preprocessing import StandardScaler
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
 from src.grpc_.utils import sendto_mongo, sendto_service, start_server
-
-ic.configureOutput(includeContext=False)
 
 
 class Feeder(ComponentServicer):
@@ -46,7 +45,7 @@ class Feeder(ComponentServicer):
             sendto_mongo(
                 {
                     "id_": uuid,
-                    "flow_data": x,
+                    "flow_data": x.tolist(),
                     "prediction": pred,
                     "metadata": metadata_list[i],
                 },
@@ -92,41 +91,27 @@ class Feeder(ComponentServicer):
 
     def preprocessor(self, flow_row: pd.Series) -> list:
         df = flow_row.to_frame().T
-        drop_columns = [
-            "id",
-            "expiration_id",
-            "src_mac",
-            "src_oui",
-            "dst_mac",
-            "dst_oui",
-            "flow_id",
-            "flow_start",
-            "bidirectional_first_seen_ms",
-            "bidirectional_last_seen_ms",
-            "src2dst_first_seen_ms",
-            "src2dst_last_seen_ms",
-            "dst2src_first_seen_ms",
-            "dst2src_last_seen_ms",
-            "src_ip",
-            "dst_ip",
-            "src_port",
-            "dst_port",
-        ]
-        df = df.drop(drop_columns, axis=1, errors="ignore")
-        df = df.replace([np.inf, -np.inf], np.nan).dropna()
+        df.drop(
+            [col for col in df.columns if "piat" not in col.lower()],
+            axis=1,
+            errors="ignore",
+            inplace=True,
+        )
 
-        x = df.select_dtypes(include=[float, int])
+        df = df.replace([np.inf, -np.inf], np.nan).dropna().infer_objects(copy=False)
+        x = df.select_dtypes(include=[float, int]).to_numpy()
+
         x = StandardScaler().fit_transform(x)
-        x = np.array(x).flatten()
-
-        assert x.shape[0] == 61, f"Expected 61 features, got {x.shape[0]}"
-
-        return x.tolist()
+        return np.array(x).flatten()
 
 
 if __name__ == "__main__":
+    ic.configureOutput(includeContext=False)
+    multiprocessing.set_start_method("forkserver", force=True)
+    os.environ["GRPC_ENABLE_FORK_SUPPORT"] = "1"
+
     interface = os.environ.get("INTERFACE", "eth0")
-    duration = int(os.environ.get("DURATION", 10))
+    duration = int(os.environ.get("DURATION", 5))
 
     service = Feeder(interface, duration)
     start_server(service, port=int(os.environ.get("PORT")))

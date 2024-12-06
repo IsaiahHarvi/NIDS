@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import tempfile
 import time
@@ -30,7 +31,7 @@ class Feeder(ComponentServicer):
         ).to("cpu")
         self.model.eval()
 
-        ic(f"Started on {os.environ.get('PORT')}")
+        ic(f"Started on {os.environ.get('PORT')} | PID: {os.getpid()}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         uuid = str(UUID())
@@ -50,7 +51,7 @@ class Feeder(ComponentServicer):
             #     port=50052,
             # )
 
-            x = torch.tensor(x)
+            x = torch.tensor(x, dtype=torch.float32)
             x = x.unsqueeze(0) if x.dim() == 1 else x
             pred = torch.argmax(self.model(x), dim=1).item()
 
@@ -63,12 +64,13 @@ class Feeder(ComponentServicer):
                 }
             )
 
-        sendto_mongo(
-            data=records,
-            collection_name=self.__class__.__name__,
-        )
+        if records:
+            sendto_mongo(
+                data=records,
+                collection_name=self.__class__.__name__,
+            )
 
-        return ComponentResponse(return_code=0)
+        return ComponentResponse(return_code=bool(records))
 
     def get_flows(self, interface: str, duration: int) -> Tuple[List[Dict], List[Dict]]:
         ic(f"Capturing packets from {interface} for {duration} seconds")
@@ -76,12 +78,19 @@ class Feeder(ComponentServicer):
         captured_packets = []
         start_time = time.time()
 
-        for _, pkt in pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50):
-            if (time.time() - start_time) > duration:
-                break
-            eth = dpkt.ethernet.Ethernet(pkt)
-            if isinstance(eth.data, dpkt.ip.IP):
-                captured_packets.append(pkt)
+        try:
+            for _, pkt in pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50):
+                if (time.time() - start_time) > duration:
+                    break
+                eth = dpkt.ethernet.Ethernet(pkt)
+                if isinstance(eth.data, dpkt.ip.IP):
+                    captured_packets.append(pkt)
+        except Exception as e:
+            ic(e)
+
+        if not captured_packets:
+            ic("No packets captured")
+            return [], []
 
         # temporary PCAP file
         with tempfile.NamedTemporaryFile(suffix=".pcap", delete=True) as temp_pcap:
@@ -111,7 +120,7 @@ class Feeder(ComponentServicer):
             inplace=True,
         )
 
-        df = df.replace([np.inf, -np.inf], np.nan).dropna().infer_objects(copy=False)
+        df = df.replace([np.inf, -np.inf], np.nan).infer_objects(copy=False).dropna()
         x = df.select_dtypes(include=[float, int]).to_numpy()
 
         x = StandardScaler().fit_transform(x)
@@ -120,8 +129,9 @@ class Feeder(ComponentServicer):
 
 if __name__ == "__main__":
     ic.configureOutput(includeContext=False)
+
     interface = os.environ.get("INTERFACE", "eth0")
     duration = int(os.environ.get("DURATION", 5))
 
     service = Feeder(interface, duration)
-    start_server(service, port=int(os.environ.get("PORT")), workers=1)
+    start_server(service, port=int(os.environ.get("PORT")))

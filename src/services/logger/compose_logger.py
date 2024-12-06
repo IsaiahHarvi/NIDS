@@ -1,8 +1,10 @@
+import datetime
 import os
-from threading import Thread
+import threading
 
 import docker
 from icecream import ic
+from pymongo import MongoClient
 
 ic.configureOutput(includeContext=False, prefix="")
 
@@ -22,14 +24,19 @@ class Logger:
         self.start_log_collection()
 
     def get_service_names(self):
-        # Modify this to get names from deploy directory - change neural network dir from model to neural-network
-
         try:
             containers = self.client.containers.list()
             services = [
                 container.name
                 for container in containers
-                if container.name in ["neural-network", "mongo", "mongo-express", "offline-feeder", "webserver"] and "logger" not in container.name
+                if container.name in [
+                    "neural-network",
+                    "mongo",
+                    "mongo-express",
+                    "offline-feeder",
+                    "webserver"
+                ]
+                and "logger" not in container.name
             ]
             ic(f"Identified services: {services}")
             return services

@@ -2,7 +2,7 @@ services:
   neural-network:
     build:
       context: ../../
-      dockerfile: deploy/neural-network/Dockerfile
+      dockerfile: deploy/neural_network/Dockerfile
       args:
         # - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
         - MODEL_PATH=data/checkpoints/MLP.ckpt

@@ -8,6 +8,7 @@ services:
     network_mode: host
     ports:
       - "50053:50053"
+    environment:
+      GRPC_VERBOSITY: ERROR
+      GRPC_LOG_SEVERITY: ERROR
     container_name: feeder
-    profiles:
-      - feeder

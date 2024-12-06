@@ -38,17 +38,19 @@ type Report = { id: string; timestamp: string };
 type SortDirection = "asc" | "desc";
 
 const classMap = {
-  BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 9, color: "yellow" },
-  "FTP-Patator": { value: 7, color: "yellow" },
-  "SSH-Patator": { value: 10, color: "yellow" },
-  "DoS slowloris": { value: 4, color: "orange" },
-  "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 3, color: "orange" },
-  "DoS Hulk": { value: 4, color: "orange" },
-  Bot: { value: 1, color: "red" },
-  Heartbleed: { value: 8, color: "red" },
-  DDoS: { value: 2, color: "red" },
+  benign: { value: 0, color: "green" },
+  malicious: { value: 1, color: "red" },
+  // BENIGN: { value: 0, color: "green" },
+  // PortScan: { value: 9, color: "yellow" },
+  // "FTP-Patator": { value: 7, color: "yellow" },
+  // "SSH-Patator": { value: 10, color: "yellow" },
+  // "DoS slowloris": { value: 4, color: "orange" },
+  // "DoS Slowhttptest": { value: 5, color: "orange" },
+  // "DoS GoldenEye": { value: 3, color: "orange" },
+  // "DoS Hulk": { value: 4, color: "orange" },
+  // Bot: { value: 1, color: "red" },
+  // Heartbleed: { value: 8, color: "red" },
+  // DDoS: { value: 2, color: "red" },
 };
 
 export default function ReportsPage() {
@@ -136,7 +138,7 @@ export default function ReportsPage() {
       .filter(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (r: any) =>
-          r.prediction !== classMap.BENIGN.value && r.metadata !== undefined
+          r.prediction !== classMap.benign.value && r.metadata !== undefined
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((r: any) => {

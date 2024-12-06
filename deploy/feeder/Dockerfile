@@ -3,6 +3,19 @@ FROM python:3.11-slim
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
     libpcap-dev \
+    python3-dev \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    flex \
+    bison \
+    gettext \
+    libjson-c-dev \
+    libusb-1.0-0-dev \
+    libdbus-glib-1-dev \
+    libbluetooth-dev \
+    libnl-genl-3-dev && \
     git && \
     rm -rf /var/lib/apt/lists/*
 

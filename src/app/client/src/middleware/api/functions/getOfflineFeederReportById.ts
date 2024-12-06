@@ -1,5 +1,5 @@
 import { restGet } from "../../rest-calls/rest-get";
-// import { FeederMessage } from "../../../../../types/client-types";
+import { FeederMessage } from "../../../../../types/client-types";
 
 // interface FeederReports
 
@@ -8,7 +8,7 @@ export async function getOfflineFeederReportById(
 ): Promise<{ id_: string } | null> {
   try {
     const fetchedData = await restGet(`/services/offline_feederReports/${id}`);
-    return fetchedData as { id_: string };
+    return fetchedData as FeederMessage;
   } catch (error) {
     console.error(`Error fetching offline feeder report with id ${id}:`, error);
     return null; // Return null if the request fails

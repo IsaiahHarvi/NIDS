@@ -13,15 +13,15 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-toolsai.jupyter",
 				"iterative.dvc",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"charliermarsh.ruff"
 			]
 		}
 	},
 	"runArgs": [
 		"--gpus=all",
-		"--shm-size=16g",
+		"--shm-size=8g",
 		"--env-file", ".devcontainer/dev.env"
 	]
 }

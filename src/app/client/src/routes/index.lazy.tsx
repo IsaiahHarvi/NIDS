@@ -1,7 +1,4 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-// import { useStore } from "@/stores/bear-store";
-// import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardDescription,
@@ -10,45 +7,41 @@ import {
 } from "@/components/ui/card";
 import Balancer from "react-wrap-balancer";
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, Crosshair, ScrollText, Gamepad2 } from "lucide-react";
+import {
+  Sparkles,
+  Crosshair,
+  ScrollText,
+  Gamepad2,
+  Clipboard,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
-
+import logo from "@/components/logo/nids_logo.png";
+import "@/components/logo/logo.css";
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
 
-// function Index() {
-//   const { count, inc } = useStore();
-//   return (
-//     <div className="p-2">
-//       <h3>Welcome Home!</h3>
-//       <div>
-//         <span>{count}</span>
-//         <Button onClick={inc}>one up</Button>
-//       </div>
-//     </div>
-//   );
-// }
-
 export function Index() {
   return (
-    <div className="container relative  justify-center py-8">
-      <div className="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-0 ">
-        <div className="text-center text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
-          NIDS
+    <div className="container mx-auto flex flex-col items-center justify-center py-12 px-4">
+      <div className="flex flex-col items-center">
+        <div className="logo-container mb-8">
+          <img src={logo} alt="Logo" className="rotating-logo w-40 h-40" />
         </div>
-        <Balancer className="max-w-[750px] text-center text-lg font-light text-foreground">
-          Network Intrustion Detection System
-        </Balancer>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-tight">
+            NIDS
+          </h1>
+          <Balancer className="mt-4 max-w-[750px] text-lg font-light text-foreground">
+            Network Intrusion Detection System
+          </Balancer>
+        </div>
       </div>
-      <div className="text-base sm:pl-2 md:pl-8 ">
-        <p className="py-2 text-xl sm:text-2xl lg:text-4xl"></p>
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 md:max-w-5xl">
         <LinkCard
           icon={Gamepad2}
-          title="Controls"
-          description="NIDS Controls"
+          title="Help"
+          description="NIDS Help Page"
           link="/help"
         />
         <LinkCard
@@ -59,15 +52,21 @@ export function Index() {
         />
         <LinkCard
           icon={Crosshair}
-          title="test"
-          description="test page"
+          title="Test"
+          description="Test page"
           link="/test"
         />
         <LinkCard
           icon={Sparkles}
-          title="Status"
-          description="View the status of NIDS"
-          link="/status"
+          title="Reports"
+          description="View Reports of NIDS"
+          link="/reports"
+        />
+        <LinkCard
+          icon={Clipboard}
+          title="Dashboard"
+          description="NIDS Dashboard"
+          link="/dashboard"
         />
       </div>
     </div>
@@ -86,12 +85,12 @@ function LinkCard({
 }) {
   return (
     <Link to={link}>
-      <Card>
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle>
-            <div className="flex flex-row items-center ">
-              <Icon className="h-6 w-14 text-inherit" />
-              {title}
+            <div className="flex items-center">
+              <Icon className="h-8 w-8 text-primary mr-3" />
+              <span className="text-lg font-semibold">{title}</span>
             </div>
           </CardTitle>
           <CardDescription>{description}</CardDescription>

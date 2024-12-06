@@ -1,8 +1,7 @@
 import os
+from threading import Thread
+
 import docker
-import threading
-from pymongo import MongoClient
-from datetime import datetime
 from icecream import ic
 
 ic.configureOutput(includeContext=False, prefix="")
@@ -50,13 +49,8 @@ class Logger:
             ic(f"Starting log collection for service: {name}")
             container = self.client.containers.get(name)
             for line in container.logs(stream=True):
-                log_message = line.strip().decode('utf-8', errors='replace')
-                out = f"{name}{' ' * (spc - len(name))}| {log_message}"
-
-                self.store_log(name, log_message)
-
-                with self.log_lock:
-                    print(out)
+                out = f"{name}{' ' * (spc - len(name))}| {line.strip().decode('utf-8')}"
+                ic(out)
         except Exception as e:
             with self.log_lock:
                 ic(f"Error occurred while monitoring {name}: {e}")

@@ -32,6 +32,9 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt && rm /app/requirements
 COPY src/grpc_ /app/src/grpc_
 COPY src/services/feeder/feeder.py /app/main.py
 
+COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
+COPY data/checkpoints/MLP.ckpt /app/model.ckpt
+
 ENV PYTHONPATH=/app/src
 WORKDIR /app
 

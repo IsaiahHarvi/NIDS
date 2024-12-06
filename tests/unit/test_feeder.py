@@ -8,7 +8,7 @@ import pytest
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.utils import start_server
-from src.services.feeder.feeder import Feeder
+from services.feeder.feeder import Feeder
 
 
 @pytest.mark.skip("feeder disconnects")

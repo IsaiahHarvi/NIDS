@@ -1,5 +1,5 @@
 include:
-  - neural-network/compose.yml
+  - neural_network/compose.yml
   - feeder/compose.yml
   - offline_feeder/compose.yml
   - logger/compose.yml

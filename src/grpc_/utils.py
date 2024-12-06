@@ -13,10 +13,10 @@ from src.grpc_.services_pb2_grpc import (ComponentStub,
 
 
 def start_server(
-    service, port, wait_for_termination: bool = True
+    service, port, workers = 1, wait_for_termination: bool = True
 ) -> None | grpc.Server:
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),
+        futures.ThreadPoolExecutor(max_workers=workers),
         options=[
             ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
             ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB

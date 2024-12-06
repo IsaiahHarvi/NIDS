@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import tempfile
 import time
@@ -124,11 +123,8 @@ class Feeder(ComponentServicer):
 
 if __name__ == "__main__":
     ic.configureOutput(includeContext=False)
-    multiprocessing.set_start_method("forkserver", force=True)
-    os.environ["GRPC_ENABLE_FORK_SUPPORT"] = "1"
-
     interface = os.environ.get("INTERFACE", "eth0")
     duration = int(os.environ.get("DURATION", 5))
 
     service = Feeder(interface, duration)
-    start_server(service, port=int(os.environ.get("PORT")))
+    start_server(service, port=int(os.environ.get("PORT")), workers=1)

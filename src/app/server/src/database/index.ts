@@ -10,6 +10,8 @@ let client: MongoClient;
 export let clientDb: Db;
 export let componentsDb: Db;
 export let storeServiceDb: Db;
+export let reportsDb: Db;
+// export let offlineFeederReports: Db;
 //may need to play with making this async again,
 //removed async because of bug where it sends multiple CS messages
 const connectToDatabase = () => {
@@ -19,6 +21,7 @@ const connectToDatabase = () => {
     });
     client.connect();
     storeServiceDb = client.db("services");
+    reportsDb = client.db("reports");
 
     // setupClientDb(clientDb);
     console.log(pc.green("Success: MongoDB Connected"));

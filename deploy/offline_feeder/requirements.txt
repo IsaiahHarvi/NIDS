@@ -6,14 +6,33 @@
 #
 --extra-index-url https://download.pytorch.org/whl/cpu
 
+aiohappyeyeballs==2.4.2
+    # via aiohttp
+aiohttp==3.10.8
+    # via fsspec
+aiosignal==1.3.1
+    # via aiohttp
 asttokens==2.4.1
     # via icecream
+attrs==24.2.0
+    # via aiohttp
 colorama==0.4.6
     # via icecream
 dnspython==2.6.1
     # via pymongo
 executing==2.0.1
     # via icecream
+filelock==3.16.1
+    # via torch
+frozenlist==1.4.1
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec[http]==2024.9.0
+    # via
+    #   lightning
+    #   pytorch-lightning
+    #   torch
 grpcio==1.66.0
     # via
     #   -r deploy/offline_feeder/requirements.in
@@ -22,14 +41,49 @@ grpcio-tools==1.66.0
     # via -r deploy/offline_feeder/requirements.in
 icecream==2.1.3
     # via -r deploy/offline_feeder/requirements.in
+idna==3.10
+    # via yarl
+imbalanced-learn==0.12.4
+    # via imblearn
+imblearn==0.0
+    # via -r deploy/offline_feeder/requirements.in
+jinja2==3.1.4
+    # via torch
 joblib==1.4.2
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
+lightning==2.4.0
+    # via -r deploy/offline_feeder/requirements.in
+lightning-utilities==0.11.7
+    # via
+    #   lightning
+    #   pytorch-lightning
+    #   torchmetrics
+markupsafe==2.1.5
+    # via jinja2
+mpmath==1.3.0
+    # via sympy
+multidict==6.1.0
+    # via
+    #   aiohttp
+    #   yarl
+networkx==3.3
+    # via torch
 numpy==1.26.4
     # via
     #   -r deploy/offline_feeder/requirements.in
+    #   imbalanced-learn
     #   pandas
     #   scikit-learn
     #   scipy
+    #   torchmetrics
+packaging==24.1
+    # via
+    #   lightning
+    #   lightning-utilities
+    #   pytorch-lightning
+    #   torchmetrics
 pandas==2.2.2
     # via -r deploy/offline_feeder/requirements.in
 protobuf==5.27.3
@@ -40,20 +94,56 @@ pymongo==4.8.0
     # via -r deploy/offline_feeder/requirements.in
 python-dateutil==2.9.0.post0
     # via pandas
+pytorch-lightning==2.4.0
+    # via lightning
 pytz==2024.1
     # via pandas
+pyyaml==6.0.2
+    # via
+    #   lightning
+    #   pytorch-lightning
 scikit-learn==1.5.1
-    # via -r deploy/offline_feeder/requirements.in
+    # via
+    #   -r deploy/offline_feeder/requirements.in
+    #   imbalanced-learn
 scipy==1.14.1
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
 six==1.16.0
     # via
     #   asttokens
     #   python-dateutil
+sympy==1.13.3
+    # via torch
 threadpoolctl==3.5.0
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
+torch==2.4.1
+    # via
+    #   -r deploy/offline_feeder/requirements.in
+    #   lightning
+    #   pytorch-lightning
+    #   torchmetrics
+torchmetrics==1.4.2
+    # via
+    #   lightning
+    #   pytorch-lightning
+tqdm==4.66.5
+    # via
+    #   lightning
+    #   pytorch-lightning
+typing-extensions==4.12.2
+    # via
+    #   lightning
+    #   lightning-utilities
+    #   pytorch-lightning
+    #   torch
 tzdata==2024.1
     # via pandas
+yarl==1.13.1
+    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# NOTE: This is for use in a production environment on a Linux machine.
-
 if grep -q "# NIDS" /etc/hosts; then
     sudo sed -i '/# NIDS/,+1d' /etc/hosts
     echo "Removed NIDS entry from /etc/hosts."

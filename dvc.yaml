@@ -15,7 +15,19 @@ stages:
     metrics:
     - dvclive/metrics.json
 
+  train_MLP:
+    cmd: >
+      python src/ai/train.py
+      --lr 0.001
+      --batch_size 64
+      --early_stop_patience 10
+      --ckpt_name MLP
+      --constructor MLP
+      --all_data
 params:
 - dvclive/params.yaml
 metrics:
 - dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step

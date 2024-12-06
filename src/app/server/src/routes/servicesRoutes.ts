@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { Elysia } from "elysia";
-import { storeServiceDb } from "../database";
+import { storeServiceDb, reportsDb } from "../database";
 import { runGrpcClient, stopGrpcClient } from "../lib/grpcClient";
 
 export const ServicesRoutes = new Elysia().group("/api/services", (router) =>
@@ -97,5 +97,55 @@ export const ServicesRoutes = new Elysia().group("/api/services", (router) =>
     .delete("/default", async () => {
       await storeServiceDb.collection("Default").deleteMany({});
       return { message: "All documents from Default have been deleted" };
+    })
+
+    //post for adding new collection to services db called offlineFeederReports
+    .post("/offline_feederReports", async (req) => {
+      const body = req.body as Record<string, any>;
+      const id = nanoid();
+      const timestamp = new Date();
+      await reportsDb.collection("OfflineFeeder").insertOne({
+        ...body,
+        id,
+        timestamp,
+      });
+      return { id };
+    })
+    .post("/feederReports", async (req) => {
+      const body = req.body as Record<string, any>;
+      const id = nanoid();
+      const timestamp = new Date();
+      await reportsDb.collection("Feeder").insertOne({
+        ...body,
+        id,
+        timestamp,
+      });
+      return { id };
+    })
+    .get("/offline_feederReports", async () => {
+      return reportsDb
+        .collection("OfflineFeeder")
+        .find({}, { projection: { timestamp: 1, id: 1 } })
+        .toArray();
+    })
+    .get("/feederReports", async () => {
+      return reportsDb
+        .collection("Feeder")
+        .find({}, { projection: { timestamp: 1, id: 1 } })
+        .toArray();
+    })
+
+    //.get to take in id and find entry in offlineFeederReports and return it
+    .get("/offline_feederReports/:id", async (req) => {
+      const { id } = req.params;
+      return reportsDb.collection("OfflineFeeder").findOne({ id });
+    })
+
+    //.get to take in id and find entry in feederReports and return it
+    .get("/feederReports/:id", async (req) => {
+      const { id } = req.params;
+      return reportsDb.collection("Feeder").findOne({
+        id,
+      });
     })
 );

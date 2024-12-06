@@ -1,46 +1,30 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
-// import PieChartComponent from "../PieChart";
 import PieChartCard from "../PieChart";
 import { useServicesStore } from "@/stores/services-store";
-// import { getFeeders } from "@/middleware/api/functions/getFeeders";
-// import { getOfflineFeeders } from "@/middleware/api/functions/getOfflineFeeders";
-// import { getNeuralNetworks } from "@/middleware/api/functions/getNeuralNetworks";
-// import { useEffect } from "react";
 import NetworkTableCard from "../NetworkTableCard";
 import { Button } from "../ui/button";
 import { startFeeders } from "@/middleware/api/functions/startFeeders";
 import { stopFeeders } from "@/middleware/api/functions/stopFeeders";
 import { useToast } from "@/hooks/use-toast";
 import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
+import { useState } from "react";
+import { Switch } from "../ui/switch";
+import { sendReports } from "@/middleware/api/functions/sendReports";
 
 const Dashboard = () => {
   const { toast } = useToast();
   const {
-    // feeders,
-    // setFeeders,
     offlineFeeders,
-    // setOfflineFeeders,
-    // neuralNetworks,
-    // setNeuralNetworks,
+    feeders,
+    setFeeders,
+    setOfflineFeeders,
+    setNeuralNetworks,
   } = useServicesStore();
+  const [isOfflineFeeder, setIsOfflineFeeder] = useState(true);
+  const [isFeedersStarted, setIsFeedersStarted] = useState(false);
+  const [isFeedersPaused, setIsFeedersPaused] = useState(false);
 
-  // TODO: figure out how to handle this
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedFeeders = await getFeeders();
-  //       setFeeders(fetchedFeeders);
-  //       const fetchedOfflineFeeders = await getOfflineFeeders();
-  //       setOfflineFeeders(fetchedOfflineFeeders);
-  //       const fetchedNeuralNetworks = await getNeuralNetworks();
-  //       setNeuralNetworks(fetchedNeuralNetworks);
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error);
-  //     }
-  //   };
-  //   fetchData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const feederMode = isOfflineFeeder ? "offline_feeder" : "feeder";
 
   return (
     <div className="p-4">
@@ -51,13 +35,23 @@ const Dashboard = () => {
             <div className="pt-3 flex flex-row justify-between items-center">
               <span>Overview of your network and collected data</span>
               <div className="flex gap-5">
+                <div className="flex items-center gap-2">
+                  <span>{isOfflineFeeder ? "Test Feeder" : "Feeder"}</span>
+                  <Switch
+                    checked={isOfflineFeeder}
+                    onCheckedChange={() => setIsOfflineFeeder((prev) => !prev)}
+                  />
+                </div>
+
                 <Button
                   size={"sm"}
                   onClick={() => {
-                    startFeeders("offline_feeder");
+                    startFeeders(feederMode);
+                    setIsFeedersStarted(true);
+                    setIsFeedersPaused(false);
                     toast({
                       title: "Feeders Started",
-                      description: "Feeders have been started successfully",
+                      description: `Started ${feederMode} successfully`,
                       duration: 2000,
                     });
                   }}
@@ -67,8 +61,10 @@ const Dashboard = () => {
 
                 <Button
                   size={"sm"}
+                  disabled={!isFeedersStarted}
                   onClick={() => {
                     stopFeeders();
+                    setIsFeedersPaused(true);
                     toast({
                       title: "Feeders Stopped",
                       description: "Feeders have been stopped successfully",
@@ -76,7 +72,34 @@ const Dashboard = () => {
                     });
                   }}
                 >
-                  Stop
+                  Pause
+                </Button>
+
+                <Button
+                  size={"sm"}
+                  disabled={
+                    !isFeedersStarted ||
+                    !isFeedersPaused ||
+                    (offlineFeeders.length === 0 && feeders.length === 0)
+                  }
+                  onClick={() => {
+                    sendReports(
+                      feederMode,
+                      feederMode === "offline_feeder" ? offlineFeeders : feeders
+                    );
+                    setFeeders([]);
+                    setOfflineFeeders([]);
+                    setNeuralNetworks([]);
+                    setIsFeedersStarted(false);
+                    setIsFeedersPaused(false);
+                    toast({
+                      title: "Feeders Reset",
+                      description: "Feeders have been reset successfully",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  Complete Scan
                 </Button>
               </div>
             </div>

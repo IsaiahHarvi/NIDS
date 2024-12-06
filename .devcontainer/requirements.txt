@@ -104,7 +104,9 @@ docker-pycreds==0.4.0
 dpath==2.2.0
     # via dvc
 dpkt==1.9.8
-    # via nfstream
+    # via
+    #   -r .devcontainer/requirements.in
+    #   nfstream
 dulwich==0.22.1
     # via
     #   dvc
@@ -365,6 +367,8 @@ pyparsing==3.1.2
     #   grandalf
     #   matplotlib
     #   pydot
+pypcap==1.3.0
+    # via -r .devcontainer/requirements.in
 pyproject-hooks==1.1.0
     # via
     #   build

@@ -17,20 +17,25 @@ async function startServer() {
         credentials: true,
       })
     )
-    .get("/", () => "Hello Elysia")
-    .get("/ping", () => ({ message: "pong" }))
-    .post("/hello", () => "world")
+    // .get("/", () => "Hello Elysia")
+    // .get("/ping", () => ({ message: "pong" }))
+    // .post("/hello", () => "world")
     .use(
       staticPlugin({
-        prefix: "/",  // Serve files from the root
+        prefix: "/", // Serve files from the root
         alwaysStatic: true,
-        assets: path.resolve("/app/server/dist"),  // Full path to the dist folder
-        })
+        // assets: path.resolve("/app/server/dist"),  // Full path to the dist folder
+        assets: "dist", // Relative path to the dist folder
+      })
     )
-    // Fallback: Serve index.html for all non-static requests
-    .get("^\\/(?!assets).*", async () => {
-      return Bun.file(path.resolve("t/app/server/dist/index.html"));
+
+    .get("*", async () => {
+      return Bun.file(path.resolve("dist/index.html"));
     })
+    // Fallback: Serve index.html for all non-static requests
+    // .get("^\\/(?!assets).*", async () => {
+    //   return Bun.file(path.resolve("t/app/server/dist/index.html"));
+    // })
     .use(ServicesRoutes)
     .use(websocketRoute)
     .listen(8000);

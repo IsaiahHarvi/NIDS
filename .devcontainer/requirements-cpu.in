@@ -21,3 +21,8 @@ pymongo
 wandb
 nfstream
 ruff
+dpkt
+pypcap
+textual
+isort
+imbalanced-learn

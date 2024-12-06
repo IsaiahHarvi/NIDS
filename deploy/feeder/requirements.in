@@ -5,7 +5,10 @@ icecream
 click
 numpy<2
 scikit-learn
-nfstream
+# nfstream
+git+https://github.com/praetoriannero/nfstream.git
 pymongo
 dpkt
 pypcap
+lightning
+torch

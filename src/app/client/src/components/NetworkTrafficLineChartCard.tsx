@@ -23,12 +23,14 @@ import {
 
 import type { FeederMessage } from "../../../types/client-types";
 
-// Define a more specific type for the tooltip payload
 interface TooltipPayload {
   payload: {
     name: string;
     value: number;
-    sourceIp: string;
+    src_ip: string;
+    dst_ip: string;
+    src_port: number;
+    dst_port: number;
   };
 }
 
@@ -45,12 +47,24 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
       <div className="p-3 bg-background border rounded-lg shadow-lg">
         <h4 className="font-semibold text-sm mb-1">{label}</h4>
         <p className="text-sm text-muted-foreground">
-          Selected Metric Value:{" "}
+          Metric Value:{" "}
           <span className="font-medium text-foreground">{data.value}</span>
         </p>
         <p className="text-sm text-muted-foreground">
           Source IP:{" "}
-          <span className="font-medium text-foreground">{data.sourceIp}</span>
+          <span className="font-medium text-foreground">{data.src_ip}</span>
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Destination IP:{" "}
+          <span className="font-medium text-foreground">{data.dst_ip}</span>
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Source Port:{" "}
+          <span className="font-medium text-foreground">{data.src_port}</span>
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Destination Port:{" "}
+          <span className="font-medium text-foreground">{data.dst_port}</span>
         </p>
       </div>
     );
@@ -59,22 +73,20 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 const availableMetrics = [
-  { label: "Total Forward Packets", key: "Total_Fwd_Packets" },
-  { label: "Total Backward Packets", key: "Total_Backward_Packets" },
-  { label: "Total Length of Fwd Packets", key: "Total_Length_of_Fwd_Packets" },
-  { label: "Total Length of Bwd Packets", key: "Total_Length_of_Bwd_Packets" },
-  { label: "Flow Bytes/s", key: "Flow_Bytes_s" },
-  { label: "Flow Packets/s", key: "Flow_Packets_s" },
-  { label: "Fwd IAT Mean", key: "Fwd_IAT_Mean" },
-  { label: "Bwd IAT Mean", key: "Bwd_IAT_Mean" },
-  { label: "Packet Length Mean", key: "Packet_Length_Mean" },
+  { label: "Bidirectional Packets", key: "bidirectional_packets" },
+  { label: "Bidirectional Bytes", key: "bidirectional_bytes" },
+  { label: "Bidirectional Duration (ms)", key: "bidirectional_duration_ms" },
+  { label: "Source to Destination Packets", key: "src2dst_packets" },
+  { label: "Destination to Source Packets", key: "dst2src_packets" },
 ];
 
-// Define the shape of the data used for charting
 interface ChartData {
   name: string;
   value: number;
-  sourceIp: string;
+  src_ip: string;
+  dst_ip: string;
+  src_port: number;
+  dst_port: number;
 }
 
 export default function NetworkTrafficLineChart({
@@ -94,7 +106,10 @@ export default function NetworkTrafficLineChart({
     return data.map((message, index) => ({
       name: `Packet ${index + 1}`,
       value: parseFloat(message?.metadata?.[selectedMetric]) || 0,
-      sourceIp: message?.metadata?.Source_IP || "Unknown",
+      src_ip: message?.metadata?.src_ip || "Unknown",
+      dst_ip: message?.metadata?.dst_ip || "Unknown",
+      src_port: parseInt(message?.metadata?.src_port) || 0,
+      dst_port: parseInt(message?.metadata?.dst_port) || 0,
     }));
   }, [data, selectedMetric]);
 
@@ -201,11 +216,29 @@ export default function NetworkTrafficLineChart({
                   <p className="text-sm text-muted-foreground">
                     Source IP:{" "}
                     <span className="font-medium text-foreground">
-                      {selectedPoint.sourceIp}
+                      {selectedPoint.src_ip}
                     </span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Selected Metric Value:{" "}
+                    Destination IP:{" "}
+                    <span className="font-medium text-foreground">
+                      {selectedPoint.dst_ip}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Source Port:{" "}
+                    <span className="font-medium text-foreground">
+                      {selectedPoint.src_port}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Destination Port:{" "}
+                    <span className="font-medium text-foreground">
+                      {selectedPoint.dst_port}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Metric Value:{" "}
                     <span className="font-medium text-foreground">
                       {selectedPoint.value}
                     </span>

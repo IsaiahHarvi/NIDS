@@ -109,16 +109,18 @@ const Dashboard = () => {
 
       <div className="flex flex-row">
         <div className="pt-4 flex flex-row gap-4 w-1/5">
-          <PieChartCard data={offlineFeeders} />
+          <PieChartCard data={isOfflineFeeder ? offlineFeeders : feeders} />
         </div>
         <div className="pt-4 pl-4 w-4/5">
           <NetworkTrafficLineChart
-            data={offlineFeeders}
+            data={isOfflineFeeder ? offlineFeeders : feeders}
           ></NetworkTrafficLineChart>
         </div>
       </div>
       <div className="pt-4">
-        <NetworkTableCard data={offlineFeeders}></NetworkTableCard>
+        <NetworkTableCard
+          data={isOfflineFeeder ? offlineFeeders : feeders}
+        ></NetworkTableCard>
       </div>
     </div>
   );

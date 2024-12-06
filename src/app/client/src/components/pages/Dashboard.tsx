@@ -7,9 +7,9 @@ import { startFeeders } from "@/middleware/api/functions/startFeeders";
 import { stopFeeders } from "@/middleware/api/functions/stopFeeders";
 import { useToast } from "@/hooks/use-toast";
 import NetworkTrafficLineChart from "../NetworkTrafficLineChartCard";
-import { useState } from "react";
 import { Switch } from "../ui/switch";
 import { sendReports } from "@/middleware/api/functions/sendReports";
+import { useControlsStore } from "@/stores/controls-store";
 
 const Dashboard = () => {
   const { toast } = useToast();
@@ -20,9 +20,14 @@ const Dashboard = () => {
     setOfflineFeeders,
     setNeuralNetworks,
   } = useServicesStore();
-  const [isOfflineFeeder, setIsOfflineFeeder] = useState(true);
-  const [isFeedersStarted, setIsFeedersStarted] = useState(false);
-  const [isFeedersPaused, setIsFeedersPaused] = useState(false);
+  const {
+    isOfflineFeeder,
+    isFeedersStarted,
+    isFeedersPaused,
+    setIsOfflineFeeder,
+    setIsFeedersStarted,
+    setIsFeedersPaused,
+  } = useControlsStore();
 
   const feederMode = isOfflineFeeder ? "offline_feeder" : "feeder";
 
@@ -39,46 +44,39 @@ const Dashboard = () => {
                   <span>{isOfflineFeeder ? "Test Feeder" : "Feeder"}</span>
                   <Switch
                     checked={isOfflineFeeder}
-                    onCheckedChange={() => setIsOfflineFeeder((prev) => !prev)}
+                    onCheckedChange={() => setIsOfflineFeeder(!isOfflineFeeder)}
                   />
                 </div>
-
                 <Button
-                  size={"sm"}
+                  size="sm"
                   onClick={() => {
-                    startFeeders(feederMode);
-                    setIsFeedersStarted(true);
-                    setIsFeedersPaused(false);
-                    toast({
-                      title: "Feeders Started",
-                      description: `Started ${feederMode} successfully`,
-                      duration: 2000,
-                    });
+                    if (!isFeedersStarted) {
+                      startFeeders(feederMode);
+                      setIsFeedersStarted(true);
+                      setIsFeedersPaused(false);
+                      toast({
+                        title: "Feeders Started",
+                        description: `Started ${feederMode} successfully`,
+                        duration: 2000,
+                      });
+                    } else {
+                      stopFeeders();
+                      setIsFeedersPaused(true);
+                      setIsFeedersStarted(false);
+                      toast({
+                        title: "Feeders Paused",
+                        description: "Feeders have been paused successfully",
+                        duration: 2000,
+                      });
+                    }
                   }}
                 >
-                  Start Feeders
+                  {isFeedersStarted ? "Pause Feeders" : "Start Feeders"}
                 </Button>
 
                 <Button
-                  size={"sm"}
-                  disabled={!isFeedersStarted}
-                  onClick={() => {
-                    stopFeeders();
-                    setIsFeedersPaused(true);
-                    toast({
-                      title: "Feeders Stopped",
-                      description: "Feeders have been stopped successfully",
-                      duration: 2000,
-                    });
-                  }}
-                >
-                  Pause
-                </Button>
-
-                <Button
-                  size={"sm"}
+                  size="sm"
                   disabled={
-                    !isFeedersStarted ||
                     !isFeedersPaused ||
                     (offlineFeeders.length === 0 && feeders.length === 0)
                   }

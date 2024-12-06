@@ -16,18 +16,8 @@ import type { FeederMessage } from "../../../types/client-types";
 import PcapMetaDataModal from "./PcapMetaDataModal";
 
 const classMap = {
-  BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 9, color: "yellow" },
-  "FTP-Patator": { value: 7, color: "yellow" },
-  "SSH-Patator": { value: 10, color: "yellow" },
-  "DoS slowloris": { value: 4, color: "orange" },
-  "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 3, color: "orange" },
-  "DoS Hulk": { value: 4, color: "orange" },
-  Bot: { value: 1, color: "red" },
-  Heartbleed: { value: 8, color: "red" },
-  // Infiltration: { value: 9, color: "red" },
-  DDoS: { value: 2, color: "red" },
+  benign: { value: 0, color: "green" },
+  malicious: { value: 1, color: "red" },
 };
 
 const invertedClassMap = Object.fromEntries(
@@ -72,9 +62,9 @@ export const NetworkTable = ({
             <TableHead>ID</TableHead>
             <TableHead>Flow Data</TableHead>
             <TableHead>Prediction</TableHead>
-            <TableHead>Host</TableHead>
-            <TableHead>Target</TableHead>
-            <TableHead>Port</TableHead>
+            <TableHead>Source IP</TableHead>
+            <TableHead>Destination IP</TableHead>
+            <TableHead>Ports</TableHead>
             <TableHead>Metadata</TableHead>
           </TableRow>
         </TableHeader>
@@ -94,12 +84,11 @@ export const NetworkTable = ({
               >
                 {invertedClassMap[message.prediction]?.name || "Unknown"}
               </TableCell>
-              <TableCell>{message?.metadata?.Source_IP || "Unknown"}</TableCell>
+              <TableCell>{message?.metadata?.src_ip || "Unknown"}</TableCell>
+              <TableCell>{message?.metadata?.dst_ip || "Unknown"}</TableCell>
               <TableCell>
-                {message?.metadata?.Destination_IP || "Unknown"}
-              </TableCell>
-              <TableCell>
-                {message?.metadata?.Destination_Port || "Unknown"}
+                Src: {message?.metadata?.src_port || "N/A"}, Dst:{" "}
+                {message?.metadata?.dst_port || "N/A"}
               </TableCell>
               <TableCell>
                 <PcapMetaDataModal metadata={message?.metadata} />

@@ -94,7 +94,7 @@ export function Navbar(): JSX.Element {
   return (
     <aside className="inset-y fixed left-0 z-20 flex h-full flex-col  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="flex flex-col items-center gap-4 py-2">
-        <LinkItem to="/" icon={Home} label="Dashboard" pathCheck="/" />
+        <LinkItem to="/" icon={Home} label="Home" pathCheck="/" />
         <LinkItem
           to="/help"
           icon={Gamepad2}
@@ -114,16 +114,16 @@ export function Navbar(): JSX.Element {
           pathCheck="/attack-control"
         />
         <LinkItem
-          to="/status"
-          icon={Sparkles}
-          label="Status"
-          pathCheck="/status"
-        />
-        <LinkItem
           to="/dashboard"
           icon={Clipboard}
           label="Dashboard"
           pathCheck="/dashboard"
+        />
+        <LinkItem
+          to="/reports"
+          icon={Sparkles}
+          label="Reports"
+          pathCheck="/reports"
         />
       </nav>
       <nav className="mt-auto grid gap-1 p-2">

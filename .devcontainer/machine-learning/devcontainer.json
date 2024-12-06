@@ -21,7 +21,7 @@
 	},
 	"runArgs": [
 		"--gpus=all",
-		"--shm-size=16g",
+		"--shm-size=8g",
 		"--env-file", ".devcontainer/dev.env"
 	]
 }

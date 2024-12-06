@@ -1,22 +1,22 @@
 # python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. src/grpc_/services.proto
 
-import time 
 import subprocess
-import grpc
+import time
 from concurrent import futures
 
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentStub
-from src.grpc_.services_pb2_grpc import add_ComponentServicer_to_server
-
+import grpc
 from icecream import ic
+
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import (ComponentStub,
+                                         add_ComponentServicer_to_server)
 
 
 def start_server(
-    service, port, wait_for_termination: bool = True
+    service, port, workers = 1, wait_for_termination: bool = True
 ) -> None | grpc.Server:
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),
+        futures.ThreadPoolExecutor(max_workers=workers),
         options=[
             ('grpc.max_send_message_length', 50 * 1024 * 1024),  # 50 MB
             ('grpc.max_receive_message_length', 50 * 1024 * 1024)  # 50 MB
@@ -62,10 +62,18 @@ def sendto_service(msg: ComponentMessage, host: str, port: int) -> ComponentResp
         ic("Send Failed", e)
 
 def sendto_mongo(data: dict, collection_name: str) -> None:
-    from pymongo import MongoClient # not all services use this, so import here
+    from pymongo import \
+        MongoClient  # not all services use this, so import here
 
     client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
     db = client["services"]
-    collection = db[collection_name]
-    result = collection.insert_one(data)
-    ic(result.inserted_id)
+
+    if isinstance(data, list):
+        collection = db[collection_name]
+        result = collection.insert_many(data)
+        ic(result.inserted_ids)
+
+    elif isinstance(data, dict):
+        collection = db[collection_name]
+        result = collection.insert_one(data)
+        ic(result.inserted_id)

@@ -1,16 +1,16 @@
-import grpc
-import os
-import pytest
 import multiprocessing
+import os
 import time
-from icecream import ic
-from src.grpc_.utils import start_server
-from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
-from src.grpc_.services_pb2_grpc import ComponentStub
 
-from src.services.model.model import NeuralNetwork
+import grpc
+import pytest
+from icecream import ic
 
 from src.ai.DataModule import DataModule
+from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
+from src.grpc_.services_pb2_grpc import ComponentStub
+from src.grpc_.utils import start_server
+from src.services.model.model import NeuralNetwork
 
 
 @pytest.fixture(scope="module")
@@ -21,7 +21,7 @@ def grpc_server():
 
     server_process = multiprocessing.Process(
         target=start_server,
-        args=(NeuralNetwork("data/checkpoints/ResidualSmall.ckpt"), 50052),
+        args=(NeuralNetwork("data/checkpoints/MLP.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)
@@ -43,7 +43,7 @@ def test_model(grpc_server):
             dm.setup()
 
             data, label = next(iter(dm.train_dataloader()))
-            data = data.numpy().flatten().tolist()  # [80] bc it has to live over gRPC
+            data = data.numpy().flatten().tolist()
 
             msg = ComponentMessage(flow=data)
             response = stub.forward(msg)

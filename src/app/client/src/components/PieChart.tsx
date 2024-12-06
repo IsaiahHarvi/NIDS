@@ -16,19 +16,26 @@ import {
 import { FeederMessage } from "../../../types/client-types";
 
 const classMap = {
-  BENIGN: { value: 0, color: "green" },
-  PortScan: { value: 9, color: "yellow" },
-  "FTP-Patator": { value: 7, color: "yellow" },
-  "SSH-Patator": { value: 10, color: "yellow" },
-  "DoS slowloris": { value: 4, color: "orange" },
-  "DoS Slowhttptest": { value: 5, color: "orange" },
-  "DoS GoldenEye": { value: 3, color: "orange" },
-  "DoS Hulk": { value: 4, color: "orange" },
-  Bot: { value: 1, color: "red" },
-  Heartbleed: { value: 8, color: "red" },
-  // Infiltration: { value: 9, color: "red" },
-  DDoS: { value: 2, color: "red" },
+  benign: { value: 0, color: "green" },
+  malicious: { value: 1, color: "red" },
 };
+// const classMap = {
+//   benign: { value: 0, color: "green" },
+//   bot: { value: 1, color: "red" },
+//   ddos: { value: 2, color: "red" },
+//   dos_goldeneye: { value: 3, color: "orange" },
+//   dos_hulk: { value: 4, color: "orange" },
+//   dos_slowhttptest: { value: 5, color: "orange" },
+//   dos_slowloris: { value: 6, color: "orange" },
+//   ftp_patator: { value: 7, color: "yellow" },
+//   heartbleed: { value: 8, color: "red" },
+//   infiltration: { value: 9, color: "red" },
+//   port_scan: { value: 10, color: "yellow" },
+//   ssh_patator: { value: 11, color: "yellow" },
+//   web_attack_brute_force: { value: 12, color: "red" },
+//   web_attack_sql_injection: { value: 13, color: "red" },
+//   web_attack_xss: { value: 14, color: "red" }
+// };
 
 const invertedClassMap = Object.fromEntries(
   Object.entries(classMap).map(([key, obj]) => [
@@ -121,7 +128,7 @@ interface PieChartCardProps {
 const PieChartCard = ({ data }: PieChartCardProps) => {
   const { processedData, oldestTimestamp } = useMemo(() => {
     const counts: { [key: string]: number } = {};
-    let oldestTime: Date | null = null;
+    let oldestTime: Date = new Date(8640000000000000);
 
     if (!data || data.length === 0) {
       return {
@@ -136,9 +143,11 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
 
       counts[attackType] = (counts[attackType] || 0) + 1;
 
-      const timestamp = new Date(message?.metadata?.Timestamp);
-      if (!oldestTime || timestamp < oldestTime) {
-        oldestTime = timestamp;
+      const flowStartStr = message.metadata?.flow_start;
+      const flowStartTime = flowStartStr ? new Date(flowStartStr) : null;
+
+      if (flowStartTime && (!oldestTime || flowStartTime < oldestTime)) {
+        oldestTime = flowStartTime;
       }
     });
 
@@ -152,9 +161,7 @@ const PieChartCard = ({ data }: PieChartCardProps) => {
 
     return {
       processedData,
-      oldestTimestamp: oldestTime
-        ? (oldestTime as Date).toLocaleString()
-        : "N/A",
+      oldestTimestamp: oldestTime ? oldestTime.toLocaleString() : "N/A",
     };
   }, [data]);
 

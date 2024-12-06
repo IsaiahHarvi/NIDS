@@ -1,14 +1,14 @@
-import grpc
-import os
-import pytest
 import multiprocessing
+import os
 import time
-from src.grpc_.utils import start_server
+
+import grpc
+import pytest
+
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
-
-from src.services.feeder.feeder import Feeder
-
+from src.grpc_.utils import start_server
+from services.feeder.feeder import Feeder
 
 
 @pytest.mark.skip("feeder disconnects")

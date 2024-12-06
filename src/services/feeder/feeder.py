@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import tempfile
 import time
@@ -9,20 +8,29 @@ import dpkt
 import numpy as np
 import pandas as pd
 import pcap
+import torch
 from icecream import ic
 from nfstream import NFStreamer
 from sklearn.preprocessing import StandardScaler
 
+from ai.BasicModule import BasicModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
-from src.grpc_.utils import sendto_mongo, sendto_service, start_server
+from src.grpc_.utils import sendto_mongo, start_server
 
 
 class Feeder(ComponentServicer):
     def __init__(self, interface, duration):
         self.interface = interface
         self.duration = duration
-        ic(f"Started on {os.environ.get('PORT')}")
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        self.model = BasicModule.load_from_checkpoint(
+            checkpoint_path="model.ckpt", strict=False
+        ).to("cpu")
+        self.model.eval()
+
+        ic(f"Started on {os.environ.get('PORT')} | PID: {os.getpid()}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
         uuid = str(UUID())
@@ -32,43 +40,58 @@ class Feeder(ComponentServicer):
 
         flows, metadata_list = self.get_flows(self.interface, self.duration)
 
+        records: List[dict] = []
         for i, flow_row in enumerate(flows):
             x = self.preprocessor(pd.Series(flow_row))
 
-            model_response = sendto_service(
-                msg=ComponentMessage(flow=x),
-                host="127.0.0.1",  # "neural-network",
-                port=50052,
-            )
-            pred: int = model_response.prediction
+            # model_response = sendto_service(
+            #     msg=ComponentMessage(flow=x),
+            #     host="127.0.0.1",  # "neural-network",
+            #     port=50052,
+            # )
 
-            sendto_mongo(
+            x = torch.tensor(x, dtype=torch.float32)
+            x = x.unsqueeze(0) if x.dim() == 1 else x
+            pred = torch.argmax(self.model(x), dim=1).item()
+
+            records.append(
                 {
                     "id_": uuid,
                     "flow_data": x.tolist(),
                     "prediction": pred,
                     "metadata": metadata_list[i],
-                },
+                }
+            )
+
+        if records:
+            sendto_mongo(
+                data=records,
                 collection_name=self.__class__.__name__,
             )
 
-        return ComponentResponse(return_code=0)
+        return ComponentResponse(return_code=bool(records))
 
     def get_flows(self, interface: str, duration: int) -> Tuple[List[Dict], List[Dict]]:
         ic(f"Capturing packets from {interface} for {duration} seconds")
 
         captured_packets = []
-        pc = pcap.pcap(name=interface, promisc=True, immediate=True, timeout_ms=50)
         start_time = time.time()
 
-        for _, pkt in pc:
-            if (time.time() - start_time) > duration:
-                break
-            # decode using dpkt
-            eth = dpkt.ethernet.Ethernet(pkt)
-            ip = eth.data
-            if isinstance(ip, dpkt.ip.IP):
-                captured_packets.append(pkt)
+        try:
+            for _, pkt in pcap.pcap(
+                name=interface, promisc=True, immediate=True, timeout_ms=50
+            ):
+                if (time.time() - start_time) > duration:
+                    break
+                eth = dpkt.ethernet.Ethernet(pkt)
+                if isinstance(eth.data, dpkt.ip.IP):
+                    captured_packets.append(pkt)
+        except Exception as e:
+            ic(e)
+
+        if not captured_packets:
+            ic("No packets captured")
+            return [], []
 
         # temporary PCAP file
         with tempfile.NamedTemporaryFile(suffix=".pcap", delete=True) as temp_pcap:
@@ -98,7 +121,7 @@ class Feeder(ComponentServicer):
             inplace=True,
         )
 
-        df = df.replace([np.inf, -np.inf], np.nan).dropna().infer_objects(copy=False)
+        df = df.replace([np.inf, -np.inf], np.nan).infer_objects(copy=False).dropna()
         x = df.select_dtypes(include=[float, int]).to_numpy()
 
         x = StandardScaler().fit_transform(x)
@@ -107,8 +130,6 @@ class Feeder(ComponentServicer):
 
 if __name__ == "__main__":
     ic.configureOutput(includeContext=False)
-    multiprocessing.set_start_method("forkserver", force=True)
-    os.environ["GRPC_ENABLE_FORK_SUPPORT"] = "1"
 
     interface = os.environ.get("INTERFACE", "eth0")
     duration = int(os.environ.get("DURATION", 5))

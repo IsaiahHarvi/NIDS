@@ -17,14 +17,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+// import { Calendar } from "@/components/ui/calendar";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { CalendarIcon, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { getFeederReports } from "@/middleware/api/functions/getFeederReports";
 import { getOfflineFeederReports } from "@/middleware/api/functions/getOfflineFeederReports";
@@ -54,9 +54,7 @@ const classMap = {
 };
 
 export default function ReportsPage() {
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | null>(
-    null
-  );
+  const [dateRange] = useState<{ from: Date; to: Date } | null>(null);
   const [sortColumn, setSortColumn] = useState<string>("timestamp");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [reports, setReports] = useState<Report[]>([]);
@@ -243,41 +241,6 @@ export default function ReportsPage() {
               <span>
                 {isOfflineFeeder ? "Offline Feeder Reports" : "Feeder Reports"}
               </span>
-            </div>
-            <div className="flex space-x-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[300px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                        {format(dateRange.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      <span>Pick a date range</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    initialFocus
-                    mode="range"
-                    selected={dateRange || undefined}
-                    onSelect={(range: { from?: Date; to?: Date } | undefined) =>
-                      setDateRange(
-                        range?.from && range?.to
-                          ? { from: range.from, to: range.to }
-                          : null
-                      )
-                    }
-                    numberOfMonths={2}
-                  />
-                </PopoverContent>
-              </Popover>
             </div>
           </div>
           {loading ? (

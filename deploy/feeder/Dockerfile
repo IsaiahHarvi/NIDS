@@ -6,7 +6,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 ENV PORT=50053
 ENV INTERFACE="eth0"
 ENV FILE_NAME="capture.pcap"
-ENV DURATION=10
+ENV DURATION=5
 
 LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION"
 

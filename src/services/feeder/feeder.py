@@ -9,19 +9,28 @@ import dpkt
 import numpy as np
 import pandas as pd
 import pcap
+import torch
 from icecream import ic
 from nfstream import NFStreamer
 from sklearn.preprocessing import StandardScaler
 
+from ai.BasicModule import BasicModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentServicer
-from src.grpc_.utils import sendto_mongo, sendto_service, start_server
+from src.grpc_.utils import sendto_mongo, start_server
 
 
 class Feeder(ComponentServicer):
     def __init__(self, interface, duration):
         self.interface = interface
         self.duration = duration
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        self.model = BasicModule.load_from_checkpoint(
+            checkpoint_path="model.ckpt", strict=False
+        ).to("cpu")
+        self.model.eval()
+
         ic(f"Started on {os.environ.get('PORT')}")
 
     def forward(self, msg: ComponentMessage, context) -> ComponentResponse:
@@ -36,12 +45,15 @@ class Feeder(ComponentServicer):
         for i, flow_row in enumerate(flows):
             x = self.preprocessor(pd.Series(flow_row))
 
-            model_response = sendto_service(
-                msg=ComponentMessage(flow=x),
-                host="127.0.0.1",  # "neural-network",
-                port=50052,
-            )
-            pred: int = model_response.prediction
+            # model_response = sendto_service(
+            #     msg=ComponentMessage(flow=x),
+            #     host="127.0.0.1",  # "neural-network",
+            #     port=50052,
+            # )
+
+            x = torch.tensor(x)
+            x = x.unsqueeze(0) if x.dim() == 1 else x
+            pred = torch.argmax(self.model(x), dim=1).item()
 
             records.append(
                 {

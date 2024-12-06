@@ -106,7 +106,6 @@ class Feeder(ComponentServicer):
         return np.array(x).flatten()
 
 
-
 if __name__ == "__main__":
     interface = os.environ.get("INTERFACE", "eth0")
     duration = int(os.environ.get("DURATION", 5))

@@ -52,7 +52,8 @@ export function runGrpcClient(
 
         if (
           error.code === grpc.status.UNAVAILABLE ||
-          error.message.includes("Channel has been shut down")
+          error.message.includes("Channel has been shut down") ||
+          error.message.includes("truncated dump file")
         ) {
           console.log("Recreating gRPC client...");
           activeGrpcClient = createGrpcClient(mode);

@@ -17,12 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-// import { Calendar } from "@/components/ui/calendar";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
@@ -34,24 +28,20 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 type Report = { id: string; timestamp: string };
+type ReportEntry = {
+  id_?: string;
+  prediction?: number;
+  metadata?: {
+    flow_start?: string;
+  };
+};
 
 type SortDirection = "asc" | "desc";
 
-const classMap = {
-  benign: { value: 0, color: "green" },
-  malicious: { value: 1, color: "red" },
-  // BENIGN: { value: 0, color: "green" },
-  // PortScan: { value: 9, color: "yellow" },
-  // "FTP-Patator": { value: 7, color: "yellow" },
-  // "SSH-Patator": { value: 10, color: "yellow" },
-  // "DoS slowloris": { value: 4, color: "orange" },
-  // "DoS Slowhttptest": { value: 5, color: "orange" },
-  // "DoS GoldenEye": { value: 3, color: "orange" },
-  // "DoS Hulk": { value: 4, color: "orange" },
-  // Bot: { value: 1, color: "red" },
-  // Heartbleed: { value: 8, color: "red" },
-  // DDoS: { value: 2, color: "red" },
-};
+// const classMap = {
+//   benign: { value: 0, color: "green" },
+//   malicious: { value: 1, color: "red" },
+// };
 
 export default function ReportsPage() {
   const [dateRange] = useState<{ from: Date; to: Date } | null>(null);
@@ -116,12 +106,11 @@ export default function ReportsPage() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const generatePDF = (report: any) => {
+  const generatePDF = (report: Record<string, unknown>) => {
     const doc = new jsPDF();
 
     const currentDate = new Date().toLocaleString();
-    const reportDate = new Date(report.timestamp).toLocaleString();
+    const reportDate = new Date(report.timestamp as string).toLocaleString();
     doc.setFontSize(18);
     doc.text("Network Intrusion Detection Report", 14, 20);
 
@@ -129,81 +118,38 @@ export default function ReportsPage() {
     doc.text(`Report Timestamp: ${reportDate}`, 14, 30);
     doc.text(`Generated on: ${currentDate}`, 14, 37);
 
+    const entries: ReportEntry[] = Object.values(report).filter(
+      (r): r is ReportEntry => typeof r === "object"
+    );
+    const totalEntries = entries.length;
+    const maliciousCount = entries.filter((r) => r?.prediction === 1).length;
+    const benignCount = totalEntries - maliciousCount;
+
     doc.setFontSize(16);
-    doc.text("Malicious Attacks Summary", 14, 50);
+    doc.text("Summary", 14, 50);
+    doc.setFontSize(12);
+    doc.text(`Total Entries: ${totalEntries}`, 14, 60);
+    doc.text(`Malicious: ${maliciousCount}`, 14, 67);
+    doc.text(`Benign: ${benignCount}`, 14, 74);
 
-    const maliciousReports = Object.values(report)
-      .filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (r: any) =>
-          r.prediction !== classMap.benign.value && r.metadata !== undefined
-      )
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((r: any) => {
-        const attackType =
-          (Object.keys(classMap) as (keyof typeof classMap)[]).find(
-            (key) => classMap[key].value === r.prediction
-          ) || "Unknown";
+    const tableData = entries.map((r, index) => [
+      r.id_ || `Entry ${index + 1}`,
+      r.metadata?.flow_start || "N/A",
+      r.prediction === 1 ? "Malicious" : "Benign",
+    ]);
 
-        return {
-          attackType,
-          sourceIP: r.metadata.Source_IP || "N/A",
-          destinationIP: r.metadata.Destination_IP || "N/A",
-        };
-      });
+    autoTable(doc, {
+      startY: 80,
+      head: [["ID", "Timestamp", "Status"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: [230, 126, 34],
+        textColor: 255,
+      },
+    });
 
-    if (maliciousReports.length > 0) {
-      const maliciousData = maliciousReports.map((r) => [
-        r.attackType,
-        r.sourceIP,
-        r.destinationIP,
-      ]);
-
-      autoTable(doc, {
-        startY: 55,
-        head: [["Attack Type", "Source IP", "Destination IP"]],
-        body: maliciousData,
-        theme: "striped",
-        headStyles: {
-          fillColor: [230, 126, 34],
-          textColor: 255,
-        },
-      });
-    } else {
-      doc.setFontSize(12);
-      doc.text("No malicious attacks detected.", 14, 60);
-    }
-
-    const lastY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 75;
-    doc.setFontSize(16);
-    doc.text("Report Metadata", 14, lastY);
-
-    if (report.metadata) {
-      const metadataEntries = [
-        ["Source IP", report.metadata.Source_IP || "N/A"],
-        ["Source Port", report.metadata.Source_Port || "N/A"],
-        ["Destination IP", report.metadata.Destination_IP || "N/A"],
-        ["Destination Port", report.metadata.Destination_Port || "N/A"],
-        ["Protocol", report.metadata.Protocol || "N/A"],
-        ["Flow Duration", `${report.metadata.Flow_Duration || 0} ms`],
-      ];
-
-      autoTable(doc, {
-        startY: lastY + 5,
-        head: [["Field", "Value"]],
-        body: metadataEntries,
-        theme: "striped",
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: 255,
-        },
-      });
-    } else {
-      doc.setFontSize(12);
-      doc.text("No metadata available.", 14, lastY + 5);
-    }
-
-    doc.save(`network_intrusion_report_${report.id_ || "unknown"}.pdf`);
+    doc.save(`network_intrusion_report_${report.id || "unknown"}.pdf`);
   };
 
   const sortedReports = [...reports].sort((a, b) => {

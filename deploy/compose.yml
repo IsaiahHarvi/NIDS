@@ -1,6 +1,6 @@
 include:
-  - model/compose.yml
+  - neural_network/compose.yml
   - feeder/compose.yml
   - offline_feeder/compose.yml
-  # - logger/compose.yml
+  - logger/compose.yml
   # - store/compose.yml

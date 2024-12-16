@@ -48,8 +48,8 @@ jobs:
         fi
 
         echo "Checking Existing Docker Environment..."
-        docker-compose --profile gui down
+        docker compose --profile gui down
 
         echo "Starting Services..."
-        docker-compose --profile gui up -d
+        docker compose --profile gui up -d
     

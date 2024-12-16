@@ -12,6 +12,8 @@ charset-normalizer==3.3.2
     # via requests
 colorama==0.4.6
     # via icecream
+dnspython==2.6.1
+    # via pymongo
 docker==7.1.0
     # via -r deploy/logger/requirements.in
 executing==2.0.1
@@ -30,6 +32,8 @@ protobuf==5.27.3
     # via grpcio-tools
 pygments==2.18.0
     # via icecream
+pymongo==4.8.0
+    # via -r deploy/logger/requirements.in
 requests==2.32.3
     # via docker
 six==1.16.0

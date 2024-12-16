@@ -1,0 +1,11 @@
+services:
+  neural-network:
+    build:
+      context: ../../
+      dockerfile: deploy/neural_network/Dockerfile
+      args:
+        # - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
+        - MODEL_PATH=data/checkpoints/MLP.ckpt
+    ports:
+      - "50052:50052"
+    container_name: neural-network

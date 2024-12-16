@@ -10,7 +10,7 @@ from src.ai.DataModule import DataModule
 from src.grpc_.services_pb2 import ComponentMessage, ComponentResponse
 from src.grpc_.services_pb2_grpc import ComponentStub
 from src.grpc_.utils import start_server
-from src.services.model.model import NeuralNetwork
+from src.services.neural_network.neural_network import NeuralNetwork
 
 
 @pytest.fixture(scope="module")

@@ -11,7 +11,13 @@ else
     echo "NIDS entry already exists in /etc/hosts"
 fi
 
-pip3 install --no-cache-dir --user -r .devcontainer/requirements-minimal.txt -e .
+# Confirm before running the pip command
+echo "Do you want to install the terminal interface? (Not recommended outside of a virtual environment!) (y/n)"
+read -r confirm_install
+
+if [[ "$confirm_install" == "y" ]]; then
+  pip3 install --no-cache-dir --user -r .devcontainer/requirements-minimal.txt -e .
+fi
 
 # Install Docker if not installed
 if ! command_exists docker; then

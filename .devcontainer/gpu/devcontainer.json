@@ -1,0 +1,58 @@
+{
+    "name": "NIDS - GPU",
+    "image": "mcr.microsoft.com/devcontainers/base:noble",
+    "features": {
+      "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
+      "ghcr.io/devcontainers-extra/features/apt-get-packages": {
+        "packages": "vim,tmux,fzf,dnsutils,iputils-ping,curl,ffmpeg,libsm6,build-essential,libxext6,libpcap-dev,python3-dev,protobuf-compiler,libprotobuf-dev"
+      },
+      "ghcr.io/devcontainers/features/common-utils:2": {
+        "configureZshAsDefaultShell": true
+      },
+      "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+      "ghcr.io/devcontainers/features/git:1": {},
+      "ghcr.io/devcontainers/features/git-lfs:1": {
+        "autoPull": false
+      },
+      "ghcr.io/devcontainers/features/sshd:1": {},
+      "ghcr.io/iterative/features/nvtop:1": {},
+
+      "ghcr.io/shyim/devcontainers-features/bun:0": {},
+      "ghcr.io/devcontainers/features/node:1": {},
+
+      "ghcr.io/devcontainers/features/python:1": {
+        "version": "3.11"
+      },
+      "../features/uv/": {
+          "version" : "1",
+          "GPU" : "true"
+      },
+      "../features/nvidia": {},
+      "ghcr.io/devcontainers/features/rust:1": {
+        "version": "1.81"
+      }
+    },
+
+    "postCreateCommand": "scripts/setup_dev.sh",
+
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "iterative.dvc",
+          "tamasfe.even-better-toml",
+          "charliermarsh.ruff",
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint",
+          "oven.bun-vscode",
+          "bradlc.vscode-tailwindcss"
+        ]
+      }
+    },
+
+    "runArgs": [
+      "--gpus=all",
+      "--shm-size=8g",
+      "--env-file", ".devcontainer/dev.env"
+    ]
+  }

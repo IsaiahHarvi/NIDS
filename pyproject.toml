@@ -1,3 +1,11 @@
+[project]
+name = "nids"
+version = "0.0.2"
+description = ""
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
 [tool.ruff]
 line-length = 88
 fix = true
@@ -7,7 +15,6 @@ exclude = [
     "src/ai",
     "tests"
 ]
-
 
 [tool.ruff.lint]
 per-file-ignores = {"src/services/feeder/feeder.py" = ["E501"], "sdk/services/example/main.py" = ["F401"]}

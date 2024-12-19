@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
+# UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # general git config
 git config --global --add safe.directory /workspaces/NIDS
-git config --global pull.rebase false
+git config --global pull.rebase true
 git lfs install
 git status
 
@@ -15,13 +18,6 @@ else
     echo -e "------------------------------------------------------------------------\n\n"
     sleep 5
 fi
-
-# update and install deps/utils
-echo -e "\nInstalling system packages..."
-sudo apt update > /dev/null 2>&1
-sudo apt upgrade -y > /dev/null
-sudo DEBIAN_FRONTEND=noninteractive apt install -y vim tmux \
-    dnsutils iputils-ping curl wget libpcap-dev build-essential python3-dev 
 
 # clear all residual docker stuff
 docker system prune --volumes -af | true

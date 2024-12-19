@@ -1,0 +1,10 @@
+{
+    "name": "Install nvidia support",
+    "id": "nvidia-support",
+    "version": "1.0.0",
+    "description": "",
+    "installsAfter": [
+        "ghcr.io/devcontainers-extra/features/apt-get-packages",
+        "ghcr.io/devcontainers/features/docker-in-docker"
+    ]
+}

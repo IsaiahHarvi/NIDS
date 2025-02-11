@@ -4,3 +4,17 @@ include:
   - offline_feeder/compose.yml
   - logger/compose.yml
   # - store/compose.yml
+
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: python-base
+  base-torch:
+    build:
+      context: .
+      dockerfile: Dockerfile-torch.base
+    depends_on:
+      - base
+    image: torch-base

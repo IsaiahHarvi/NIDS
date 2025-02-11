@@ -11,7 +11,11 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> /etc/zsh/zshrc
     # --output-file requirements-cpu.txt
 
 if [ "${GPU}" = "true" ]; then
-    uv pip sync --system requirements.txt
+    uv pip install --system --index-strategy unsafe-best-match \
+        --extra-index-url https://download.pytorch.org/whl/cu124 \
+        -r requirements.txt
 else
-    uv pip sync --system requirements-cpu.txt
+    uv pip install --system --index-strategy unsafe-best-match \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r requirements.txt
 fi

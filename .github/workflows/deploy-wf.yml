@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-    
+
 permissions:
   contents: read
 
@@ -26,11 +26,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg
-        
+
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-        
+
         echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        
+
         sudo apt-get update
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
@@ -52,7 +52,3 @@ jobs:
 
         echo "Starting Services..."
         docker compose up -d
-
-        echo "Starting GUI..."
-        docker compose --profile gui up -d || true # Dont fail CI for TS errors from random node packages
-    

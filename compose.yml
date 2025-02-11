@@ -60,6 +60,7 @@ services:
         condition: service_healthy
     environment:
       WEBSERVER_MONGO_URL: mongodb://root:example@mongo:27017/
+    image: localhost:42069/webserver:latest
     profiles:
       - gui
       - webserver

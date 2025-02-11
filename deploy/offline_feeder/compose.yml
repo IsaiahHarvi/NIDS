@@ -12,3 +12,4 @@ services:
     ports:
       - "50054:50054"
     container_name: nids-offline-feeder
+    image: localhost:42069/nids-offline-feeder:latest

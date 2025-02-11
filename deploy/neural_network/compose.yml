@@ -11,3 +11,4 @@ services:
     ports:
       - "50052:50052"
     container_name: nids-neural-network
+    image: localhost:42069/nids-ids:latest

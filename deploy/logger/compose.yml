@@ -18,3 +18,4 @@ services:
     profiles:
       - log
     attach: false # silence terminal output
+    image: localhost:42069/nids-logger:latest

@@ -10,11 +10,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.base
-    image: python-base
+    image: localhost:42069/python-base:latest
   base-torch:
     build:
       context: .
       dockerfile: Dockerfile-torch.base
     depends_on:
       - base
-    image: torch-base
+    image: localhost:42069/torch-base:latest

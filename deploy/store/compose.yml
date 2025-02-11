@@ -3,14 +3,18 @@ services:
     build:
       context: ../../
       dockerfile: deploy/store/Dockerfile.to-file
+    depends_on:
+      - base
     ports:
       - "50056:50056"
     container_name: store-file
 
-  store-db: 
+  store-db:
     build:
       context: ../../
       dockerfile: deploy/store/Dockerfile.to-db
+    depends_on:
+      - base
     ports:
       - "50057:50057"
-    container_name: store-db
+    container_name: nids-store-db

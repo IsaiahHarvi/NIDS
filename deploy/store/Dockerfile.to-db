@@ -1,10 +1,10 @@
-FROM python:3.11-slim
+FROM python-base
 
 ENV PORT=50057
 LABEL ENVS="HOST,TARGET_PORT"
 
 COPY deploy/store/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt 
+RUN uv pip install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
 
 WORKDIR /app
 ENV PYTHONPATH=/app/src
@@ -12,4 +12,4 @@ ENV PYTHONPATH=/app/src
 COPY src/grpc_ /app/src/grpc_
 COPY src/services/store/to_db.py /app/main.py
 
-CMD ["python", "main.py"]
+CMD ["uv", "run", "main.py"]

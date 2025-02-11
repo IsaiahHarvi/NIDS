@@ -4,7 +4,10 @@ version = "0.0.2"
 description = ""
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "rich>=13.9.4",
+    "textual>=1.0.0",
+]
 
 [tool.ruff]
 line-length = 88

@@ -1,10 +1,10 @@
 {
-    "name": "NIDS - GPU",
+    "name": "${localEnv:USER}-nids-gpu",
     "image": "mcr.microsoft.com/devcontainers/base:noble",
     "features": {
       "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
       "ghcr.io/devcontainers-extra/features/apt-get-packages": {
-        "packages": "vim,tmux,fzf,dnsutils,iputils-ping,curl,ffmpeg,libsm6,build-essential,libxext6,libpcap-dev,python3-dev,protobuf-compiler,libprotobuf-dev"
+        "packages": "vim,tmux,fzf,dnsutils,iputils-ping,curl,ffmpeg,libsm6,build-essential,libxext6,libpcap-dev,python3-dev,protobuf-compiler,libprotobuf-dev,autoconf,automake,libtool,pkg-config,flex,bison,gettext,libjson-c-dev,libusb-1.0-0-dev,libdbus-glib-1-dev,libbluetooth-dev,libnl-genl-3-dev"
       },
       "ghcr.io/devcontainers/features/common-utils:2": {
         "configureZshAsDefaultShell": true
@@ -53,6 +53,7 @@
     "runArgs": [
       "--gpus=all",
       "--shm-size=8g",
-      "--env-file", ".devcontainer/dev.env"
+      "--env-file", ".devcontainer/dev.env",
+      "--name", "${localEnv:USER}-nids-gpu"
     ]
   }

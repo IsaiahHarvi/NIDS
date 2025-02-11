@@ -1,10 +1,10 @@
 {
-    "name": "NIDS - CPU",
+    "name": "${localEnv:USER}-nids-cpu",
     "image": "mcr.microsoft.com/devcontainers/base:noble",
     "features": {
       "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
       "ghcr.io/devcontainers-extra/features/apt-get-packages": {
-        "packages": "vim,tmux,fzf,dnsutils,iputils-ping,curl,ffmpeg,libsm6,build-essential,libxext6,libpcap-dev,python3-dev,protobuf-compiler,libprotobuf-dev"
+        "packages": "vim,tmux,fzf,dnsutils,iputils-ping,curl,ffmpeg,libsm6,build-essential,libxext6,libpcap-dev,python3-dev,protobuf-compiler,libprotobuf-dev,autoconf,automake,libtool,pkg-config,flex,bison,gettext,libjson-c-dev,libusb-1.0-0-dev,libdbus-glib-1-dev,libbluetooth-dev,libnl-genl-3-dev"
       },
       "ghcr.io/devcontainers/features/common-utils:2": {
         "configureZshAsDefaultShell": true
@@ -19,7 +19,6 @@
 
       "ghcr.io/shyim/devcontainers-features/bun:0": {},
       "ghcr.io/devcontainers/features/node:1": {},
-
       "ghcr.io/devcontainers/features/python:1": {
         "version": "3.11"
       },
@@ -27,6 +26,7 @@
           "version" : "1",
           "GPU" : "false"
       },
+      "../features/nvidia": {"GPU" : "false"},
       "ghcr.io/devcontainers/features/rust:1": {
         "version": "1.81"
       }
@@ -51,6 +51,9 @@
 
     "runArgs": [
       "--shm-size=4g",
-      "--env-file", ".devcontainer/dev.env"
+      "--memory=8g",
+      "--cpus=2",
+      "--env-file", ".devcontainer/dev.env",
+      "--name", "${localEnv:USER}-nids-cpu"
     ]
   }

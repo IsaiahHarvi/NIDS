@@ -7,12 +7,14 @@ services:
       - "50055:50055"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    container_name: logger
+    container_name: nids-logger
     depends_on:
       mongo:
         condition: service_healthy
       mongo-express:
         condition: service_healthy
+      base:
+        condition: service_started
     profiles:
       - log
     attach: false # silence terminal output

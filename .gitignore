@@ -177,3 +177,4 @@ data/CIC/*.csv
 wandb/
 dvclive/plots
 .DS_Store
+uv.lock

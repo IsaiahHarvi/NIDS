@@ -14,3 +14,4 @@ services:
     #   GRPC_VERBOSITY: ERROR
     #   GRPC_LOG_SEVERITY: ERROR
     container_name: nids-feeder
+    image: localhost:42069/nids-feeder:latest

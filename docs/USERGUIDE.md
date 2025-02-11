@@ -42,7 +42,7 @@ cd /path/to/NIDS
 > The web interface provides a visual representation of network traffic and alerts in real-time as well as the ability to manage the NIDS service.
 4. Access the terminal interface by running:
 ```
-python3 scripts/display.py
+uv run scripts/display.py
 ```
 > The terminal interface provides direct control over the NIDS service. It is useful for managing the service when the web interface is not accessible. But currently does not provide monitoring tools.
 

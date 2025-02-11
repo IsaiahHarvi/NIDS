@@ -6,9 +6,11 @@ services:
     cap_add:
       - NET_ADMIN
     network_mode: host
+    depends_on:
+      - base-torch
     ports:
       - "50053:50053"
     # environment:
     #   GRPC_VERBOSITY: ERROR
     #   GRPC_LOG_SEVERITY: ERROR
-    container_name: feeder
+    container_name: nids-feeder

@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY requirements.txt /app/requirements.txt
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install `uv` globally in /usr/local/bin
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv /root/.local/bin/uv /usr/local/bin/ && \
+    mv /root/.local/bin/uvx /usr/local/bin/ && \
+    echo 'export PATH="/usr/local/bin:$PATH"' >> /etc/profile && \
+    echo 'export PATH="/usr/local/bin:$PATH"' >> /root/.bashrc
+
+SHELL ["/bin/bash", "-c"]
+
+RUN uv pip install --system --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt

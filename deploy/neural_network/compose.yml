@@ -6,6 +6,8 @@ services:
       args:
         # - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
         - MODEL_PATH=data/checkpoints/MLP.ckpt
+    depends_on:
+      - base-torch
     ports:
       - "50052:50052"
-    container_name: neural-network
+    container_name: nids-neural-network

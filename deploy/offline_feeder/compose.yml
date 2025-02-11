@@ -7,6 +7,8 @@ services:
       - NET_ADMIN
     # network_mode: host
     shm_size: '1gb'
+    depends_on:
+      - base-torch
     ports:
       - "50054:50054"
-    container_name: offline-feeder
+    container_name: nids-offline-feeder

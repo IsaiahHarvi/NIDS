@@ -1,4 +1,4 @@
-FROM torch-base
+FROM 172.17.0.1:42069/torch-base
 
 ENV PORT=50054
 

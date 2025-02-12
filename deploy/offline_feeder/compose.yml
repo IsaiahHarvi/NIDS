@@ -3,13 +3,16 @@ services:
     build:
       context: ../../
       dockerfile: deploy/offline_feeder/Dockerfile
+      args:
+        REGISTRY: "${REGISTRY}"
+        CACHE_FROM: ${REGISTRY}/nids-offline-feeder:latest
     cap_add:
       - NET_ADMIN
     # network_mode: host
     shm_size: '1gb'
     depends_on:
-      - base-torch
+      - torch-base
     ports:
       - "50054:50054"
     container_name: nids-offline-feeder
-    image: localhost:42069/nids-offline-feeder:latest
+    image: ${REGISTRY}/nids-offline-feeder:latest

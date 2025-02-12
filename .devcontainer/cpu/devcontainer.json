@@ -15,8 +15,6 @@
         "autoPull": false
       },
       "ghcr.io/devcontainers/features/sshd:1": {},
-      "ghcr.io/iterative/features/nvtop:1": {},
-
       "ghcr.io/shyim/devcontainers-features/bun:0": {},
       "ghcr.io/devcontainers/features/node:1": {},
       "ghcr.io/devcontainers/features/python:1": {
@@ -48,11 +46,14 @@
         ]
       }
     },
-
+    "mounts": [
+      "source=/etc/docker/daemon.json,target=/etc/docker/daemon.json,type=bind",
+      "source=/mnt/data/nids/,target=/workspaces/NIDS/mnt_data/,type=bind"
+    ],
     "runArgs": [
       "--shm-size=4g",
       "--memory=8g",
-      "--cpus=2",
+      "--cpus=8",
       "--env-file", ".devcontainer/dev.env",
       "--name", "${localEnv:USER}-nids-cpu"
     ]

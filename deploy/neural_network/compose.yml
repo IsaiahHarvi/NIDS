@@ -4,11 +4,12 @@ services:
       context: ../../
       dockerfile: deploy/neural_network/Dockerfile
       args:
-        # - MODEL_PATH=data/checkpoints/ResidualNetwork.ckpt
-        - MODEL_PATH=data/checkpoints/MLP.ckpt
+        REGISTRY: "${REGISTRY}"
+        MODEL_PATH: data/checkpoints/MLP.ckpt
+        CACHE_FROM: ${REGISTRY}/nids-ids:latest
     depends_on:
-      - base-torch
+      - torch-base
     ports:
       - "50052:50052"
     container_name: nids-neural-network
-    image: localhost:42069/nids-ids:latest
+    image: ${REGISTRY}/nids-ids:latest

@@ -1,5 +1,6 @@
 click
 # nfstream
+git+https://github.com/praetoriannero/nfstream.git
 pymongo
 dpkt
 pypcap

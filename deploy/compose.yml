@@ -6,15 +6,22 @@ include:
   # - store/compose.yml
 
 services:
-  base:
+  python-base:
     build:
       context: .
       dockerfile: Dockerfile.base
-    image: localhost:42069/python-base:latest
-  base-torch:
+      args:
+        CACHE_FROM: ${REGISTRY}/python-base:latest
+        REGISTRY: "${REGISTRY}"
+    image: ${REGISTRY}/python-base:latest
+
+  torch-base:
     build:
       context: .
       dockerfile: Dockerfile-torch.base
+      args:
+        CACHE_FROM: ${REGISTRY}/torch-base:latest
+        REGISTRY: "${REGISTRY}"
     depends_on:
-      - base
-    image: localhost:42069/torch-base:latest
+      - python-base
+    image: ${REGISTRY}/torch-base:latest

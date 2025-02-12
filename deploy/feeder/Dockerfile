@@ -1,5 +1,6 @@
 # Stage 1
-FROM python:3.11-slim AS nfstream-builder
+ARG REGISTRY
+FROM 172.17.0.1:42069/torch-base
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
@@ -19,22 +20,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libnl-genl-3-dev \
     git && \
     rm -rf /var/lib/apt/lists/*
-
-WORKDIR /nfstream
-RUN git clone --recurse-submodules git+https://github.com/praetoriannero/nfstream.git .
-RUN python3 -m pip install --upgrade pip
-RUN python3 -m pip install -r dev_requirements.txt
-RUN python3 -m pip install --prefix=/nfstream-install .
-
-# Stage 2
-FROM torch-base
-
-COPY --from=nfstream-builder /nfstream-install /usr/local
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    libpcap-dev \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY deploy/feeder/requirements.txt /app/requirements.txt
 RUN uv pip install --system --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt

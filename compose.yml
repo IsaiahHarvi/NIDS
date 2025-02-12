@@ -51,6 +51,9 @@ services:
     build:
       context: .
       dockerfile: deploy/webserver/Dockerfile
+      args:
+        CACHE_FROM: ${REGISTRY}/webserver:latest
+        REGISTRY: "${REGISTRY}"
     network_mode: host
     ports:
       - "8000:8000" # server
@@ -60,7 +63,7 @@ services:
         condition: service_healthy
     environment:
       WEBSERVER_MONGO_URL: mongodb://root:example@mongo:27017/
-    image: localhost:42069/webserver:latest
+    image: ${REGISTRY}/webserver:latest
     profiles:
       - gui
       - webserver

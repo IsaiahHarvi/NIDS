@@ -1,4 +1,5 @@
-FROM python-base
+ARG REGISTRY
+FROM ${REGISTRY}/python-base
 
 ENV PORT=50055
 

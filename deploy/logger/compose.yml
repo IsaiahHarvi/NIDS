@@ -3,6 +3,9 @@ services:
     build:
       context: ../../
       dockerfile: deploy/logger/Dockerfile
+      args:
+        CACHE_FROM: ${REGISTRY}/nids-logger:latest
+        REGISTRY: "${REGISTRY}"
     ports:
       - "50055:50055"
     volumes:
@@ -13,9 +16,9 @@ services:
         condition: service_healthy
       mongo-express:
         condition: service_healthy
-      base:
+      python-base:
         condition: service_started
     profiles:
       - log
     attach: false # silence terminal output
-    image: localhost:42069/nids-logger:latest
+    image: ${REGISTRY}/nids-logger:latest

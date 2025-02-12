@@ -3,15 +3,18 @@ services:
     build:
       context: ../../
       dockerfile: deploy/feeder/Dockerfile
+      args:
+        CACHE_FROM: ${REGISTRY}/nids-feeder:latest
+        REGISTRY: "${REGISTRY}"
     cap_add:
       - NET_ADMIN
     network_mode: host
     depends_on:
-      - base-torch
+      - torch-base
     ports:
       - "50053:50053"
     # environment:
     #   GRPC_VERBOSITY: ERROR
     #   GRPC_LOG_SEVERITY: ERROR
     container_name: nids-feeder
-    image: localhost:42069/nids-feeder:latest
+    image: ${REGISTRY}/nids-feeder:latest

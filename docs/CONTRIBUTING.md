@@ -53,5 +53,10 @@ Inside of Vscode:
 - **Testing:** Include tests for new functionality whenever possible.
 
 ## Need Help?
+### Docker
+[Common Commands for Development and Testing](docker.md)
 
-If you have questions or encounter issues, please open an issue in the repository or reach out to the maintainers.
+### Ruff
+[Linting and Formatting](ruff.md)
+
+If you have other questions or encounter issues, please open an issue in the repository or reach out to the maintainers.

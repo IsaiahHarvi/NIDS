@@ -49,7 +49,6 @@ certifi==2022.12.7
 cffi==1.17.1
     # via
     #   cryptography
-    #   nfstream
     #   pygit2
 charset-normalizer==2.1.1
     # via requests
@@ -98,9 +97,7 @@ docker-pycreds==0.4.0
 dpath==2.2.0
     # via dvc
 dpkt==1.9.8
-    # via
-    #   -r .devcontainer/features/uv/requirements.in
-    #   nfstream
+    # via -r .devcontainer/features/uv/requirements.in
 dulwich==0.22.7
     # via
     #   dvc
@@ -246,15 +243,12 @@ networkx==3.3
     # via
     #   dvc
     #   torch
-nfstream @ git+https://github.com/praetoriannero/nfstream.git@7657f543b7df50f89a91c9344d9a9a35e98cba49
-    # via -r .devcontainer/features/uv/requirements.in
 numpy==2.1.2
     # via
     #   -r .devcontainer/features/uv/requirements.in
     #   contourpy
     #   imbalanced-learn
     #   matplotlib
-    #   nfstream
     #   pandas
     #   scikit-learn
     #   scipy
@@ -316,9 +310,7 @@ packaging==24.1
     #   pytorch-lightning
     #   torchmetrics
 pandas==2.2.3
-    # via
-    #   -r .devcontainer/features/uv/requirements.in
-    #   nfstream
+    # via -r .devcontainer/features/uv/requirements.in
 pathspec==0.12.1
     # via
     #   dvc
@@ -353,7 +345,6 @@ psutil==6.1.1
     #   dvc
     #   dvclive
     #   flufl-lock
-    #   nfstream
     #   wandb
 pycparser==2.22
     # via cffi

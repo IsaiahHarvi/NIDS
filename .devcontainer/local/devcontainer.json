@@ -30,7 +30,7 @@
       }
     },
 
-    "postCreateCommand": "scripts/setup_dev.sh && docker run -d -p 172.17.0.1:42069:5000 --name registry registry:2",
+    "postCreateCommand": "scripts/setup_dev.sh && scripts/setup_local_registry.sh",
 
     "customizations": {
       "vscode": {

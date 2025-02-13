@@ -33,7 +33,7 @@ def main(epochs, batch_size, constructor, all_data, lr, early_stop_patience, ckp
         paths = [
             f"data/CIC/{csv}"
             for csv in os.listdir("data/CIC")
-            if csv.endswith(".csv") and (csv != "test_data.csv")
+            if csv.endswith(".csv") and (csv not in ["test_data.csv", "test_data_small.csv"])
         ]
     else:  # just for teting
         paths = [

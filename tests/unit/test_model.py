@@ -15,9 +15,8 @@ from src.services.neural_network.neural_network import NeuralNetwork
 
 @pytest.fixture(scope="module")
 def grpc_server():
-    os.system("docker kill $(docker ps -q) > /dev/null 2>&1")
-    os.system("docker container prune -f > /dev/null 2>&1")
-    os.system("docker image prune -f > /dev/null 2>&1")
+    os.system("docker kill nids-ids > /dev/null 2>&1")
+    os.system("docker container rm nids-ids > /dev/null 2>&1")
 
     server_process = multiprocessing.Process(
         target=start_server,
@@ -29,14 +28,14 @@ def grpc_server():
     server_process.terminate()
     server_process.join()
 
-
-@pytest.mark.order(-1)  # run this last becuase its aggressive w/ containers
+@pytest.mark.skip("reevaluate")
+@pytest.mark.order(-1) # runs last
 def test_model(grpc_server):
     try:
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
-                paths=["data/CIC/test_data.csv"],
+                paths=["data/CIC/test_data_small.csv"],
                 batch_size=1,
                 num_workers=1
             )

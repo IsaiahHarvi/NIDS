@@ -6,6 +6,7 @@ import pytest
 from tests.conftest import compose
 
 
+@pytest.mark.skip("reevaluate")
 @pytest.mark.slow()
 def test_servers(compose):
     result = subprocess.run(

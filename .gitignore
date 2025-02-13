@@ -178,3 +178,4 @@ wandb/
 dvclive/plots
 .DS_Store
 uv.lock
+mnt_data/

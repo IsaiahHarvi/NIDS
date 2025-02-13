@@ -8,13 +8,16 @@ from pymongo import MongoClient
 
 ic.configureOutput(includeContext=False, prefix="")
 
+
 class Logger:
     def __init__(self):
         # Delete any existing collections in logs database
 
         ic(f"Logger started on port {os.environ.get('PORT')}")
         self.client = docker.from_env()
-        self.mongo_client = MongoClient("mongodb://root:example@mongo:27017/?replicaSet=rs0")
+        self.mongo_client = MongoClient(
+            "mongodb://root:example@mongo:27017/?replicaSet=rs0"
+        )
         self.db = self.mongo_client["logs"]
         self.log_lock = threading.Lock()
         self.threads = []
@@ -29,12 +32,13 @@ class Logger:
             services = [
                 container.name
                 for container in containers
-                if container.name in [
+                if container.name
+                in [
                     "neural-network",
                     "mongo",
                     "mongo-express",
                     "offline-feeder",
-                    "webserver"
+                    "webserver",
                 ]
                 and "logger" not in container.name
             ]
@@ -82,6 +86,7 @@ class Logger:
     def stop_log_collection(self):
         for thread in self.threads:
             thread.join()
+
 
 if __name__ == "__main__":
     logger = None

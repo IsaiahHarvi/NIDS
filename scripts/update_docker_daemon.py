@@ -7,6 +7,7 @@ import sys
 
 """Trusts the locally hosted insecure docker registry. Requires elevated permissions."""
 
+
 def update_daemon_config(file_path, registry):
     config = {}
     if os.path.exists(file_path):
@@ -32,6 +33,7 @@ def update_daemon_config(file_path, registry):
     print(f"Updated {file_path} with insecure registry: {registry}")
     return True
 
+
 def restart_docker(os_type):
     try:
         if os_type == "Linux":
@@ -39,16 +41,18 @@ def restart_docker(os_type):
             subprocess.run(["systemctl", "restart", "docker"], check=True)
         elif os_type == "Windows":
             print("Restarting Docker service on Windows...")
-            subprocess.run(["powershell", "-Command", "Restart-Service docker"], check=True)
+            subprocess.run(
+                ["powershell", "-Command", "Restart-Service docker"], check=True
+            )
         elif os_type == "Darwin":
             print("Restarting Docker Desktop on macOS...")
-            # Quit and re-open Docker Desktop (requires Docker Desktop to be installed in /Applications)
             subprocess.run(["osascript", "-e", 'quit app "Docker"'], check=True)
             subprocess.run(["open", "-a", "Docker"], check=True)
         else:
             print("Please restart Docker.")
     except subprocess.CalledProcessError as e:
         print(f"Error restarting Docker: {e}")
+
 
 def main():
     registry = "172.17.0.1:42069"
@@ -62,7 +66,9 @@ def main():
     elif os_type == "Darwin":
         daemon_file = "/etc/docker/daemon.json"
         if not os.path.exists(daemon_file):
-            print(f"{daemon_file} does not exist. For Docker Desktop on macOS, please update settings via Docker Desktop preferences.")
+            print(
+                f"{daemon_file} does not exist. Update settings via Docker Desktop."
+            )
             sys.exit(1)
     else:
         print("Unsupported operating system.")
@@ -72,6 +78,7 @@ def main():
         restart_docker(os_type)
     else:
         print("Failed to update Docker daemon configuration.")
+
 
 if __name__ == "__main__":
     main()

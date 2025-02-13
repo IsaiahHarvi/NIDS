@@ -1,5 +1,8 @@
 # NIDS: Real-Time Network Intrusion Detection, Monitoring, and Analysis
 
+## Contributing
+For information on contributing to this project, please see the [CONTRIBUTING.md](./docs/CONTRIBUTING.md) file.
+
 ## Overview
 **NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. After installation, NIDS is just another client on a network, allowing it to be a drop-in service. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks. The user guide is available [here](./docs/USERGUIDE.md)
 
@@ -19,18 +22,6 @@ The following diagram illustrates a high-level overview of the NIDS system. NIDS
 ### Threat Detection with Signature and Anomaly-Based Methods
 - **Anomaly-Based Detection**: Utilizes machine learning to detect abnormal behavior in network traffic that deviates from baseline patterns (e.g., unusual data transfer volumes).
 
-### Intrusion Detection Alerts and Reporting
-- **Real-Time Alerts**: Generates alerts when suspicious activity is detected.
-- **Threat Classification**: Classifies detected intrusions by severity (low, medium, high), based on the type and potential impact of the threat.
-- **Incident Reporting**: Automatically generates reports on detected threats, including time of detection, type of threat, and affected network segment.
-
-<!--
-### Response Automation and Mitigation
-- **Automatic Response**: The system can automatically trigger pre-defined mitigation actions (e.g., blocking IPs, terminating sessions, quarantining devices) when severe intrusions are detected.
-- **Manual Response**: Security administrators can manually take actions, such as isolating network segments or blacklisting IPs.
-- **Threat Intelligence Integration**: Allows integration with threat intelligence feeds for automatic updates of the latest threat signatures and blacklisted IPs.
--->
-
 ### Docker Integration for Service Networking
 - **Service Isolation**: Each service within NIDS (e.g., packet capture, logging, detection engine) runs in its own container, reducing the risk of cross-service vulnerabilities and ensuring potential security issues in one service don't affect others.
 - **Secure Service Networking**: Docker’s virtualized networking stack ensures secure communication between NIDS components without directly exposing them to the host network.
@@ -45,11 +36,3 @@ The following diagram illustrates a high-level overview of the NIDS system. NIDS
 ### API for Security Integration
 - **REST API**: Exposes functionality through an API, enabling external systems to retrieve traffic logs <!--, send alerts to a SIEM, or integrate with a Security Orchestration, Automation, and Response (SOAR) platform. -->
 - **Custom Integration**: Provides flexibility for security teams to integrate with other enterprise systems (e.g., firewalls, intrusion prevention systems) and customize response actions and alerts.
-
-## Team Distribtion
-- **Casey Bramlett**: Front End Lead
-- **Isaiah Harville**: 
-  - Technical Lead
-  - Machine Learning Specialist
-- **Jacob Neel**: Back End Developer
-- **Kevin Santschi**: Back End Developer

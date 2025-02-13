@@ -38,7 +38,7 @@ cd /path/to/NIDS
 ```
 ./scripts/deploy.sh
 ```
-3. Access the web interface by navigating to `http://localhost:5000` in your preferred web browser.
+3. Access the web interface by navigating to `http://localhost:8000` in your preferred web browser.
 > The web interface provides a visual representation of network traffic and alerts in real-time as well as the ability to manage the NIDS service.
 4. Access the terminal interface by running:
 ```

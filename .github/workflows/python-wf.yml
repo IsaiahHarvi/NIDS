@@ -17,31 +17,32 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/src
       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+      UV_SYSTEM_PYTHON: 1
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+      enable-cache: true
+
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
         python-version: "3.11"
+
     - name: Verify Environment
       run: |
-        sudo apt-get install -y curl wget libpcap-dev build-essential
-        git lfs install
-        git lfs pull
+        sudo apt-get install -y curl wget python3-dev autoconf automake libtool pkg-config flex bison gettext libjson-c-dev libusb-1.0-0-dev libdbus-glib-1-dev libbluetooth-dev libnl-genl-3-dev
         echo $PWD
         echo "PYTHONPATH is: $PYTHONPATH"
-    - name: Pip Cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements-cpu.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+
     - name: Install Python Packages
       # in the future, we can make a dedicated ci-requirements file
       run: |
-        pip install uv
-        uv install --system --no-cache-dir -r .devcontainer/features/uv/requirements-cpu.txt -e .
+        uv pip install --system --index-strategy unsafe-best-match \
+                --extra-index-url https://download.pytorch.org/whl/cpu \
+                -r .devcontainer/features/uv/requirements.txt
 
     - name: Run pytest
       run: pytest -sv

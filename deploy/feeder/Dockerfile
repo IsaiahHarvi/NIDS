@@ -1,4 +1,3 @@
-# Stage 1
 ARG REGISTRY
 FROM 172.17.0.1:42069/torch-base
 

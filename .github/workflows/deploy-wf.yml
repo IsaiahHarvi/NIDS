@@ -52,3 +52,6 @@ jobs:
 
         echo "Starting Services..."
         docker compose up -d
+
+        echo "Starting Webserver..."
+        docker compose up gui -d || true

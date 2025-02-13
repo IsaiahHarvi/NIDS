@@ -1,15 +1,15 @@
 FROM 172.17.0.1:42069/torch-base
 
-ENV PORT=50052
-
 WORKDIR /app
-ENV PYTHONPATH=/app/src
 
 COPY src/grpc_ /app/src/grpc_
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
+COPY src/services/neural_network/neural_network.py /app/main.py
 
 ARG MODEL_PATH
 COPY $MODEL_PATH /app/model.ckpt
-COPY src/services/neural_network/neural_network.py /app/main.py
+
+ENV PORT=50052
+ENV PYTHONPATH=/app/src
 
 CMD ["uv", "run", "main.py"]

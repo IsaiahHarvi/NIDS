@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "private": true,
+  "module": "index.ts",
+  "type": "module",
+  "packageManager": "bun@1.2.2",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "turbo": "^2.4.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build --parallel --verbose",
+    "dev": "turbo run dev"
+  },
+  "workspaces": [
+    "nids_apps/*"
+  ]
+}

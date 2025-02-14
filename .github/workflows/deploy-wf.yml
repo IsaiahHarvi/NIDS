@@ -20,14 +20,9 @@ jobs:
       registry:
         image: registry:2
         ports:
-          - 5000
+          - 5000:5000
         env:
           REGISTRY_HTTP_SECRET: "supressthewarninglol"
-        options: >-
-          --health-cmd="curl -f http://localhost:5000/v2/_catalog || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
     - uses: actions/checkout@v4

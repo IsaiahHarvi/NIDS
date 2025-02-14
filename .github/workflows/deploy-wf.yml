@@ -14,13 +14,13 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/src
       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-      REGISTRY: 172.17.0.1:42069
+      REGISTRY: localhost:42069
 
     services:
       registry:
         image: registry:2
         ports:
-          - "172.17.0.1:42069:5000"
+          - "42069:5000"
         options: >-
           --health-cmd="curl -f http://localhost:5000/v2/_catalog || exit 1"
           --health-interval=10s
@@ -29,11 +29,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
 
     - name: Install Docker CLI and Compose v2
       run: |

@@ -9,7 +9,7 @@ stages:
       --constructor ResidualNetwork
     deps:
     - src/ai/train.py
-    - data/CIC
+    - data/flows
     outs:
     - data/checkpoints/ResidualSmall.ckpt
     metrics:
@@ -21,8 +21,8 @@ stages:
       --lr 0.001
       --batch_size 64
       --early_stop_patience 10
-      --ckpt_name MLP
-      --constructor MLP
+      --ckpt_name mlp
+      --constructor mlp
       --all_data
 params:
 - dvclive/params.yaml

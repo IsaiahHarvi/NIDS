@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def main():
-    dfs = [pd.read_csv(f"data/CIC/{f}", delimiter="\t") for f in os.listdir("data/CIC")]
+    dfs = [pd.read_csv(f"data/flows/{f}", delimiter="\t") for f in os.listdir("data/flows")]
     df = pd.concat(dfs, ignore_index=True)
 
     class_counts = Counter(df["label"])
@@ -25,13 +25,13 @@ def main():
         capped.append(sampled_data)
 
     capped_df = pd.concat(capped, ignore_index=True)
-    capped_df.to_csv("data/CIC/test_data.csv", index=False, sep="\t")
+    capped_df.to_csv("data/flows/test_data.csv", index=False, sep="\t")
 
     print("\nCapped counts:")
     for label, count in Counter(capped_df["label"]).items():
         print(f"  {label}: {count}")
 
-    print("\nSaved to data/CIC/test_data.csv")
+    print("\nSaved to data/flows/test_data.csv")
 
 
 if __name__ == "__main__":

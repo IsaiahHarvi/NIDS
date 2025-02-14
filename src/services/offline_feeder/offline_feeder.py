@@ -17,7 +17,8 @@ class OfflineFeeder(ComponentServicer):
     def __init__(self) -> None:
         ic(f"Started on {os.environ.get('PORT')}")
 
-        df = pd.read_csv("data/CIC/test_data_small.csv", delimiter="\t")
+        df = pd.read_csv("data/flows/test_data_small.csv", delimiter=",")
+        ic(df.columns)
         df["label"] = df["label"].str.lower().str.replace(r"[\s-]+", "_", regex=True)
         self.y = df["label"]
 

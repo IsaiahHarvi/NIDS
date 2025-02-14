@@ -12,8 +12,7 @@ from sklearn.preprocessing import StandardScaler
 
 @click.command()
 @click.option(
-    "--path",
-    default="data/CIC/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+    "--path"
 )
 @click.option(
     "--model_type", type=click.Choice(["random_forest", "knn"]), default="knn"

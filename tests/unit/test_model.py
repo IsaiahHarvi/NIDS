@@ -20,7 +20,7 @@ def grpc_server():
 
     server_process = multiprocessing.Process(
         target=start_server,
-        args=(NeuralNetwork("data/checkpoints/MLP.ckpt"), 50052),
+        args=(NeuralNetwork("data/checkpoints/mlp.ckpt"), 50052),
     )
     server_process.start()
     time.sleep(1)
@@ -35,7 +35,7 @@ def test_model(grpc_server):
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = ComponentStub(channel)
             dm = DataModule(
-                paths=["data/CIC/test_data_small.csv"],
+                paths=["data/flows/test_data_small.csv"],
                 batch_size=1,
                 num_workers=1
             )

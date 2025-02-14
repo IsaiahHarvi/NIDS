@@ -14,6 +14,19 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/src
       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+      REGISTRY: 172.17.0.1:42069
+
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - "172.17.0.1:42069:5000"
+        options: >-
+          --health-cmd="curl -f http://localhost:5000/v2/_catalog || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
     - uses: actions/checkout@v4
 
@@ -36,7 +49,6 @@ jobs:
 
         docker --version
         docker compose version
-
 
     - name: Run NIDS
       run: | # This is a modified version of scripts/deploy.sh for CI/CD

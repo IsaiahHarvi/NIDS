@@ -14,13 +14,15 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/src
       WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-      REGISTRY: localhost:42069
+      REGISTRY: registry:5000
 
     services:
       registry:
         image: registry:2
         ports:
-          - "42069:5000"
+          - 5000
+        env:
+          REGISTRY_HTTP_SECRET: "supressthewarninglol"
         options: >-
           --health-cmd="curl -f http://localhost:5000/v2/_catalog || exit 1"
           --health-interval=10s

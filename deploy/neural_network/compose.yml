@@ -5,7 +5,7 @@ services:
       dockerfile: deploy/neural_network/Dockerfile
       args:
         REGISTRY: "${REGISTRY}"
-        MODEL_PATH: data/checkpoints/MLP.ckpt
+        MODEL_PATH: data/checkpoints/mlp.ckpt
         CACHE_FROM: ${REGISTRY}/nids-ids:latest
     depends_on:
       - torch-base

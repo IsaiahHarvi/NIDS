@@ -1,4 +1,5 @@
-FROM 172.17.0.1:42069/torch-base
+ARG REGISTRY
+FROM ${REGISTRY}/torch-base
 
 WORKDIR /app
 

@@ -1,10 +1,10 @@
-FROM 172.17.0.1:42069/torch-base
-
+ARG REGISTRY
+FROM ${REGISTRY}/torch-base
 
 COPY deploy/offline_feeder/requirements.txt /app/requirements.txt
 RUN uv pip install --system --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt
 
-COPY data/CIC/test_data_small.csv /app/data/CIC/test_data_small.csv
+COPY data/flows/test_data_small.csv /app/data/flows/test_data_small.csv
 COPY src/grpc_ /app/src/grpc_
 COPY src/ai/ /app/src/ai
 COPY src/services/offline_feeder/offline_feeder.py /app/main.py

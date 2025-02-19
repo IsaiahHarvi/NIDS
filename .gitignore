@@ -179,3 +179,5 @@ dvclive/plots
 .DS_Store
 uv.lock
 mnt_data/
+/node_modules/
+.turbo

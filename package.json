@@ -1,0 +1,39 @@
+{
+  "name": "nids",
+  "private": true,
+  "packageManager": "bun@1.1.36",
+  "devDependencies": {
+    "@commitlint/config-conventional": "^19.6.0",
+    "prettier": "^3.2.5",
+    "turbo": "^2.3.1",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "dev:server": "turbo dev --filter=server",
+    "dev:web": "turbo dev --filter=web",
+    "test": "turbo test",
+    "test:unit": "turbo test:unit",
+    "test:watch": "turbo test:watch",
+    "lint": "turbo lint",
+    "db:push": "turbo db:push",
+    "db:generate": "turbo db:generate"
+  },
+  "workspaces": [
+    "src/app/nids_apps/**",
+    "src/app/packages/**"
+  ],
+  "dependencies": {
+    "recharts": "^2.15.1",
+    "vite": "6.1.0"
+  },
+  "turbo": {
+    "scope": [
+      "client"
+    ]
+  }
+}

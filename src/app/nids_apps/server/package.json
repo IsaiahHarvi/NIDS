@@ -1,7 +1,8 @@
 {
   "name": "server",
-  "module": "index.ts",
-  "type": "module",
+  "version" : "1.0.0",
+  "main" : "src/index.ts",
+  "types" : "src/index.ts",
   "devDependencies": {
     "@types/bun": "latest",
     "prisma": "^6.3.1"
@@ -10,7 +11,8 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "dev": "bun index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build --compile --minify-whitespace --minify-syntax ./src/index.ts --outfile server",
     "migrate": "bun prisma migrate dev"
   },
   "dependencies": {

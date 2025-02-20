@@ -1,5 +1,6 @@
 ARG REGISTRY
 FROM ${REGISTRY}/torch-base
+LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \

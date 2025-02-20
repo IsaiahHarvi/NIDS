@@ -4,6 +4,14 @@
 docker compose --profile gui up
 ```
 
+**Start Components w/o Logs**
+```
+docker compose --profile gui up -d
+```
+**Start Components w/o Registry**
+```
+docker compose --profile gui up --build
+```
 **Stop Components**
 ```
 docker compose --profile gui down
@@ -12,11 +20,6 @@ docker compose --profile gui down
 **Rebuild Components**
 ```
 docker compose --profile gui up --build
-```
-
-**Push updates to registry**
-```
-docker compose --profile gui push
 ```
 
 **View logs**

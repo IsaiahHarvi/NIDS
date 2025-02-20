@@ -11,7 +11,7 @@ This document provides an overview of the NIDS operator manual. It includes info
 Ideally, NIDS is meant to be run on a server that is connected to a network that you would like to monitor. NIDS hosts a web interface that allows users to view network traffic and alerts in real-time. If for any reason the web interface is not accessible, the NIDS service can still be managed via the  terminal interface.
 
 ## Installation
-Note that NIDS is designed to run on a Linux-based system. It also functions without regard to any other docker services and will not hesistate to remove them. Adjust your installation environment accordingly.
+Note that NIDS is designed to run on a Linux-based system. Adjust your installation environment accordingly.
 
 To install NIDS, follow the steps below:
 1. Clone the repository to a preferred directory:

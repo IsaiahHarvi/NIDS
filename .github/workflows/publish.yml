@@ -3,6 +3,11 @@ name: Build and Push to GHCR
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'deploy/**'
+      - 'src/**'
+      - '!src/app/**'
+      - '!src/legacy_app/**'
 
 jobs:
   publish:

@@ -1,5 +1,6 @@
 # # Client build stage
 FROM mcr.microsoft.com/devcontainers/typescript-node AS client-layers
+LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
 COPY src/app/types/ /app/types/
 COPY src/app/client/ /app/client/

@@ -12,7 +12,7 @@ else
 fi
 
 # Confirm before running the pip command
-echo "Do you want to install the terminal interface? (y/n)"
+echo "Do you want to install the Graphical Terminal Interface? (y/n)"
 read -r confirm_install
 
 if [[ "$confirm_install" == "y" ]]; then

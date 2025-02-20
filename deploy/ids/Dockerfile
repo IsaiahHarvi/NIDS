@@ -1,10 +1,12 @@
-FROM 172.17.0.1:42069/torch-base
+ARG REGISTRY
+FROM ${REGISTRY}/torch-base
+LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
 WORKDIR /app
 
 COPY src/grpc_ /app/src/grpc_
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
-COPY src/services/neural_network/neural_network.py /app/main.py
+COPY src/services/ids/main.py /app/main.py
 
 ARG MODEL_PATH
 COPY $MODEL_PATH /app/model.ckpt

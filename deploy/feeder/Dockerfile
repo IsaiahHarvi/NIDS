@@ -1,5 +1,6 @@
 ARG REGISTRY
-FROM 172.17.0.1:42069/torch-base
+FROM ${REGISTRY}/torch-base
+LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
@@ -32,7 +33,7 @@ LABEL ENV_VARS="INTERFACE,FILE_NAME,DURATION"
 COPY src/grpc_ /app/src/grpc_
 COPY src/services/feeder/feeder.py /app/main.py
 COPY src/ai/BasicModule.py /app/src/ai/BasicModule.py
-COPY data/checkpoints/MLP.ckpt /app/model.ckpt
+COPY data/checkpoints/mlp.ckpt /app/model.ckpt
 
 ENV PYTHONPATH=/app/src
 WORKDIR /app

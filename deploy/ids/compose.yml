@@ -1,15 +1,15 @@
 services:
-  neural-network:
+  ids:
     build:
       context: ../../
-      dockerfile: deploy/neural_network/Dockerfile
+      dockerfile: deploy/ids/Dockerfile
       args:
         REGISTRY: "${REGISTRY}"
-        MODEL_PATH: data/checkpoints/MLP.ckpt
+        MODEL_PATH: data/checkpoints/mlp.ckpt
         CACHE_FROM: ${REGISTRY}/nids-ids:latest
     depends_on:
       - torch-base
     ports:
       - "50052:50052"
-    container_name: nids-neural-network
+    container_name: nids-ids
     image: ${REGISTRY}/nids-ids:latest

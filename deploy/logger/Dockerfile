@@ -1,5 +1,6 @@
 ARG REGISTRY
 FROM ${REGISTRY}/python-base
+LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
 COPY deploy/logger/requirements.txt /app/requirements.txt
 RUN uv pip install --no-cache-dir -r /app/requirements.txt && rm /app/requirements.txt

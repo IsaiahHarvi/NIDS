@@ -1,5 +1,5 @@
 include:
-  - neural_network/compose.yml
+  - ids/compose.yml
   - feeder/compose.yml
   - offline_feeder/compose.yml
   - logger/compose.yml
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile-torch.base
       args:
         CACHE_FROM: ${REGISTRY}/torch-base:latest
-        REGISTRY: "${REGISTRY}"
+        _REGISTRY: "${REGISTRY}"
     depends_on:
       - python-base
     image: ${REGISTRY}/torch-base:latest

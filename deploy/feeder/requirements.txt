@@ -10,7 +10,7 @@ dpkt==1.9.8
     # via
     #   -r deploy/feeder/requirements.in
     #   nfstream
-nfstream @ git+https://github.com/praetoriannero/nfstream.git@7657f543b7df50f89a91c9344d9a9a35e98cba49
+nfstream==6.5.3
     # via -r deploy/feeder/requirements.in
 numpy==1.26.4
     # via

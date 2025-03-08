@@ -25,12 +25,9 @@
           "GPU" : "false"
       },
       "../features/nvidia": {"GPU" : "false"},
-      "ghcr.io/devcontainers/features/rust:1": {
-        "version": "1.81"
-      }
     },
 
-    "postCreateCommand": "scripts/setup_dev.sh && scripts/setup_local_registry.sh",
+    "postCreateCommand": "scripts/setup_dev.sh",
 
     "customizations": {
       "vscode": {

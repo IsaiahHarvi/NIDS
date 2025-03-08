@@ -20,11 +20,7 @@
       "ghcr.io/devcontainers/features/python:1": {
         "version": "3.11"
       },
-      "../features/uv/": {
-          "version" : "1",
-          "GPU" : "false"
-      },
-      "../features/nvidia": {"GPU" : "false"},
+      "../features/nvidia": {"GPU" : "false"}
     },
 
   "postCreateCommand": "scripts/setup_dev.sh",

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# UV
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
 # general git config
 git config --global --add safe.directory /workspaces/NIDS
 git config --global pull.rebase true
@@ -16,4 +13,21 @@ if ! grep -q "# NIDS" /etc/hosts; then
     echo "NIDS entry added to /etc/hosts"
 else
     echo "NIDS entry already exists in /etc/hosts"
+fi
+
+set -e
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+echo 'export PATH="$HOME/.local/bin:$PATH"'
+echo 'export PATH="$HOME/.local/bin:$PATH"'
+
+if command -v nvidia-smi &> /dev/null; then
+    uv pip install --system --index-strategy unsafe-best-match \
+        --extra-index-url https://download.pytorch.org/whl/cu124 \
+        -r .devcontainer/requirements.txt
+else
+    uv pip install --system --index-strategy unsafe-best-match \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r .devcontainer/requirements-cpu.txt
 fi

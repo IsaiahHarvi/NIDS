@@ -180,3 +180,4 @@ mnt_data/
 node_modules/
 .turbo
 src/app/node_modules/
+bun.lock

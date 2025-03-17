@@ -15,11 +15,8 @@ else
     echo "NIDS entry already exists in /etc/hosts"
 fi
 
-set -e
-
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-echo 'export PATH="$HOME/.local/bin:$PATH"'
 echo 'export PATH="$HOME/.local/bin:$PATH"'
 
 if command -v nvidia-smi &> /dev/null; then
@@ -31,3 +28,5 @@ else
         --extra-index-url https://download.pytorch.org/whl/cpu \
         -r .devcontainer/requirements-cpu.txt
 fi
+
+uv pip install -e .

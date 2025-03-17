@@ -1,7 +1,7 @@
 [project]
 name = "nids"
 version = "0.0.2"
-description = ""
+description = "Real-Time Network Intrusion Detection, Monitoring, and Analysis Framework"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

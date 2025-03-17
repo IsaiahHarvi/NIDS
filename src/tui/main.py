@@ -87,7 +87,7 @@ class NIDS(App):
                 self.output_log.write(
                     Text("Killing all components...", style="bold red")
                 )
-                execute("docker kill $(docker ps -q)")
+                execute("docker kill $(docker ps --filter 'name=nids-' -q) > /dev/null 2>&1")
             case "clear_cache":
                 self.output_log.write(Text("System Prune...", style="bold red"))
                 execute("docker system prune --volumes -af")

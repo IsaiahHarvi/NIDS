@@ -1,32 +1,48 @@
 # NIDS: Real-Time Network Intrusion Detection, Monitoring, and Analysis
 
-## Overview
-**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. After installation, NIDS is just another client on a network, allowing it to be a drop-in service. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats such as unauthorized access, data exfiltration, and various types of Denial of Service attacks. 
+[![Version](https://img.shields.io/github/v/release/IsaiahHarvi/NIDS.svg)](https://github.com/IsaiahHarvi/NIDS/releases)
+[![Tests Passing](https://img.shields.io/github/actions/workflow/status/IsaiahHarvi/NIDS/publish.yml)](https://github.com/IsaiahHarvi/NIDS/actions?query=workflow%3Atest)
+[![GitHub Contributors](https://img.shields.io/github/contributors/IsaiahHarvi/NIDS.svg)](https://github.com/IsaiahHarvi/NIDS/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/IsaiahHarvi/NIDS.svg)](https://github.com/IsaiahHarvi/NIDS/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/IsaiahHarvi/NIDS.svg)](https://github.com/IsaiahHarvi/NIDS/pulls)
+[![Discord](https://img.shields.io/discord/:1276597095138070792)](https://discord.gg/m2TWH5nsAP)
 
-### Architecture
-NIDS is intended to be run on a Linux server connected to the network you want to monitor. The system has several components, including a packet capture module, a detection engine, a logging service, and a data visualization dashboard. The system is designed to be modular and scalable, allowing for easy integration with other security tools and services. It can be accessed via a web-based dashboard for real-time management, monitoring and analysis of network traffic. NIDS also has a built-in terminal interface for management if the web interface is inaccessible.
+## Overview
+**NIDS** is a real-time Network Intrusion Detection System designed to monitor and analyze network traffic. After installation, NIDS acts as a drop-in client on your network. It utilizes Deep Neural Networks to detect malicious attacks by identifying abnormal patterns and generating alerts for potential threats like unauthorized access, data exfiltration, and various types of Denial of Service attacks.
+
+## Architecture
+NIDS is deployed on a Linux server connected to the network you want to monitor. It consists of several components:
+- **Packet Capture Module**: Continuously captures live network traffic.
+- **Detection Engine**: Uses machine learning for threat detection via anomaly and signature-based methods.
+- **Logging Service**: Maintains a record of network traffic for future analysis or forensic investigations.
+- **Data Visualization Dashboard**: Offers real-time visualizations and historical analysis of network traffic.
+
+Each component runs in its own Docker container, ensuring modularity, scalability, and secure service networking. In case the web interface is inaccessible, a built-in terminal interface is available for management.
 
 ## Key Features
 
 ### Real-Time Network Traffic Monitoring
-- **Packet Capture**: Continuously monitors live network traffic on the host's network.
-- **Packet Inspection**: Analyzes captured packets for detailed information, including IP addresses, ports, protocols, and more.
-- **Traffic Logging**: Stores logs of network traffic for future analysis or forensic investigations.
+- **Packet Capture**: Constant monitoring of live network traffic.
+- **Packet Inspection**: Detailed analysis including IP addresses, ports, protocols, etc.
+- **Traffic Logging**: Persistent logging for later analysis and forensics.
 
 ### Threat Detection with Signature and Anomaly-Based Methods
-- **Anomaly-Based Detection**: Utilizes machine learning to detect abnormal behavior in network traffic that deviates from baseline patterns (e.g., unusual data transfer volumes).
+- **Anomaly-Based Detection**: Leverages machine learning to detect deviations from normal traffic behavior.
 
 ### Docker Integration for Service Networking
-- **Isolation**: Each service within NIDS (e.g., packet capture, logging, detection engine) runs in its own container, reducing the risk of cross-service vulnerabilities and ensuring potential security issues in one service don't affect others.
-- **Secure Service Networking**: Docker’s virtualized networking stack ensures secure communication between NIDS components without directly exposing them to the host network.
-- **Portability**: Docker ensures NIDS can be deployed consistently across different environments, maintaining uniform behavior and configuration.
+- **Isolation**: Each service runs in its own container, minimizing cross-service vulnerabilities.
+- **Secure Communication**: Docker’s virtualized networking stack secures inter-service communication.
+- **Portability**: Consistent deployment across various environments using Docker.
 
 ### Data Visualization Dashboard
-- **Traffic Visualizations**: Provides real-time visualizations of network traffic, including traffic flow, volume by protocol, and geographic source of traffic.
-- **Historical Analysis**: Allows users to view historical trends in network traffic and threats, with filtering options by time, location, or severity.
+- **Real-Time Visualizations**: Monitors traffic flow, volume by protocol, and geographic source of traffic.
+- **Historical Analysis**: Supports trend analysis with filtering options by time, location, or severity.
 
 ## Installation
-The user guide is available [here](./docs/USERGUIDE.md). NIDS can be installed and run by executing two scripts.
+Follow the [User Guide](./docs/USERGUIDE.md) to install and run NIDS. Installation is streamlined through two scripts that set up the environment and deploy the necessary containers.
 
 ## Contributing
-Please see the [CONTRIBUTING.md](./docs/CONTRIBUTING.md) file for information on contributing to this project.
+Contributions are welcome! Please refer to the [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for guidelines and instructions.
+
+## License
+[MIT License](./LICENSE)

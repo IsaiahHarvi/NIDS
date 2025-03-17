@@ -2,8 +2,8 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node AS client-layers
 LABEL org.opencontainers.image.source https://github.com/isaiahharvi/nids
 
-COPY src/app/types/ /app/types/
-COPY src/app/client/ /app/client/
+COPY src/legacy_app/types/ /app/types/
+COPY src/legacy_app/client/ /app/client/
 WORKDIR /app/client
 
 RUN pnpm install && pnpm build
@@ -16,8 +16,8 @@ ENV NODE_ENV production
 # this is weird but we absolute path in one of the ts files
 COPY src/grpc_ /workspaces/NIDS/src/grpc_
 
-COPY src/app/types/ /app/types/
-COPY src/app/server/ /app/server/
+COPY src/legacy_app/types/ /app/types/
+COPY src/legacy_app/server/ /app/server/
 WORKDIR /app/server
 
 RUN bun install --production

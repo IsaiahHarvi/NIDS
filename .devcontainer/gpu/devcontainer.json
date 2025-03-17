@@ -1,5 +1,5 @@
 {
-    "name": "local-nids",
+    "name": "nids-gpu",
     "image": "mcr.microsoft.com/devcontainers/base:noble",
     "features": {
       "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
@@ -15,12 +15,13 @@
         "autoPull": false
       },
       "ghcr.io/devcontainers/features/sshd:1": {},
+      "ghcr.io/iterative/features/nvtop:1": {},
       "ghcr.io/shyim/devcontainers-features/bun:0": {},
       "ghcr.io/devcontainers/features/node:1": {},
       "ghcr.io/devcontainers/features/python:1": {
         "version": "3.11"
       },
-      "../features/nvidia": {"GPU" : "false"}
+      "../features/nvidia": {"GPU" : "true"}
     },
 
   "postCreateCommand": "scripts/setup_dev.sh",
@@ -42,10 +43,11 @@
     }
   },
   "runArgs": [
+    "--gpus=all",
     "--shm-size=4g",
     "--env-file",
     ".devcontainer/dev.env",
     "--name",
-    "local-nids"
+    "nids-gpu"
   ]
 }

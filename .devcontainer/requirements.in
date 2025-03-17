@@ -23,4 +23,4 @@ pypcap
 textual
 isort
 imbalanced-learn
-# git+https://github.com/praetoriannero/nfstream.git
+nfstream

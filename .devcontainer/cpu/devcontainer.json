@@ -1,5 +1,5 @@
 {
-    "name": "${localEnv:USER}-nids-cpu",
+    "name": "nids-cpu",
     "image": "mcr.microsoft.com/devcontainers/base:noble",
     "features": {
       "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
@@ -15,46 +15,38 @@
         "autoPull": false
       },
       "ghcr.io/devcontainers/features/sshd:1": {},
+      "ghcr.io/iterative/features/nvtop:1": {},
       "ghcr.io/shyim/devcontainers-features/bun:0": {},
       "ghcr.io/devcontainers/features/node:1": {},
       "ghcr.io/devcontainers/features/python:1": {
         "version": "3.11"
       },
-      "../features/uv/": {
-          "version" : "1",
-          "GPU" : "false"
-      },
-      "../features/nvidia": {"GPU" : "false"},
-      "ghcr.io/devcontainers/features/rust:1": {
-        "version": "1.81"
-      }
+      "../features/nvidia": {"GPU" : "false"}
     },
 
-    "postCreateCommand": "scripts/setup_dev.sh",
+  "postCreateCommand": "scripts/setup_dev.sh",
 
-    "customizations": {
-      "vscode": {
-        "extensions": [
-          "ms-python.python",
-          "iterative.dvc",
-          "tamasfe.even-better-toml",
-          "charliermarsh.ruff",
-          "esbenp.prettier-vscode",
-          "dbaeumer.vscode-eslint",
-          "oven.bun-vscode",
-          "bradlc.vscode-tailwindcss"
-        ]
-      }
-    },
-    "mounts": [
-      "source=/etc/docker/daemon.json,target=/etc/docker/daemon.json,type=bind",
-      "source=/mnt/data/nids/,target=/workspaces/NIDS/mnt_data/,type=bind"
-    ],
-    "runArgs": [
-      "--shm-size=4g",
-      "--memory=8g",
-      "--cpus=8",
-      "--env-file", ".devcontainer/dev.env",
-      "--name", "${localEnv:USER}-nids-cpu"
-    ]
-  }
+  "forwardPorts": [5173, 3000],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "iterative.dvc",
+        "tamasfe.even-better-toml",
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "oven.bun-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "runArgs": [
+    "--shm-size=4g",
+    "--env-file",
+    ".devcontainer/dev.env",
+    "--name",
+    "nids-gpu"
+  ]
+}
